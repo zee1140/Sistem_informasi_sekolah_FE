@@ -4,7 +4,7 @@
     <nav class="navbar navbar-expand-lg px-4">
       <div class="container-fluid">
         <span class="navbar-brand">JeprutSchool</span>
-        <router-link to="/login" class="login-btn">Login</router-link>
+        <router-link to="/profile" class="login-btn">Profile</router-link>
       </div>
     </nav>
 
