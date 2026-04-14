@@ -23,7 +23,9 @@
         <router-link to="/forgot" class="forgot">Forgot?</router-link>
       </div>
 
-      <button class="login-btn w-100">Login</button>
+      <router-link to="/dashboard">
+  <button class="login-btn w-100">Login</button>
+</router-link>
 
       <p class="register-text mt-3">
         Don't have account?
