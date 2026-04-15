@@ -4,7 +4,7 @@ import Home from '../views/Login.vue'
 import Dashboard from '../views/Dashboard.vue'
 import Register from '../views/Register.vue'
 import Forgot from '../views/Forgot.vue'
-
+import Profile from '../views/Profile.vue'
 const routes = [
   {
     path: '/',
@@ -26,6 +26,12 @@ const routes = [
   name: 'Forgot',
   component: Forgot
   },  
+
+   {
+    path: '/profile', // Path untuk halaman profile baru kamu
+    name: 'Profile',
+    component: Profile
+  },
 ]
 
 const router = createRouter({
