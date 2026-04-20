@@ -1,11 +1,13 @@
 <template>
   <div class="app-wrapper animate-home">
     <!-- Floating Glass Navbar -->
-    <nav class="navbar navbar-expand-lg px-4">
-      <div class="container-fluid">
-        <span class="navbar-brand">JeprutSchool</span>
-        <router-link to="/login" class="login-btn">Login</router-link>
+    <nav class="custom-nav sticky-top d-flex justify-content-between align-items-center px-lg-5 px-3">
+      <div class="brand">
+        <span class="brand-accent">Jeprut</span>School
       </div>
+      <a href="#" @click.prevent="$router.push('/dashboard')" class="btn-back">
+        <i class="bi bi-arrow-left-short"></i> Kembali ke Dashboard
+      </a>
     </nav>
 
     <div class="container-fluid mt-4">
