@@ -4,7 +4,9 @@
     <nav class="navbar navbar-expand-lg px-4">
       <div class="container-fluid">
         <span class="navbar-brand">JeprutSchool</span>
-        <router-link to="/login" class="login-btn">Login</router-link>
+        <router-link to="/profile" class="profile-icon">
+  <i class="bi bi-person-circle"></i>
+</router-link>
       </div>
     </nav>
 
@@ -15,8 +17,12 @@
           <div class="glass-card p-4 h-100">
             <h6 class="mb-3">Menu</h6>
             <ul class="nav flex-column gap-2">
-              <li><button class="menu-btn">Dashboard</button></li>
-              <li><button class="menu-btn">Data Siswa</button></li>
+           <li>
+  <router-link to="/siswa" class="menu-btn">Siswa</router-link>
+</li>
+           <li>
+  <router-link to="/kelas" class="menu-btn">Kelas</router-link>
+</li>
               <li><button class="menu-btn">Guru</button></li>
               <li><button class="menu-btn">Jadwal</button></li>
             </ul>
@@ -200,14 +206,16 @@ p {
 
 /* Animated Menu Button */
 .menu-btn {
+  display: block;
   width: 100%;
-  background: transparent;
-  border: none;
   padding: 10px;
-  border-radius: 12px;
+  border: none;
+  background: transparent;
   text-align: left;
-  transition: all 0.3s ease;
-  color: #1d1d1f;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 10px;
+  transition: 0.3s;
   font-weight: 500;
 }
 
@@ -326,6 +334,21 @@ p {
   animation: homeFade 0.7s ease;
 }
 
+.profile-icon {
+  font-size: 32px;
+  color: inherit; /* ngikut warna parent */
+  transition: all 0.25s ease;
+}
+
+.profile-icon:hover {
+  transform: scale(1.15);
+  opacity: 0.7; /* bukan ganti warna, jadi tetap konsisten */
+}
+
+.profile-icon:active {
+  transform: scale(0.95);
+}
+
 @keyframes homeFade {
   0% {
     opacity: 0;
@@ -335,6 +358,8 @@ p {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
+
+  
 
   
 }
