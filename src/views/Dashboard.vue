@@ -17,8 +17,12 @@
           <div class="glass-card p-4 h-100">
             <h6 class="mb-3">Menu</h6>
             <ul class="nav flex-column gap-2">
-              <li><button class="menu-btn">Siswa</button></li>
-              <li><button class="menu-btn">Kelas</button></li>
+           <li>
+  <router-link to="/siswa" class="menu-btn">Siswa</router-link>
+</li>
+           <li>
+  <router-link to="/kelas" class="menu-btn">Kelas</router-link>
+</li>
               <li><button class="menu-btn">Guru</button></li>
               <li><button class="menu-btn">Jadwal</button></li>
             </ul>
@@ -202,14 +206,16 @@ p {
 
 /* Animated Menu Button */
 .menu-btn {
+  display: block;
   width: 100%;
-  background: transparent;
-  border: none;
   padding: 10px;
-  border-radius: 12px;
+  border: none;
+  background: transparent;
   text-align: left;
-  transition: all 0.3s ease;
-  color: #1d1d1f;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 10px;
+  transition: 0.3s;
   font-weight: 500;
 }
 
