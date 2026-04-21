@@ -17,15 +17,31 @@
           <div class="glass-card p-4 h-100">
             <h6 class="mb-3">Menu</h6>
             <ul class="nav flex-column gap-2">
-           <li>
-  <router-link to="/siswa" class="menu-btn">Siswa</router-link>
-</li>
-           <li>
-  <router-link to="/kelas" class="menu-btn">Kelas</router-link>
-</li>
-              <li><button class="menu-btn">Guru</button></li>
-              <li><button class="menu-btn">Jadwal</button></li>
-            </ul>
+  <li>
+    <router-link to="/siswa" class="menu-btn">
+      <i class="bi bi-people"></i>
+      <span>Siswa</span>
+    </router-link>
+  </li>
+  <li>
+    <router-link to="/kelas" class="menu-btn">
+      <i class="bi bi-building"></i>
+      <span>Kelas</span>
+    </router-link>
+  </li>
+  <li>
+    <button class="menu-btn">
+      <i class="bi bi-person-workspace"></i>
+      <span>Guru</span>
+    </button>
+  </li>
+  <li>
+    <button class="menu-btn">
+      <i class="bi bi-calendar-event"></i>
+      <span>Jadwal</span>
+    </button>
+  </li>
+</ul>
           </div>
         </div>
 
@@ -350,5 +366,63 @@ body {
 
 .profile-icon:hover {
   color: #4e73df;
+}
+
+.menu-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: #5a5c69;
+  text-decoration: none;
+  font-weight: 500;
+  border-radius: 10px;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+/* Icon */
+.menu-btn i {
+  font-size: 1.2rem;
+  color: #b7b9cc;
+  transition: 0.3s;
+}
+
+/* Hover effect */
+.menu-btn:hover {
+  background: #f1f4ff;
+  color: #4e73df;
+  transform: translateX(6px);
+}
+
+.menu-btn:hover i {
+  color: #4e73df;
+}
+
+/* Active route */
+.router-link-active.menu-btn {
+  background: linear-gradient(135deg, #4e73df, #224abe);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(78, 115, 223, 0.3);
+}
+
+.router-link-active.menu-btn i {
+  color: white;
+}
+
+/* Left indicator */
+.router-link-active.menu-btn::before {
+  content: "";
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 60%;
+  width: 4px;
+  background: #4e73df;
+  border-radius: 4px;
 }
 </style>
