@@ -7,6 +7,8 @@ import Forgot from '../views/Forgot.vue'
 import Profile from '../views/Profile.vue'
 import Siswa from '../views/Siswa.vue'
 import Kelas from '../views/Kelas.vue'
+import Guru from '../views/Guru.vue'
+import Jadwal from '../views/Jadwal.vue'
 
 const routes = [
   {
@@ -46,6 +48,16 @@ const routes = [
    name: 'Kelas',
    component: Kelas
  },
+ {
+  path: '/Guru',
+  name: '/Guru',
+  component: Guru
+ },
+ {
+  path: '/Jadwal',
+  name: '/Jadwal',
+  component: Jadwal
+ }
 ]
 
 const router = createRouter({
