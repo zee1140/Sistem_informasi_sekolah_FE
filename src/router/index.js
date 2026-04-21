@@ -1,20 +1,25 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import Home from '../views/Home.vue'
-import Login from '../views/Login.vue'
+import Home from '../views/Login.vue'
+import Dashboard from '../views/Dashboard.vue'
 import Register from '../views/Register.vue'
 import Forgot from '../views/Forgot.vue'
+import Profile from '../views/Profile.vue'
+import Siswa from '../views/Siswa.vue'
+import Kelas from '../views/Kelas.vue'
+import Guru from '../views/Guru.vue'
+import Jadwal from '../views/Jadwal.vue'
 
 const routes = [
   {
     path: '/',
     name: 'Home',
     component: Home
-  },
+  },  
   {
-    path: '/login',
-    name: 'Login',
-    component: Login
+    path: '/dashboard',
+    name: 'Dashboard',
+    component: Dashboard
   },
   {
     path: '/Register',
@@ -26,6 +31,33 @@ const routes = [
   name: 'Forgot',
   component: Forgot
   },  
+
+   {
+    path: '/profile',
+    name: 'Profile',
+    component: Profile
+  },
+   
+  {
+   path: '/siswa',
+   name: 'Siswa',
+   component: Siswa
+ },
+  {
+   path: '/kelas',
+   name: 'Kelas',
+   component: Kelas
+ },
+ {
+  path: '/Guru',
+  name: '/Guru',
+  component: Guru
+ },
+ {
+  path: '/Jadwal',
+  name: '/Jadwal',
+  component: Jadwal
+ }
 ]
 
 const router = createRouter({
