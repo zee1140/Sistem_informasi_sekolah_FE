@@ -158,7 +158,7 @@ export default {
     logout() {
       // Logika logout sederhana
       if(confirm('Apakah anda yakin ingin keluar?')) {
-        this.$router.push('/login');
+        this.$router.push('/');
       }
     }
   }
