@@ -286,6 +286,8 @@ export default {
   padding: 12px 18px;
   font-weight: 500;
   transition: 0.3s;
+
+  color: #1e293b; /* 🔥 ini yang bikin teks keliatan */
 }
 
 .custom-input:focus {

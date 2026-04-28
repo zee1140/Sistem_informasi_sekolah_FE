@@ -147,7 +147,33 @@ export default {
 
 /* Sidebar & Hero */
 .glass-card { background: white; border: 1px solid #e3e6f0; border-radius: 18px; }
-.menu-btn { display: flex; align-items: center; gap: 12px; padding: 12px 16px; width: 100%; color: #5a5c69; text-decoration: none; font-weight: 500; border-radius: 12px; transition: 0.25s; }
+.menu-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: #5a5c69;
+  text-decoration: none;
+  font-weight: 500;
+  border-radius: 12px;
+  transition: all 0.25s ease;
+
+  white-space: nowrap; /* penting */
+}
+
+.menu-btn:hover {
+  background: #f1f4ff;
+  color: #4e73df;
+  transform: translateX(5px);
+}
+/* optional biar lebih rapi lagi */
+.menu-btn span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .router-link-active.menu-btn { background: linear-gradient(135deg, #4e73df, #224abe); color: #fff !important; }
 
 .admin-hero { background: linear-gradient(135deg, #4e73df 0%, #224abe 100%); color: white; border-radius: 20px; }
