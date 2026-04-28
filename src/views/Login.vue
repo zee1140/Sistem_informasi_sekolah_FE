@@ -52,6 +52,12 @@ export default {
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 .login-wrapper {
+  position: fixed;
+  inset: 0; /* full layar semua sisi */
+}
+
+
+.login-wrapper {
   height: 100vh;
   display: flex;
   justify-content: center;

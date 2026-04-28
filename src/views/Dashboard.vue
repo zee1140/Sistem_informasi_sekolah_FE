@@ -170,6 +170,11 @@ export default {
 @import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap');
 
 .app-wrapper {
+  position: fixed;
+  inset: 0; /* full layar semua sisi */
+}
+
+.app-wrapper {
   background-color: #f8f9fc;
   min-height: 100vh;
   font-family: 'Public Sans', sans-serif;
@@ -214,6 +219,14 @@ export default {
   font-weight: 500;
   border-radius: 12px;
   transition: all 0.25s ease;
+
+  white-space: nowrap; /* penting */
+}
+
+/* optional biar lebih rapi lagi */
+.menu-btn span {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .menu-btn:hover {
