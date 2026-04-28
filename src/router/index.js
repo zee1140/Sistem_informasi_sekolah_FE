@@ -4,11 +4,6 @@ import Home from '../views/Login.vue'
 import Dashboard from '../views/Dashboard.vue'
 import Register from '../views/Register.vue'
 import Forgot from '../views/Forgot.vue'
-import Profile from '../views/Profile.vue'
-import Siswa from '../views/Siswa.vue'
-import Kelas from '../views/Kelas.vue'
-import Guru from '../views/Guru.vue'
-import Jadwal from '../views/Jadwal.vue'
 
 const routes = [
   {
@@ -22,7 +17,7 @@ const routes = [
     component: Dashboard
   },
   {
-    path: '/Register',
+    path: '/register', // Disarankan huruf kecil semua agar konsisten
     name: 'Register',
     component: Register
   },
@@ -31,33 +26,6 @@ const routes = [
   name: 'Forgot',
   component: Forgot
   },  
-
-   {
-    path: '/profile',
-    name: 'Profile',
-    component: Profile
-  },
-   
-  {
-   path: '/siswa',
-   name: 'Siswa',
-   component: Siswa
- },
-  {
-   path: '/kelas',
-   name: 'Kelas',
-   component: Kelas
- },
- {
-  path: '/Guru',
-  name: '/Guru',
-  component: Guru
- },
- {
-  path: '/Jadwal',
-  name: '/Jadwal',
-  component: Jadwal
- }
 ]
 
 const router = createRouter({
