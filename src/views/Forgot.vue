@@ -1,28 +1,32 @@
 <template>
   <div class="login-wrapper">
     <div class="login-card animate-in">
-      <div class="avatar">
-        <i class="bi bi-envelope"></i>
+      <div class="brand-header">
+        <div class="brand-icon">
+          <i class="bi bi-envelope-open-heart"></i>
+        </div>
+        <h4 class="brand-name">Jeprut<span>School</span></h4>
       </div>
 
       <h5 class="title">Forgot Password</h5>
-      <p class="subtitle">Enter your email to reset password</p>
+      <p class="subtitle">Masukkan email terdaftar untuk mengatur ulang kata sandi Anda</p>
 
-      <div class="mb-3">
+      <div class="mb-4 text-start">
+        <label class="form-label small fw-bold text-secondary ms-1">Email Address</label>
         <input 
           v-model="email"
           type="email" 
           class="form-control input" 
-          placeholder="Email">
+          placeholder="name@school.com">
       </div>
 
       <button @click="sendReset" class="login-btn w-100">
         Send Reset Link
       </button>
 
-      <p class="register-text mt-3">
-        Remember your password?
-        <router-link to="/login" class="register-link">Login</router-link>
+      <p class="register-text mt-4">
+        Sudah ingat password?
+        <router-link to="/login" class="register-link">Kembali Login</router-link>
       </p>
     </div>
   </div>
@@ -55,7 +59,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 .login-wrapper {
@@ -63,113 +67,110 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(-45deg, #f2f2f4, #e5e5ea, #f2f2f4, #dcdce1);
-  background-size: 400% 400%;
-  animation: bgMove 18s ease infinite;
+  background-color: #f8fafc;
+  background-image: radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.05) 0, transparent 50%), 
+                    radial-gradient(at 50% 0%, rgba(37, 99, 235, 0.05) 0, transparent 50%);
   font-family: 'Inter', sans-serif;
 }
 
-@keyframes bgMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-
 .login-card {
-  width: 340px;
-  padding: 40px 30px 30px;
-  border-radius: 28px;
-  background: rgba(255,255,255,0.65);
-  backdrop-filter: blur(30px);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+  width: 100%;
+  max-width: 400px;
+  padding: 40px;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
   text-align: center;
-  position: relative;
 }
 
-/* ANIMATION */
+/* Brand Section */
+.brand-header {
+  margin-bottom: 25px;
+}
+
+.brand-icon {
+  font-size: 40px;
+  color: #2563eb;
+  margin-bottom: 10px;
+}
+
+.brand-name {
+  font-weight: 700;
+  color: #1e293b;
+  letter-spacing: -0.5px;
+}
+
+.brand-name span {
+  color: #2563eb;
+}
+
+/* Animation */
 .animate-in {
-  animation: fadeZoom 0.7s ease;
+  animation: slideUp 0.6s ease-out;
 }
 
-@keyframes fadeZoom {
-  0% {
-    opacity: 0;
-    transform: scale(0.92) translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* AVATAR */
-.avatar {
-  width: 75px;
-  height: 75px;
-  border-radius: 50%;
-  background: #1c1c1e;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 28px;
-  position: absolute;
-  top: -35px;
-  left: 50%;
-  transform: translateX(-50%);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-}
-
-/* TEXT */
+/* Text Styles */
 .title {
-  margin-top: 30px;
-  font-weight: 600;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 8px;
 }
 
 .subtitle {
-  color: #6e6e73;
+  color: #64748b;
   font-size: 14px;
-  margin-bottom: 20px;
+  line-height: 1.5;
+  margin-bottom: 30px;
 }
 
-/* INPUT */
+/* Input Styles */
 .input {
-  border-radius: 14px;
-  padding: 12px;
-  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 12px 16px;
+  border: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+  transition: all 0.2s;
 }
 
 .input:focus {
-  border-color: #1c1c1e;
-  box-shadow: 0 0 0 2px rgba(0,0,0,0.05);
+  border-color: #2563eb;
+  background-color: #fff;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+  outline: none;
 }
 
-/* BUTTON */
+/* Button */
 .login-btn {
-  background: linear-gradient(135deg, #1c1c1e, #3a3a3c);
+  background-color: #2563eb;
   color: white;
-  border-radius: 16px;
-  padding: 12px;
+  border-radius: 12px;
+  padding: 14px;
   border: none;
-  font-weight: 500;
-  transition: all 0.3s ease;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
 }
 
 .login-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  background-color: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
 }
 
-/* LINK */
+/* Link */
 .register-text {
-  font-size: 13px;
-  color: #6e6e73;
+  font-size: 14px;
+  color: #64748b;
 }
 
 .register-link {
-  color: #1c1c1e;
-  font-weight: 500;
+  color: #2563eb;
+  font-weight: 600;
   text-decoration: none;
 }
 
