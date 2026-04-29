@@ -1,110 +1,141 @@
 <template>
-  <div class="container-fluid py-4 animate-page">
+  <div class="container-fluid py-4 min-vh-100 bg-light-custom">
 
-    <div class="row mb-4 align-items-center fade-in">
-      <div class="col">
-        <h3 class="admin-title">Manajemen Siswa</h3>
-        <p class="text-muted small">Daftar seluruh siswa aktif di JeprutSchool</p>
+    <transition name="fade">
+      <div v-if="alert.show" class="custom-alert shadow" :class="alert.type">
+        <i class="bi" :class="alert.type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill'"></i>
+        {{ alert.message }}
       </div>
-      <div class="col-auto">
-        <button class="btn-admin-primary" @click="openModal()">
-          <i class="bi bi-plus-lg me-2"></i> Tambah Siswa
+    </transition>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div class="d-flex align-items-center gap-3">
+        <button class="btn btn-white shadow-sm rounded-circle p-0 d-flex align-items-center justify-content-center" 
+                @click="goDashboard" style="width: 42px; height: 42px;">
+          <i class="bi bi-arrow-left fs-5 text-primary"></i>
         </button>
+        <div>
+          <h4 class="fw-bold mb-0 text-dark">Manajemen Siswa</h4>
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0" style="font-size: 0.85rem;">
+              <li class="breadcrumb-item"><a href="#" @click.prevent="goDashboard" class="text-decoration-none text-muted">Dashboard</a></li>
+              <li class="breadcrumb-item active fw-medium text-primary">Data Siswa</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+
+      <button class="btn btn-primary-jeprut shadow-sm px-4 py-2" @click="openModal">
+        <i class="bi bi-plus-lg me-2"></i> Tambah Siswa
+      </button>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4 rounded-4">
+      <div class="card-body p-3">
+        <div class="input-group">
+          <span class="input-group-text bg-light border-0"><i class="bi bi-search text-muted"></i></span>
+          <input v-model="search" class="form-control border-0 bg-light" placeholder="Cari berdasarkan nama atau kelas..." />
+        </div>
       </div>
     </div>
 
-    <div class="admin-card p-3 mb-4 fade-in-delay">
-      <div class="search-wrapper">
-        <i class="bi bi-search"></i>
-        <input type="text" v-model="search" placeholder="Cari berdasarkan nama atau kelas..." class="search-input" />
-      </div>
-    </div>
-
-    <div class="admin-card overflow-hidden fade-up">
+    <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
       <div class="table-responsive">
-        <table class="table admin-table align-middle">
-          <thead>
+        <table class="table table-hover align-middle mb-0">
+          <thead class="bg-header-table">
             <tr>
-              <th>Nama Lengkap</th>
-              <th>Alamat Email</th>
-              <th>Kelas</th>
-              <th class="text-center" width="180">Aksi Management</th>
+              <th class="ps-4 py-3 text-uppercase fw-bold text-muted" style="font-size: 0.75rem;">Siswa</th>
+              <th class="py-3 text-uppercase fw-bold text-muted" style="font-size: 0.75rem;">Kontak</th>
+              <th class="py-3 text-uppercase fw-bold text-muted" style="font-size: 0.75rem;">Kelas</th>
+              <th class="text-center py-3 text-uppercase fw-bold text-muted" style="font-size: 0.75rem;">Aksi</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(siswa, index) in filteredSiswa" :key="index" class="row-anim">
-              <td class="fw-bold text-dark">{{ siswa.nama }}</td>
-              <td><span class="text-secondary">{{ siswa.email }}</span></td>
-              <td><span class="badge-kelas">{{ siswa.kelas }}</span></td>
+            <tr v-for="(siswa, i) in filteredSiswa" :key="i">
+              <td class="ps-4">
+                <div class="d-flex align-items-center">
+                  <div class="avatar-circle me-3">{{ siswa.nama.charAt(0) }}</div>
+                  <span class="fw-bold text-dark">{{ siswa.nama }}</span>
+                </div>
+              </td>
+              <td><span class="text-muted">{{ siswa.email }}</span></td>
+              <td>
+                <span class="badge-soft-primary">
+                  {{ siswa.kelas }}
+                </span>
+              </td>
               <td class="text-center">
-                <button class="btn-icon edit" @click="editData(index)" title="Edit">
-                  <i class="bi bi-pencil-square"></i>
-                </button>
-                <button class="btn-icon delete" @click="deleteData(index)" title="Hapus">
-                  <i class="bi bi-trash3"></i>
+                <button class="btn btn-icon-delete border-0" @click="deleteData(i)">
+                  <i class="bi bi-trash3 text-danger"></i>
                 </button>
               </td>
             </tr>
+
             <tr v-if="filteredSiswa.length === 0">
-              <td colspan="4" class="text-center py-5 text-muted">Data tidak ditemukan.</td>
+              <td colspan="4" class="text-center py-5">
+                <i class="bi bi-inbox fs-1 text-light mb-2 d-block"></i>
+                <p class="text-muted mb-0">Data tidak ditemukan atau masih kosong.</p>
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <transition name="fade">
-      <div v-if="showModal" class="admin-modal-overlay">
-        <div class="admin-modal-box scale-in">
-          <div class="modal-header-admin">
-            <h4>{{ isEdit ? 'Edit Data' : 'Tambah Siswa' }}</h4>
-            <p>Pastikan informasi data siswa sudah benar.</p>
+    <div class="modal fade" id="modalSiswa" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow-lg">
+          <div class="modal-header border-0 p-4 pb-0">
+            <h5 class="fw-bold">Input Data Siswa</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
-
-          <div class="modal-body-admin">
-            <div class="input-group-admin">
-              <label>Nama Lengkap</label>
-              <input v-model="form.nama" placeholder="Masukkan nama...">
+          <div class="modal-body p-4">
+            <div class="mb-3">
+              <label class="form-label fw-semibold small">Nama Lengkap</label>
+              <input v-model="form.nama" type="text" class="form-control custom-input" placeholder="Contoh: Andi Wijaya">
             </div>
-            <div class="input-group-admin">
-              <label>Email</label>
-              <input v-model="form.email" placeholder="contoh@gmail.com">
+            <div class="mb-3">
+              <label class="form-label fw-semibold small">Alamat Email</label>
+              <input v-model="form.email" type="email" class="form-control custom-input" placeholder="andi@gmail.com">
             </div>
-            <div class="input-group-admin">
-              <label>Kelas</label>
-              <input v-model="form.kelas" placeholder="Misal: 10 IPA 1">
+            <div class="mb-2">
+              <label class="form-label fw-semibold small">Kelas</label>
+              <input v-model="form.kelas" type="text" class="form-control custom-input" placeholder="Contoh: 12 IPA 1">
             </div>
           </div>
-
-          <div class="modal-footer-admin">
-            <button class="btn-admin-primary w-100" @click="saveData">
-              <i class="bi bi-check-circle me-2"></i> Simpan Data
-            </button>
-            <button class="btn-admin-outline w-100 mt-2" @click="closeModal">Batal</button>
+          <div class="modal-footer border-0 p-4 pt-0 d-flex gap-2">
+            <button class="btn btn-light flex-grow-1 py-2 rounded-3 text-muted fw-bold" data-bs-dismiss="modal">Batal</button>
+            <button class="btn btn-primary-jeprut flex-grow-1 py-2 rounded-3" @click="saveData">Simpan Siswa</button>
           </div>
         </div>
       </div>
-    </transition>
+    </div>
 
   </div>
 </template>
 
 <script>
+import { Modal } from 'bootstrap'
+
 export default {
   data() {
     return {
       search: "",
-      showModal: false,
-      isEdit: false,
-      editIndex: null,
       siswaList: [
         { nama: "Budi Santoso", email: "budi@gmail.com", kelas: "10A" },
         { nama: "Siti Aminah", email: "siti@gmail.com", kelas: "11B" },
-        { nama: "Rizky Pratama", email: "rizky@gmail.com", kelas: "12C" }
+        { nama: "Andi Saputra", email: "andi@gmail.com", kelas: "12C" }
       ],
-      form: { nama: "", email: "", kelas: "" }
+      form: { nama: "", email: "", kelas: "" },
+      modal: null,
+      alert: {
+        show: false,
+        message: '',
+        type: 'success'
+      }
     }
   },
+
   computed: {
     filteredSiswa() {
       return this.siswaList.filter(s =>
@@ -113,225 +144,136 @@ export default {
       )
     }
   },
+
+  mounted() {
+    // Memastikan modal Bootstrap terinisialisasi dengan benar
+    const modalEl = document.getElementById('modalSiswa');
+    if (modalEl) {
+      this.modal = new Modal(modalEl);
+    }
+  },
+
   methods: {
+    goDashboard() {
+      this.$router.push('/dashboard')
+    },
+
     openModal() {
-      this.showModal = true
-      this.isEdit = false
       this.form = { nama: "", email: "", kelas: "" }
+      if (this.modal) this.modal.show()
     },
-    closeModal() {
-      this.showModal = false
-    },
+
     saveData() {
-      if (this.isEdit) {
-        this.siswaList[this.editIndex] = { ...this.form }
-      } else {
-        this.siswaList.push({ ...this.form })
+      if (!this.form.nama || !this.form.email || !this.form.kelas) {
+        this.showAlert('Semua data wajib diisi!', 'danger')
+        return
       }
-      this.closeModal()
+
+      this.siswaList.push({ ...this.form })
+      if (this.modal) this.modal.hide()
+      this.showAlert('Siswa berhasil ditambahkan', 'success')
     },
-    editData(index) {
-      this.form = { ...this.siswaList[index] }
-      this.editIndex = index
-      this.isEdit = true
-      this.showModal = true
-    },
-    deleteData(index) {
-      if(confirm('Apakah Anda yakin ingin menghapus data ini?')) {
-        this.siswaList.splice(index, 1)
+
+    deleteData(i) {
+      if (confirm("Hapus data siswa ini?")) {
+        this.siswaList.splice(i, 1)
+        this.showAlert('Data siswa telah dihapus', 'warning')
       }
+    },
+
+    showAlert(message, type = 'success') {
+      this.alert.message = message
+      this.alert.type = type
+      this.alert.show = true
+      setTimeout(() => { this.alert.show = false }, 2500)
     }
   }
 }
 </script>
 
 <style scoped>
-/* KONFIGURASI WARNA ADMIN */
-:root {
-  --primary: #4e73df;
-  --dark: #1e1e2d;
-  --border: #e3e6f0;
-  --bg-soft: #f8f9fc;
+/* BACKGROUND & UTILS */
+.bg-light-custom { background-color: #f4f7fe; }
+.btn-white { background: white; border: none; }
+
+/* GRADASI BIRU (Sesuai Banner Dashboard) */
+.btn-primary-jeprut {
+  background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+  border: none;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+.btn-primary-jeprut:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(78, 115, 223, 0.35);
+  color: white;
 }
 
-.animate-page {
-  animation: fadeInPage 0.5s ease-out;
-}
-
-.admin-title {
-  font-weight: 800;
-  color: #2c3e50;
-  margin-bottom: 0;
-}
-
-/* SEARCH BOX ADMIN */
-.search-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.search-wrapper i {
-  position: absolute;
-  left: 15px;
-  color: #b7b9cc;
-}
-
-.search-input {
-  width: 100%;
-  padding: 12px 12px 12px 45px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: #fff;
-  transition: all 0.3s;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: #4e73df;
-  box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.1);
-}
-
-/* CARD & TABLE ADMIN */
-.admin-card {
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.05);
-}
-
-.admin-table thead {
-  background: #f8f9fc;
-}
-
-.admin-table th {
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
-  font-weight: 700;
-  color: #4e5d78;
-  padding: 15px;
-  border-bottom: 2px solid var(--border);
-}
-
-.admin-table td {
-  padding: 15px;
-  border-bottom: 1px solid #f2f4f9;
-}
-
-.badge-kelas {
-  background: #eef2ff;
+/* BADGE & AVATAR */
+.badge-soft-primary {
+  background-color: #eef2ff;
   color: #4e73df;
-  padding: 5px 12px;
-  border-radius: 6px;
-  font-weight: 700;
-  font-size: 0.8rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
 }
-
-/* BUTTONS */
-.btn-admin-primary {
+.avatar-circle {
+  width: 38px;
+  height: 38px;
   background: #4e73df;
   color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 0.3s;
-}
-
-.btn-admin-primary:hover {
-  background: #2e59d9;
-  transform: translateY(-2px);
-}
-
-.btn-admin-outline {
-  background: transparent;
-  color: #858796;
-  border: 1px solid #d1d3e2;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 0.2s;
-}
-
-.btn-admin-outline:hover { background: #f8f9fc; }
-
-/* ACTION BUTTONS (ICONS) */
-.btn-icon {
-  width: 35px;
-  height: 35px;
-  border-radius: 8px;
-  border: none;
-  margin: 0 3px;
-  transition: all 0.2s;
-}
-
-.btn-icon.edit { background: #eef2ff; color: #4e73df; }
-.btn-icon.delete { background: #fff1f0; color: #ff4d4f; }
-
-.btn-icon:hover { transform: scale(1.1); }
-
-/* MODAL ADMIN */
-.admin-modal-overlay {
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(30, 30, 45, 0.6);
-  backdrop-filter: blur(4px);
+  border-radius: 50%;
   display: flex;
-  justify-content: center;
   align-items: center;
-  z-index: 2000;
+  justify-content: center;
+  font-weight: bold;
 }
 
-.admin-modal-box {
-  background: white;
-  padding: 30px;
-  border-radius: 16px;
-  width: 400px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-}
-
-.modal-header-admin h4 { font-weight: 800; color: #2c3e50; margin: 0;}
-.modal-header-admin p { font-size: 0.85rem; color: #858796; margin-bottom: 20px;}
-
-.input-group-admin { margin-bottom: 15px; }
-.input-group-admin label {
-  display: block;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #4e5d78;
-  margin-bottom: 5px;
-}
-
-.input-group-admin input {
-  width: 100%;
-  padding: 10px;
+/* TABLE STYLING */
+.bg-header-table { background-color: #f8fafc; }
+.btn-icon-delete {
+  padding: 8px 12px;
   border-radius: 8px;
-  border: 1px solid var(--border);
+  background: transparent;
+  transition: 0.2s;
+}
+.btn-icon-delete:hover { background: #fee2e2; }
+
+/* FORM CUSTOM */
+.custom-input {
+  background-color: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+}
+.custom-input:focus {
+  border-color: #4e73df;
+  box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.1);
+  background-color: #fff;
 }
 
-/* ANIMATIONS */
-@keyframes fadeInPage {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+/* ALERT NOTIFICATION */
+.custom-alert {
+  position: fixed;
+  top: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  padding: 12px 24px;
+  border-radius: 12px;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
 }
+.custom-alert.success { background: #10b981; }
+.custom-alert.warning { background: #f59e0b; }
+.custom-alert.danger { background: #ef4444; }
 
-.scale-in { animation: scaleIn 0.3s ease; }
-@keyframes scaleIn {
-  from { transform: scale(0.9); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-.fade-in { animation: fadeIn 0.5s ease; }
-.fade-in-delay { animation: fadeIn 0.8s ease; }
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.fade-up { animation: fadeUp 0.6s ease; }
-@keyframes fadeUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
+/* ANIMATION */
+.fade-enter-active, .fade-leave-active { transition: opacity .4s, transform .4s; }
+.fade-enter-from, .fade-leave-to { opacity: 0; transform: translate(-50%, -20px); }
 </style>

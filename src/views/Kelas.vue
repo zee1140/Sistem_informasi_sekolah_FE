@@ -1,109 +1,119 @@
 <template>
-  <div class="container-fluid py-4 animate-page">
+  <div class="main-wrapper py-5">
+    <div class="container">
 
-    <div class="row mb-4 align-items-center fade-in">
-      <div class="col">
-        <h3 class="admin-title">Manajemen Kelas</h3>
-        <p class="text-muted small">Daftar seluruh kelas di JeprutSchool</p>
-      </div>
-      <div class="col-auto">
-     <button class="btn-admin-primary btn-tambah" @click="openModal">
-  <i class="bi bi-plus-lg me-2"></i> Tambah Kelas
-</button>
-      </div>
-    </div>
+      <div class="row mb-5 align-items-center">
+        <div class="col-auto me-2">
+          <button class="btn-back" @click="goDashboard">
+            <i class="bi bi-arrow-left"></i>
+          </button>
+        </div>
 
-    <div class="admin-card p-3 mb-4 fade-in-delay">
-      <div class="search-wrapper">
-        <i class="bi bi-search"></i>
-        <input
-          type="text"
-          v-model="search"
-          placeholder="Cari berdasarkan nama kelas atau wali..."
-          class="search-input"
-        />
-      </div>
-    </div>
+        <div class="col">
+          <h1 class="fw-bold mb-1">Manajemen Kelas</h1>
+          <p class="text-muted mb-0">Daftar seluruh kelas di JeprutSchool</p>
+        </div>
 
-    <div class="admin-card overflow-hidden fade-up">
-      <div class="table-responsive">
-        <table class="table admin-table align-middle">
-          <thead>
-            <tr>
-              <th>Nama Kelas</th>
-              <th>Wali Kelas</th>
-              <th>Jumlah Siswa</th>
-              <th class="text-center" width="180">Aksi Management</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            <tr v-for="(kelas, index) in filteredKelas" :key="index" class="row-anim">
-              <td class="fw-bold text-dark">{{ kelas.nama }}</td>
-              <td><span class="text-secondary">{{ kelas.wali }}</span></td>
-              <td><span class="badge-kelas">{{ kelas.jumlah }} Siswa</span></td>
-
-              <td class="text-center">
-                <button class="btn-icon edit" @click="editData(index)" title="Edit">
-                  <i class="bi bi-pencil-square"></i>
-                </button>
-                <button class="btn-icon delete" @click="deleteData(index)" title="Hapus">
-                  <i class="bi bi-trash3"></i>
-                </button>
-              </td>
-            </tr>
-
-            <tr v-if="filteredKelas.length === 0">
-              <td colspan="4" class="text-center py-5 text-muted">
-                Data tidak ditemukan.
-              </td>
-            </tr>
-          </tbody>
-
-        </table>
-      </div>
-    </div>
-
-    <!-- MODAL -->
-    <transition name="fade">
-      <div v-if="showModal" class="admin-modal-overlay">
-        <div class="admin-modal-box scale-in">
-
-          <div class="modal-header-admin">
-            <h4>{{ isEdit ? 'Edit Kelas' : 'Tambah Kelas' }}</h4>
-            <p>Pastikan informasi data kelas sudah benar.</p>
-          </div>
-
-          <div class="modal-body-admin">
-            <div class="input-group-admin">
-              <label>Nama Kelas</label>
-              <input v-model="form.nama" placeholder="Masukkan nama kelas..." />
-            </div>
-
-            <div class="input-group-admin">
-              <label>Wali Kelas</label>
-              <input v-model="form.wali" placeholder="Nama wali kelas..." />
-            </div>
-
-            <div class="input-group-admin">
-              <label>Jumlah Siswa</label>
-              <input v-model="form.jumlah" type="number" />
-            </div>
-          </div>
-
-          <div class="modal-footer-admin">
-            <button class="btn-admin-primary w-100" @click="saveData">
-              <i class="bi bi-check-circle me-2"></i> Simpan Data
-            </button>
-            <button class="btn-admin-outline w-100 mt-2" @click="closeModal">
-              Batal
-            </button>
-          </div>
-
+        <div class="col-auto">
+          <button class="btn-primary-jeprut shadow-sm" @click="openModal">
+            <i class="bi bi-plus-lg me-2"></i> Tambah Kelas
+          </button>
         </div>
       </div>
-    </transition>
 
+      <div class="card shadow-sm border-0 rounded-4 mb-4 action-card">
+        <div class="card-body p-3">
+          <div class="search-group">
+            <i class="bi bi-search search-icon"></i>
+            <input
+              v-model="search"
+              type="text"
+              class="form-control custom-search ps-5"
+              placeholder="Cari berdasarkan nama kelas atau wali..."
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="bg-table-head border-bottom">
+              <tr>
+                <th class="ps-4 py-3 text-uppercase text-primary fs-7 fw-bold">Nama Kelas</th>
+                <th class="py-3 text-uppercase text-primary fs-7 fw-bold text-center">Wali Kelas</th>
+                <th class="py-3 text-uppercase text-primary fs-7 fw-bold text-center">Jumlah Siswa</th>
+                <th class="py-3 text-uppercase text-primary fs-7 fw-bold text-center">Aksi Management</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr v-for="(kelas, index) in filteredKelas" :key="index">
+                <td class="ps-4 fw-bold h6 mb-0 py-4">{{ kelas.nama }}</td>
+                <td class="text-secondary text-center">{{ kelas.wali }}</td>
+                <td class="text-center">
+                  <span class="badge-kelas">{{ kelas.jumlah }} Siswa</span>
+                </td>
+
+                <td class="text-center">
+                  <div class="d-flex justify-content-center gap-2">
+                    <button class="btn-action edit" @click="editData(index)">
+                      <i class="bi bi-pencil-square"></i>
+                    </button>
+                    <button class="btn-action delete" @click="deleteData(index)">
+                      <i class="bi bi-trash3"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr v-if="filteredKelas.length === 0">
+                <td colspan="4" class="text-center py-5 text-muted">
+                  <i class="bi bi-search fs-1 mb-3 d-block text-light"></i>
+                  Data tidak ditemukan.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <transition name="fade">
+        <div v-if="showModal" class="admin-modal-overlay">
+          <div class="admin-modal-box shadow-lg">
+            <div class="modal-header-admin border-0 p-4 pb-0">
+              <h4 class="fw-bold mb-1">{{ isEdit ? 'Update Data Kelas' : 'Tambah Kelas Baru' }}</h4>
+              <p class="text-muted small">Pastikan informasi data kelas sudah benar.</p>
+            </div>
+
+            <div class="modal-body-admin p-4">
+              <div class="input-group-admin mb-3">
+                <label class="fw-semibold small mb-2 d-block">Nama Kelas</label>
+                <input v-model="form.nama" class="form-control custom-input" placeholder="Contoh: 10A" />
+              </div>
+
+              <div class="input-group-admin mb-3">
+                <label class="fw-semibold small mb-2 d-block">Wali Kelas</label>
+                <input v-model="form.wali" class="form-control custom-input" placeholder="Nama Guru" />
+              </div>
+
+              <div class="input-group-admin">
+                <label class="fw-semibold small mb-2 d-block">Jumlah Siswa</label>
+                <input v-model="form.jumlah" type="number" class="form-control custom-input" placeholder="0" />
+              </div>
+            </div>
+
+            <div class="modal-footer-admin p-4 pt-0 d-flex gap-2">
+              <button class="btn btn-light w-100 py-2 fw-bold text-muted" @click="closeModal">Batal</button>
+              <button class="btn btn-primary-jeprut w-100 py-2" @click="saveData">
+                {{ isEdit ? 'Update Data' : 'Simpan Data' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </transition>
+
+    </div>
   </div>
 </template>
 
@@ -115,17 +125,14 @@ export default {
       showModal: false,
       isEdit: false,
       editIndex: null,
-
       kelasList: [
         { nama: "10A", wali: "Pak Budi", jumlah: 32 },
         { nama: "11B", wali: "Bu Siti", jumlah: 30 },
         { nama: "12C", wali: "Pak Andi", jumlah: 28 }
       ],
-
       form: { nama: "", wali: "", jumlah: "" }
     }
   },
-
   computed: {
     filteredKelas() {
       return this.kelasList.filter(k =>
@@ -134,327 +141,84 @@ export default {
       )
     }
   },
-
   methods: {
+    goDashboard() { this.$router.push('/dashboard') },
     openModal() {
-      this.showModal = true
-      this.isEdit = false
-      this.form = { nama: "", wali: "", jumlah: "" }
+      this.showModal = true;
+      this.isEdit = false;
+      this.form = { nama: "", wali: "", jumlah: "" };
     },
-
-    closeModal() {
-      this.showModal = false
-    },
-
+    closeModal() { this.showModal = false; },
     saveData() {
+      if (!this.form.nama || !this.form.wali) return alert("Isi data dulu!");
       if (this.isEdit) {
-        this.kelasList[this.editIndex] = { ...this.form }
+        this.kelasList[this.editIndex] = { ...this.form };
       } else {
-        this.kelasList.push({ ...this.form })
+        this.kelasList.push({ ...this.form });
       }
-      this.closeModal()
+      this.closeModal();
     },
-
     editData(index) {
-      this.form = { ...this.kelasList[index] }
-      this.editIndex = index
-      this.isEdit = true
-      this.showModal = true
+      this.form = { ...this.kelasList[index] };
+      this.editIndex = index;
+      this.isEdit = true;
+      this.showModal = true;
     },
-
     deleteData(index) {
-      if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
-        this.kelasList.splice(index, 1)
-      }
+      if (confirm('Hapus data kelas ini?')) this.kelasList.splice(index, 1);
     }
   }
 }
 </script>
 
 <style scoped>
-/* ===== ADMIN THEME ===== */
-:root {
-  --primary: #4e73df;
-  --primary-hover: #2e59d9;
-  --border: #e3e6f0;
-  --bg-soft: #f8f9fc;
-  --text-main: #2c3e50;
-  --text-muted: #858796;
-}
+/* GLOBAL & BACKGROUND */
+.main-wrapper { background-color: #f8faff; min-height: 100vh; }
 
-/* PAGE */
-.animate-page {
-  animation: fadeInPage 0.5s ease-out;
+/* HEADER BUTTONS */
+.btn-back {
+  width: 42px; height: 42px; border-radius: 12px; border: none;
+  background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  transition: 0.3s; color: #4e73df;
 }
+.btn-back:hover { background: #4e73df; color: #fff; }
 
-.admin-title {
-  font-weight: 800;
-  color: var(--text-main);
-  margin-bottom: 0;
-}
-
-/* ===== SEARCH ===== */
-.search-wrapper {
-  position: relative;
-}
-
-.search-wrapper i {
-  position: absolute;
-  top: 50%;
-  left: 15px;
-  transform: translateY(-50%);
-  color: #b7b9cc;
-}
-
-.search-input {
-  width: 100%;
-  padding: 12px 15px 12px 45px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: #fff;
+.btn-primary-jeprut {
+  background: #4e73df; color: white; border: none;
+  padding: 10px 24px; border-radius: 12px; font-weight: 600;
   transition: 0.3s;
 }
+.btn-primary-jeprut:hover { background: #3e5fbb; transform: translateY(-2px); }
 
-.search-input:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.1);
-}
+/* SEARCH BAR */
+.search-group { position: relative; }
+.search-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: #adb5bd; }
+.custom-search { border: 1px solid #e2e8f0; border-radius: 12px; padding: 10px; background: #fff; }
 
-/* ===== CARD ===== */
-.admin-card {
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  box-shadow: 0 0.15rem 1.2rem rgba(58, 59, 69, 0.05);
-}
-
-/* ===== TABLE ===== */
-.admin-table thead {
-  background: var(--bg-soft);
-}
-
-.admin-table th {
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
-  font-weight: 700;
-  color: #4e5d78;
-  padding: 16px;
-  border-bottom: 2px solid var(--border);
-}
-
-.admin-table td {
-  padding: 16px;
-  border-bottom: 1px solid #f2f4f9;
-}
-
-/* Hover row */
-.admin-table tbody tr:hover {
-  background: #f9fbff;
-  transition: 0.2s;
-}
-
-/* ===== BADGE ===== */
+/* TABLE */
+.bg-table-head { background-color: #fff; }
+.fs-7 { font-size: 0.75rem; letter-spacing: 0.05rem; }
 .badge-kelas {
-  background: #eef2ff;
-  color: var(--primary);
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-weight: 700;
-  font-size: 0.8rem;
+  background: #eef2ff; color: #4e73df; font-weight: 800;
+  padding: 6px 16px; border-radius: 10px; font-size: 0.85rem;
 }
 
-/* ===== BUTTON ===== */
-.admin-modal-box {
-  background: #fff;
-  border-radius: 16px;
-  width: 420px;
-  padding: 30px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-  border: 1px solid #e3e6f0;
-}
+/* ACTION BUTTONS (EDIT & DELETE) */
+.btn-action { border: none; padding: 8px 12px; border-radius: 10px; transition: 0.2s; }
+.btn-action.edit { background: #eef2ff; color: #4e73df; }
+.btn-action.delete { background: #fff5f5; color: #dc3545; }
+.btn-action:hover { opacity: 0.8; transform: scale(1.1); }
 
-.modal-header-admin h4 {
-  font-weight: 800;
-  color: #2c3e50;
-  text-align: center;
-}
-
-.modal-header-admin p {
-  text-align: center;
-  font-size: 0.85rem;
-  color: #858796;
-  margin-bottom: 20px;
-}
-
-.input-group-admin label {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #4e5d78;
-  margin-bottom: 6px;
-  display: block;
-}
-
-.input-group-admin input {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid #e3e6f0;
-  background: #fff;
-  transition: 0.3s;
-}
-
-.input-group-admin input:focus {
-  border-color: #4e73df;
-  box-shadow: 0 0 0 3px rgba(78,115,223,0.15);
-  outline: none;
-}
-
-/* BUTTON BIRU SAMA PERSIS SISWA */
-.btn-admin-primary {
-  background: #4e73df !important;
-  color: #fff !important;
-  border: none;
-  padding: 10px;
-  border-radius: 10px;
-  font-weight: 600;
-}
-
-.btn-admin-primary:hover {
-  background: #2e59d9 !important;
-}
-
-.btn-admin-outline {
-  background: transparent;
-  border: 1px solid #d1d3e2;
-  color: #858796;
-  padding: 10px;
-  border-radius: 10px;
-  font-weight: 600;
-}
-
-.btn-admin-outline:hover {
-  background: #f8f9fc;
-}
-
-/* ===== ICON BUTTON ===== */
-.btn-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  border: none;
-  margin: 0 4px;
-  transition: 0.2s;
-}
-
-.btn-icon.edit {
-  background: #eef2ff;
-  color: var(--primary);
-}
-
-.btn-icon.delete {
-  background: #fff1f0;
-  color: #ff4d4f;
-}
-
-.btn-icon:hover {
-  transform: scale(1.1);
-}
-
-/* ===== MODAL ===== */
+/* MODAL OVERLAY */
 .admin-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(30, 30, 45, 0.6);
-  backdrop-filter: blur(4px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4); display: flex; align-items: center;
+  justify-content: center; z-index: 9999;
 }
+.admin-modal-box { background: white; width: 450px; border-radius: 20px; overflow: hidden; }
+.custom-input { background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 12px; }
 
-.admin-modal-box {
-  background: white;
-  padding: 30px;
-  border-radius: 16px;
-  width: 400px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-  animation: scaleIn 0.3s ease;
-}
-
-.modal-header-admin h4 {
-  font-weight: 800;
-  color: var(--text-main);
-  margin: 0;
-}
-
-.modal-header-admin p {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  margin-bottom: 20px;
-}
-
-.input-group-admin {
-  margin-bottom: 15px;
-}
-
-.input-group-admin label {
-  display: block;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #4e5d78;
-  margin-bottom: 5px;
-}
-
-.input-group-admin input {
-  width: 100%;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  transition: 0.2s;
-}
-
-.input-group-admin input:focus {
-  outline: none;
-  border-color: var(--primary);
-}
-
-/* FIX tombol biar gak putih */
-.btn-tambah {
-  background: #4e73df !important;
-  color: #fff !important;
-  border: none !important;
-}
-
-.btn-tambah:hover {
-  background: #2e59d9 !important;
-  color: #fff !important;
-}
-
-/* ===== ANIMATIONS ===== */
-@keyframes fadeInPage {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes scaleIn {
-  from {
-    transform: scale(0.9);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
+/* ANIMATION */
+.fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
 </style>
