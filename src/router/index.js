@@ -58,7 +58,9 @@ const routes = [
   {
     path: '/guru',
     name: 'Guru',
-    component: Guru
+    component: Guru,
+    // Tambahkan meta jika nanti butuh title halaman dinamis
+    meta: { title: 'Daftar Guru' } 
   },
 
   {
@@ -67,18 +69,22 @@ const routes = [
     component: Jadwal
   },
 
-  // fallback (biar ga blank)
+  // fallback (mengarahkan halaman typo ke Login atau Dashboard)
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
-    redirect: '/'
+    redirect: '/dashboard' 
   }
 ]
 
 // ROUTER
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
+  // Otomatis scroll ke atas setiap pindah halaman
+  scrollBehavior() {
+    return { top: 0 }
+  }
 })
 
 export default router

@@ -173,16 +173,36 @@ export default {
 
 <style scoped>
 /* GLOBAL & BACKGROUND */
-.main-wrapper { background-color: #f8faff; min-height: 100vh; }
+.main-wrapper { background-color: #f8faff; min-height: 100vh; font-family: 'Inter', sans-serif; }
 
-/* HEADER BUTTONS */
+/* TOMBOL KEMBALI (UPDATE SESUAI GAMBAR) */
 .btn-back {
-  width: 42px; height: 42px; border-radius: 12px; border: none;
-  background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  transition: 0.3s; color: #4e73df;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: none;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: #0052ff; /* Warna biru sesuai gambar */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
-.btn-back:hover { background: #4e73df; color: #fff; }
 
+.btn-back:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  background: #ffffff;
+}
+
+.btn-back i {
+  line-height: 0;
+}
+
+/* LAINNYA TETAP */
 .btn-primary-jeprut {
   background: #4e73df; color: white; border: none;
   padding: 10px 24px; border-radius: 12px; font-weight: 600;
@@ -190,12 +210,10 @@ export default {
 }
 .btn-primary-jeprut:hover { background: #3e5fbb; transform: translateY(-2px); }
 
-/* SEARCH BAR */
 .search-group { position: relative; }
 .search-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: #adb5bd; }
 .custom-search { border: 1px solid #e2e8f0; border-radius: 12px; padding: 10px; background: #fff; }
 
-/* TABLE */
 .bg-table-head { background-color: #fff; }
 .fs-7 { font-size: 0.75rem; letter-spacing: 0.05rem; }
 .badge-kelas {
@@ -203,13 +221,11 @@ export default {
   padding: 6px 16px; border-radius: 10px; font-size: 0.85rem;
 }
 
-/* ACTION BUTTONS (EDIT & DELETE) */
-.btn-action { border: none; padding: 8px 12px; border-radius: 10px; transition: 0.2s; }
+.btn-action { border: none; padding: 8px 12px; border-radius: 10px; transition: 0.2s; cursor: pointer; }
 .btn-action.edit { background: #eef2ff; color: #4e73df; }
 .btn-action.delete { background: #fff5f5; color: #dc3545; }
 .btn-action:hover { opacity: 0.8; transform: scale(1.1); }
 
-/* MODAL OVERLAY */
 .admin-modal-overlay {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   background: rgba(0,0,0,0.4); display: flex; align-items: center;
@@ -218,7 +234,6 @@ export default {
 .admin-modal-box { background: white; width: 450px; border-radius: 20px; overflow: hidden; }
 .custom-input { background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 12px; }
 
-/* ANIMATION */
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
 </style>
