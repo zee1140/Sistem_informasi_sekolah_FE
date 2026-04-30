@@ -8,7 +8,7 @@
           <span class="badge-admin ms-2">ADMIN</span>
         </span>
         <div class="d-flex align-items-center gap-3">
-          <span class="text-secondary small d-none d-md-block">Senin, 21 April 2026</span>
+          <span class="text-secondary small d-none d-md-block">{{ tanggalSekarang }}</span>
           
           <router-link to="/profile" class="profile-link" title="Buka Profil">
             <i class="bi bi-person-circle text-indigo"></i>
@@ -70,8 +70,8 @@
                 </div>
                 <div class="d-none d-xl-block">
                   <div class="clock-glass p-3 rounded-4 text-center text-white">
-                    <h4 class="fw-bold mb-0">17:45</h4>
-                    <small class="opacity-75">WIB</small>
+                    <h4 class="fw-bold mb-0" style="min-width: 110px;">{{ jamSekarang }}</h4>
+                    <small class="opacity-75 fw-bold">WIB</small>
                   </div>
                 </div>
               </div>
@@ -221,6 +221,9 @@ export default {
   name: 'FullDashboard',
   data() {
     return {
+      jamSekarang: '--:--:--',
+      tanggalSekarang: '',
+      timer: null,
       activities: [
         { text: 'Update data siswa - Kelas 12 IPA 1', time: '5 menit yang lalu' },
         { text: 'Penambahan jadwal ujian semester', time: '2 jam yang lalu' },
@@ -229,9 +232,30 @@ export default {
     }
   },
   methods: {
+    updateWaktu() {
+      const skrg = new Date();
+      
+      // Update Jam
+      const h = String(skrg.getHours()).padStart(2, '0');
+      const m = String(skrg.getMinutes()).padStart(2, '0');
+      const s = String(skrg.getSeconds()).padStart(2, '0');
+      this.jamSekarang = `${h}:${m}:${s}`;
+
+      // Update Tanggal (Format Indonesia)
+      const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+      this.tanggalSekarang = skrg.toLocaleDateString('id-ID', options);
+    },
     logout() {
       if(confirm('Keluar dari sistem?')) this.$router.push('/');
     }
+  },
+  mounted() {
+    this.updateWaktu();
+    this.timer = setInterval(this.updateWaktu, 1000);
+  },
+  beforeUnmount() {
+    // Penting: Hapus interval agar tidak terjadi memory leak
+    if (this.timer) clearInterval(this.timer);
   }
 }
 </script>
@@ -308,7 +332,7 @@ export default {
 /* Hero UI */
 .hero-banner { background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); border-radius: 32px; }
 .hero-icon { position: absolute; right: -30px; bottom: -30px; font-size: 180px; color: rgba(255,255,255,0.1); transform: rotate(-15deg); }
-.clock-glass { background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.3); min-width: 100px; }
+.clock-glass { background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.3); min-width: 130px; }
 
 /* Card & Tables */
 .white-card { background: white; border-radius: 32px; }
