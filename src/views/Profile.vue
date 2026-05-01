@@ -1,17 +1,23 @@
 <template>
-  <div class="app-container">
-    <nav class="custom-nav sticky-top d-flex justify-content-between align-items-center px-lg-5 px-3">
-      <div class="brand">
-        <span class="brand-accent">Jeprut</span>School
+  <div class="app-container animate-profile">
+    <nav class="navbar navbar-expand-lg px-4 bg-white border-bottom shadow-sm">
+      <div class="container-fluid p-0">
+        <span class="navbar-brand d-flex align-items-center m-0">
+          <i class="bi bi-shield-check me-2 text-indigo"></i>
+          <span class="fw-bold text-dark">JeprutSchool</span>
+          <span class="badge-admin ms-2">ADMIN</span>
+        </span>
+        <div class="d-flex align-items-center gap-3">
+          <button @click="$router.push('/dashboard')" class="btn btn-back shadow-sm">
+            <i class="bi bi-arrow-left me-2"></i> Kembali ke Dashboard
+          </button>
+        </div>
       </div>
-      <a href="#" @click.prevent="$router.push('/dashboard')" class="btn-back">
-        <i class="bi bi-arrow-left-short"></i> Kembali ke Dashboard
-      </a>
     </nav>
 
-    <main class="content-wrapper p-lg-5 p-3">
-      <div class="container">
-        <div class="main-profile-card">
+    <div class="content-scroll-area p-4 p-md-5">
+      <div class="container max-width-profile">
+        <div class="main-profile-card shadow-lg border-0">
           <div class="row g-0">
             
             <div class="col-lg-4 side-info p-5">
@@ -19,28 +25,37 @@
                 <div class="avatar-glow"></div>
                 <div class="profile-image-wrapper">
                   <img 
-                    src="https://ui-avatars.com/api/?name=Admin+Jeprut&background=1e293b&color=fff&size=200" 
+                    :src="adminData.profileImage" 
                     alt="Profile" 
                     class="profile-img-circle"
                   >
                 </div>
-                <div class="edit-badge">
+                
+                <div class="edit-badge" @click="triggerFileInput" title="Ganti Foto">
                   <i class="bi bi-camera-fill"></i>
                 </div>
+
+                <input 
+                  type="file" 
+                  ref="fileInput" 
+                  @change="onFileChange" 
+                  accept="image/*" 
+                  style="display: none"
+                >
               </div>
               
-              <h2 class="admin-name">{{ adminData.name }}</h2>
+              <h2 class="admin-name text-dark">{{ adminData.name }}</h2>
               <div class="mb-4">
                 <span class="badge-role">{{ adminData.role }}</span>
               </div>
               
               <div class="mini-stats-grid mt-5">
-                <div class="stat-card">
-                  <span class="stat-val">1,200</span>
+                <div class="stat-card shadow-sm border-0">
+                  <span class="stat-val text-indigo">1,200</span>
                   <span class="stat-lab">Siswa</span>
                 </div>
-                <div class="stat-card">
-                  <span class="stat-val">75</span>
+                <div class="stat-card shadow-sm border-0">
+                  <span class="stat-val text-indigo">75</span>
                   <span class="stat-lab">Guru</span>
                 </div>
               </div>
@@ -48,35 +63,37 @@
 
             <div class="col-lg-8 p-lg-5 p-4 bg-white">
               <div class="form-header mb-5">
-                <h3 class="fw-bold">Edit Informasi Profil</h3>
-                <p class="text-muted">Kelola detail akun Anda untuk sistem JeprutSchool.</p>
+                <h3 class="fw-bold text-dark">Informasi Akun</h3>
+                <p class="text-muted">Perbarui data profil dan biografi Anda di bawah ini.</p>
               </div>
 
               <div class="row g-4">
                 <div class="col-md-6">
-                  <label class="custom-label">Nama Lengkap</label>
+                  <label class="custom-label">NAMA LENGKAP</label>
                   <input type="text" class="custom-input" v-model="adminData.name">
                 </div>
                 <div class="col-md-6">
-                  <label class="custom-label">Alamat Email</label>
+                  <label class="custom-label">ALAMAT EMAIL</label>
                   <input type="email" class="custom-input" v-model="adminData.email">
                 </div>
                 <div class="col-12">
-                  <label class="custom-label">Biografi Singkat</label>
+                  <label class="custom-label">BIOGRAFI SINGKAT</label>
                   <textarea class="custom-input" rows="3" v-model="adminData.bio"></textarea>
                 </div>
                 <div class="col-md-12">
-                  <label class="custom-label">Jabatan</label>
-                  <select class="custom-input" v-model="adminData.role">
+                  <label class="custom-label">JABATAN SISTEM</label>
+                  <select class="custom-input form-select" v-model="adminData.role">
                     <option>Administrator Utama</option>
                     <option>Kepala Sistem Informasi</option>
-                    <option>Tim IT</option>
+                    <option>Tim IT Jeprut</option>
                   </select>
                 </div>
                 <div class="col-12 mt-5">
                   <div class="d-flex gap-3">
-                    <button @click="saveData" class="btn-save-action">Update Profil</button>
-                    <button class="btn-cancel">Batal</button>
+                    <button @click="saveData" class="btn-save-action shadow-sm">
+                      <i class="bi bi-check-circle-fill me-2"></i>Simpan Perubahan
+                    </button>
+                    <button @click="$router.push('/dashboard')" class="btn-cancel">Batal</button>
                   </div>
                 </div>
               </div>
@@ -85,25 +102,41 @@
           </div>
         </div>
       </div>
-    </main>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
+  name: 'ProfileAdmin',
   data() {
     return {
       adminData: {
         name: 'Admin Jeprut',
         role: 'Administrator Utama',
         email: 'admin@jeprutschool.sch.id',
-        bio: 'Fokus pada pengembangan infrastruktur IT digital sekolah yang modern dan efisien.'
+        bio: 'Fokus pada pengembangan infrastruktur IT digital sekolah yang modern dan efisien.',
+        profileImage: 'https://ui-avatars.com/api/?name=Admin+Jeprut&background=4f46e5&color=fff&size=200'
       }
     }
   },
   methods: {
+    triggerFileInput() {
+      this.$refs.fileInput.click();
+    },
+    onFileChange(e) {
+      const file = e.target.files[0];
+      if (file) {
+        if (file.size > 2 * 1024 * 1024) {
+          alert("Ukuran file terlalu besar! Maksimal 2MB.");
+          return;
+        }
+        // Membuat preview URL secara instan
+        this.adminData.profileImage = URL.createObjectURL(file);
+      }
+    },
     saveData() {
-      alert('Profil ' + this.adminData.name + ' berhasil diperbarui!');
+      alert('Data ' + this.adminData.name + ' telah diperbarui di sistem.');
     }
   }
 }
@@ -113,53 +146,46 @@ export default {
 @import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css');
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
 
+/* ANTI-MELESAT: Layout Lock */
 .app-container {
-  min-height: 100vh;
-  background-color: #f0f2f5;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  color: #1e293b;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  background-color: #f8fafc;
+  overflow: hidden;
+  position: fixed;
+  top: 0; left: 0;
+  font-family: 'Public Sans', sans-serif;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translate3d(0,0,0);
 }
 
-/* Nav */
-.custom-nav {
-  height: 80px;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+.content-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  background-color: #f8fafc;
 }
 
-.brand {
-  font-weight: 800;
-  font-size: 1.6rem;
-}
-
-.brand-accent {
-  color: #6366f1;
-}
+/* Navbar */
+.navbar { height: 75px; z-index: 1000; }
+.text-indigo { color: #4f46e5; }
+.badge-admin { background: #eef2ff; color: #4f46e5; font-size: 11px; padding: 5px 12px; border-radius: 8px; font-weight: 800; }
 
 .btn-back {
-  background: white;
-  color: #1e293b;
-  padding: 10px 18px;
-  border-radius: 12px;
-  text-decoration: none;
-  font-weight: 600;
-  border: 1px solid #e2e8f0;
-  transition: 0.3s;
+  background: white; color: #475569; border: 1px solid #e2e8f0;
+  border-radius: 12px; padding: 10px 20px; font-weight: 700; transition: 0.3s;
 }
+.btn-back:hover { background: #f1f5f9; color: #4f46e5; transform: translateX(-5px); }
 
-.btn-back:hover {
-  background: #f8fafc;
-  color: #6366f1;
-  transform: translateX(-3px);
-}
-
-/* Profile Card */
+/* Profile Card Structure */
+.max-width-profile { max-width: 1100px; }
 .main-profile-card {
   background: white;
   border-radius: 40px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
   overflow: hidden;
+  border: 1px solid #e2e8f0;
 }
 
 .side-info {
@@ -168,116 +194,37 @@ export default {
   text-align: center;
 }
 
-/* Avatar Lingkaran */
-.avatar-container {
-  position: relative;
-  width: 150px;
-  height: 150px;
-  margin: 0 auto;
-}
-
+/* Avatar & Fitur Kamera */
+.avatar-container { position: relative; width: 160px; height: 160px; margin: 0 auto; }
 .profile-image-wrapper {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 5px solid white;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-  z-index: 2;
+  position: relative; width: 100%; height: 100%; border-radius: 50%;
+  overflow: hidden; border: 6px solid white; box-shadow: 0 10px 30px rgba(0,0,0,0.1); z-index: 2;
 }
-
-.profile-img-circle {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s;
-}
-
-.avatar-container:hover .profile-img-circle {
-  transform: scale(1.1);
-}
-
+.profile-img-circle { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
 .avatar-glow {
-  position: absolute;
-  top: 10%; left: 10%;
-  width: 80%; height: 80%;
-  background: #6366f1;
-  filter: blur(25px);
-  opacity: 0.35;
-  z-index: 1;
+  position: absolute; top: 10%; left: 10%; width: 80%; height: 80%;
+  background: #4f46e5; filter: blur(25px); opacity: 0.3; z-index: 1;
 }
-
 .edit-badge {
-  position: absolute;
-  bottom: 5px;
-  right: 5px;
-  background: #6366f1;
-  color: white;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 4px solid white;
-  box-shadow: 0 5px 10px rgba(0,0,0,0.1);
-  z-index: 3;
-  cursor: pointer;
+  position: absolute; bottom: 5px; right: 5px; background: #4f46e5; color: white;
+  width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; border: 4px solid white; z-index: 3; cursor: pointer;
+  transition: 0.2s;
 }
+.edit-badge:hover { transform: scale(1.1); background: #3730a3; }
 
-/* Typography & Badges */
-.admin-name {
-  font-weight: 800;
-  font-size: 1.7rem;
-  margin-top: 20px;
-}
+/* Typography */
+.admin-name { font-weight: 800; font-size: 1.8rem; margin-top: 15px; }
+.badge-role { background: #eef2ff; color: #4f46e5; padding: 8px 20px; border-radius: 100px; font-size: 0.85rem; font-weight: 700; }
 
-.badge-role {
-  background: rgba(99, 102, 241, 0.1);
-  color: #6366f1;
-  padding: 6px 16px;
-  border-radius: 100px;
-  font-size: 0.85rem;
-  font-weight: 700;
-}
+/* Stats Mini */
+.mini-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.stat-card { background: white; padding: 20px; border-radius: 24px; border: 1px solid #f1f5f9; }
+.stat-val { font-weight: 800; font-size: 1.4rem; display: block; }
+.stat-lab { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; font-weight: 700; }
 
-/* Stats */
-.mini-stats-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-}
-
-.stat-card {
-  background: white;
-  padding: 15px;
-  border-radius: 20px;
-  border: 1px solid #f1f5f9;
-}
-
-.stat-val {
-  font-weight: 800;
-  font-size: 1.2rem;
-  display: block;
-}
-
-.stat-lab {
-  font-size: 0.7rem;
-  color: #94a3b8;
-  text-transform: uppercase;
-  font-weight: 700;
-}
-
-/* Form Styles */
-.custom-label {
-  font-weight: 700;
-  font-size: 0.85rem;
-  margin-bottom: 8px;
-  color: #64748b;
-  display: block;
-}
-
+/* Form Elements */
+.custom-label { font-weight: 800; font-size: 0.7rem; letter-spacing: 1px; color: #94a3b8; margin-bottom: 8px; display: block; }
 .custom-input {
   width: 100%;
   border: 2px solid #f1f5f9;
@@ -295,33 +242,15 @@ export default {
   box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
 }
 
-/* Buttons */
+/* Action Buttons */
 .btn-save-action {
-  flex: 2;
-  background: #1e293b;
-  color: white;
-  border: none;
-  padding: 16px;
-  border-radius: 16px;
-  font-weight: 700;
-  transition: 0.3s;
+  flex: 2; background: #4f46e5; color: white; border: none;
+  padding: 18px; border-radius: 20px; font-weight: 700; transition: 0.3s;
 }
-
-.btn-save-action:hover {
-  background: #334155;
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-}
-
+.btn-save-action:hover { background: #3730a3; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3); }
 .btn-cancel {
-  flex: 1;
-  background: #f1f5f9;
-  color: #64748b;
-  border: none;
-  padding: 16px;
-  border-radius: 16px;
-  font-weight: 700;
-  transition: 0.3s;
+  flex: 1; background: #f1f5f9; color: #64748b; border: none;
+  padding: 18px; border-radius: 20px; font-weight: 700; transition: 0.3s;
 }
 
 .btn-cancel:hover {
