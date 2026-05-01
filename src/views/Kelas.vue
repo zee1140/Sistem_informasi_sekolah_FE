@@ -1,109 +1,143 @@
 <template>
-  <div class="container-fluid py-4 animate-page">
+  <div class="app-container animate-home">
+    
+    <div class="header-section py-4 px-5 bg-white border-bottom shadow-sm">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <button class="btn btn-back mb-3" @click="goDashboard">
+            <i class="bi bi-arrow-left me-2"></i> Kembali
+          </button>
+          <h2 class="fw-bold text-dark mb-1">Manajemen Kelas</h2>
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 small">
+              <li class="breadcrumb-item"><a href="#" @click.prevent="goDashboard" class="text-muted text-decoration-none">Beranda</a></li>
+              <li class="breadcrumb-item active fw-semibold text-indigo">Data Kelas</li>
+            </ol>
+          </nav>
+        </div>
 
-    <div class="row mb-4 align-items-center fade-in">
-      <div class="col">
-        <h3 class="admin-title">Manajemen Kelas</h3>
-        <p class="text-muted small">Daftar seluruh kelas di JeprutSchool</p>
-      </div>
-      <div class="col-auto">
-     <button class="btn-admin-primary btn-tambah" @click="openModal">
-  <i class="bi bi-plus-lg me-2"></i> Tambah Kelas
-</button>
-      </div>
-    </div>
-
-    <div class="admin-card p-3 mb-4 fade-in-delay">
-      <div class="search-wrapper">
-        <i class="bi bi-search"></i>
-        <input
-          type="text"
-          v-model="search"
-          placeholder="Cari berdasarkan nama kelas atau wali..."
-          class="search-input"
-        />
-      </div>
-    </div>
-
-    <div class="admin-card overflow-hidden fade-up">
-      <div class="table-responsive">
-        <table class="table admin-table align-middle">
-          <thead>
-            <tr>
-              <th>Nama Kelas</th>
-              <th>Wali Kelas</th>
-              <th>Jumlah Siswa</th>
-              <th class="text-center" width="180">Aksi Management</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            <tr v-for="(kelas, index) in filteredKelas" :key="index" class="row-anim">
-              <td class="fw-bold text-dark">{{ kelas.nama }}</td>
-              <td><span class="text-secondary">{{ kelas.wali }}</span></td>
-              <td><span class="badge-kelas">{{ kelas.jumlah }} Siswa</span></td>
-
-              <td class="text-center">
-                <button class="btn-icon edit" @click="editData(index)" title="Edit">
-                  <i class="bi bi-pencil-square"></i>
-                </button>
-                <button class="btn-icon delete" @click="deleteData(index)" title="Hapus">
-                  <i class="bi bi-trash3"></i>
-                </button>
-              </td>
-            </tr>
-
-            <tr v-if="filteredKelas.length === 0">
-              <td colspan="4" class="text-center py-5 text-muted">
-                Data tidak ditemukan.
-              </td>
-            </tr>
-          </tbody>
-
-        </table>
+        <div class="text-end">
+          <div class="badge-stats mb-2">Total: {{ kelasList.length }} Kelas Terdaftar</div>
+          <button class="btn btn-primary-jeprut shadow-sm px-4 py-2 rounded-pill" @click="openModal">
+            <i class="bi bi-plus-circle-fill me-2"></i> Tambah Kelas
+          </button>
+        </div>
       </div>
     </div>
 
-    <!-- MODAL -->
-    <transition name="fade">
+    <div class="content-scroll-area p-5">
+      <div class="card search-card shadow-sm border-0 mb-4 rounded-4">
+        <div class="card-body p-3">
+          <div class="input-group input-group-lg">
+            <span class="input-group-text bg-transparent border-0 ps-3">
+              <i class="bi bi-search text-indigo"></i>
+            </span>
+            <input v-model="search" class="form-control border-0 bg-transparent fs-6" placeholder="Cari nama kelas atau wali kelas di sini..." />
+          </div>
+        </div>
+      </div>
+
+      <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-5">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead>
+              <tr class="bg-header-table">
+                <th class="ps-4 py-4 text-uppercase tracking-wider">Informasi Kelas</th>
+                <th class="py-4 text-uppercase tracking-wider text-center">Wali Kelas</th>
+                <th class="py-4 text-uppercase tracking-wider text-center">Kapasitas</th>
+                <th class="text-center py-4 text-uppercase tracking-wider">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(kelas, index) in filteredKelas" :key="index" class="table-row-animate">
+                <td class="ps-4 py-3">
+                  <div class="d-flex align-items-center">
+                    <div class="avatar-gradient me-3">
+                      <i class="bi bi-door-open-fill"></i>
+                    </div>
+                    <div>
+                      <div class="fw-bold text-dark mb-0">{{ kelas.nama }}</div>
+                      <small class="text-muted">JeprutSchool Academic</small>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-center text-secondary fw-semibold">
+                   {{ kelas.wali }}
+                </td>
+                <td class="text-center">
+                  <span class="badge-soft-indigo px-3 py-2">
+                    <i class="bi bi-people-fill me-1"></i> {{ kelas.jumlah }} Siswa
+                  </span>
+                </td>
+                <td class="text-center">
+                  <div class="d-flex justify-content-center gap-2">
+                    <button class="btn btn-action-edit" @click="editData(index)" title="Edit Kelas">
+                      <i class="bi bi-pencil-square"></i>
+                    </button>
+                    <button class="btn btn-action-delete" @click="deleteData(index)" title="Hapus Kelas">
+                      <i class="bi bi-trash3-fill"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr v-if="filteredKelas.length === 0">
+                <td colspan="4" class="text-center py-5 text-muted">
+                  <i class="bi bi-search fs-1 mb-3 d-block opacity-25"></i>
+                  Data kelas tidak ditemukan
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <transition name="slide-up">
       <div v-if="showModal" class="admin-modal-overlay">
-        <div class="admin-modal-box scale-in">
-
-          <div class="modal-header-admin">
-            <h4>{{ isEdit ? 'Edit Kelas' : 'Tambah Kelas' }}</h4>
-            <p>Pastikan informasi data kelas sudah benar.</p>
+        <div class="admin-modal-box shadow-lg border-0 rounded-4">
+          <div class="modal-header-admin border-0 p-4 pb-0 d-flex justify-content-between align-items-center">
+            <div>
+              <h4 class="fw-bold mb-1">{{ isEdit ? 'Update Data Kelas' : 'Tambah Kelas Baru' }}</h4>
+              <p class="text-muted small">Lengkapi informasi kelas di bawah ini.</p>
+            </div>
+            <button class="btn-close" @click="closeModal"></button>
           </div>
 
-          <div class="modal-body-admin">
-            <div class="input-group-admin">
-              <label>Nama Kelas</label>
-              <input v-model="form.nama" placeholder="Masukkan nama kelas..." />
+          <div class="modal-body-admin p-4">
+            <div class="mb-3">
+              <label class="form-label fw-bold text-secondary small text-uppercase">Nama Kelas</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-door-open"></i></span>
+                <input v-model="form.nama" class="form-control custom-input border-start-0" placeholder="Contoh: 10 IPA 1" />
+              </div>
             </div>
 
-            <div class="input-group-admin">
-              <label>Wali Kelas</label>
-              <input v-model="form.wali" placeholder="Nama wali kelas..." />
+            <div class="mb-3">
+              <label class="form-label fw-bold text-secondary small text-uppercase">Wali Kelas</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-person-badge"></i></span>
+                <input v-model="form.wali" class="form-control custom-input border-start-0" placeholder="Nama Guru" />
+              </div>
             </div>
 
-            <div class="input-group-admin">
-              <label>Jumlah Siswa</label>
-              <input v-model="form.jumlah" type="number" />
+            <div class="mb-2">
+              <label class="form-label fw-bold text-secondary small text-uppercase">Jumlah Siswa</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-people"></i></span>
+                <input v-model="form.jumlah" type="number" class="form-control custom-input border-start-0" placeholder="0" />
+              </div>
             </div>
           </div>
 
-          <div class="modal-footer-admin">
-            <button class="btn-admin-primary w-100" @click="saveData">
-              <i class="bi bi-check-circle me-2"></i> Simpan Data
+          <div class="modal-footer-admin p-4 pt-0 d-flex gap-3">
+            <button class="btn btn-light flex-grow-1 py-3 rounded-3 text-muted fw-bold" @click="closeModal">Batal</button>
+            <button class="btn btn-primary-jeprut flex-grow-1 py-3 rounded-3 shadow-sm" @click="saveData">
+              {{ isEdit ? 'Simpan Perubahan' : 'Tambah Kelas' }}
             </button>
-            <button class="btn-admin-outline w-100 mt-2" @click="closeModal">
-              Batal
-            </button>
           </div>
-
         </div>
       </div>
     </transition>
-
   </div>
 </template>
 
@@ -115,17 +149,14 @@ export default {
       showModal: false,
       isEdit: false,
       editIndex: null,
-
       kelasList: [
         { nama: "10A", wali: "Pak Budi", jumlah: 32 },
         { nama: "11B", wali: "Bu Siti", jumlah: 30 },
         { nama: "12C", wali: "Pak Andi", jumlah: 28 }
       ],
-
       form: { nama: "", wali: "", jumlah: "" }
     }
   },
-
   computed: {
     filteredKelas() {
       return this.kelasList.filter(k =>
@@ -134,327 +165,122 @@ export default {
       )
     }
   },
-
   methods: {
+    goDashboard() { this.$router.push('/dashboard') },
     openModal() {
-      this.showModal = true
-      this.isEdit = false
-      this.form = { nama: "", wali: "", jumlah: "" }
+      this.showModal = true;
+      this.isEdit = false;
+      this.form = { nama: "", wali: "", jumlah: "" };
     },
-
-    closeModal() {
-      this.showModal = false
-    },
-
+    closeModal() { this.showModal = false; },
     saveData() {
+      if (!this.form.nama || !this.form.wali) return alert("Mohon isi data dengan lengkap!");
       if (this.isEdit) {
-        this.kelasList[this.editIndex] = { ...this.form }
+        this.kelasList[this.editIndex] = { ...this.form };
       } else {
-        this.kelasList.push({ ...this.form })
+        this.kelasList.push({ ...this.form });
       }
-      this.closeModal()
+      this.closeModal();
     },
-
     editData(index) {
-      this.form = { ...this.kelasList[index] }
-      this.editIndex = index
-      this.isEdit = true
-      this.showModal = true
+      this.form = { ...this.kelasList[index] };
+      this.editIndex = index;
+      this.isEdit = true;
+      this.showModal = true;
     },
-
     deleteData(index) {
-      if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
-        this.kelasList.splice(index, 1)
-      }
+      if (confirm('Hapus data kelas ini?')) this.kelasList.splice(index, 1);
     }
   }
 }
 </script>
 
 <style scoped>
-/* ===== ADMIN THEME ===== */
-:root {
-  --primary: #4e73df;
-  --primary-hover: #2e59d9;
-  --border: #e3e6f0;
-  --bg-soft: #f8f9fc;
-  --text-main: #2c3e50;
-  --text-muted: #858796;
-}
+@import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800&display=swap');
 
-/* PAGE */
-.animate-page {
-  animation: fadeInPage 0.5s ease-out;
-}
-
-.admin-title {
-  font-weight: 800;
-  color: var(--text-main);
-  margin-bottom: 0;
-}
-
-/* ===== SEARCH ===== */
-.search-wrapper {
-  position: relative;
-}
-
-.search-wrapper i {
-  position: absolute;
-  top: 50%;
-  left: 15px;
-  transform: translateY(-50%);
-  color: #b7b9cc;
-}
-
-.search-input {
-  width: 100%;
-  padding: 12px 15px 12px 45px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: #fff;
-  transition: 0.3s;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.1);
-}
-
-/* ===== CARD ===== */
-.admin-card {
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  box-shadow: 0 0.15rem 1.2rem rgba(58, 59, 69, 0.05);
-}
-
-/* ===== TABLE ===== */
-.admin-table thead {
-  background: var(--bg-soft);
-}
-
-.admin-table th {
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
-  font-weight: 700;
-  color: #4e5d78;
-  padding: 16px;
-  border-bottom: 2px solid var(--border);
-}
-
-.admin-table td {
-  padding: 16px;
-  border-bottom: 1px solid #f2f4f9;
-}
-
-/* Hover row */
-.admin-table tbody tr:hover {
-  background: #f9fbff;
-  transition: 0.2s;
-}
-
-/* ===== BADGE ===== */
-.badge-kelas {
-  background: #eef2ff;
-  color: var(--primary);
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-weight: 700;
-  font-size: 0.8rem;
-}
-
-/* ===== BUTTON ===== */
-.admin-modal-box {
-  background: #fff;
-  border-radius: 16px;
-  width: 420px;
-  padding: 30px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-  border: 1px solid #e3e6f0;
-}
-
-.modal-header-admin h4 {
-  font-weight: 800;
-  color: #2c3e50;
-  text-align: center;
-}
-
-.modal-header-admin p {
-  text-align: center;
-  font-size: 0.85rem;
-  color: #858796;
-  margin-bottom: 20px;
-}
-
-.input-group-admin label {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #4e5d78;
-  margin-bottom: 6px;
-  display: block;
-}
-
-.input-group-admin input {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid #e3e6f0;
-  background: #fff;
-  transition: 0.3s;
-}
-
-.input-group-admin input:focus {
-  border-color: #4e73df;
-  box-shadow: 0 0 0 3px rgba(78,115,223,0.15);
-  outline: none;
-}
-
-/* BUTTON BIRU SAMA PERSIS SISWA */
-.btn-admin-primary {
-  background: #4e73df !important;
-  color: #fff !important;
-  border: none;
-  padding: 10px;
-  border-radius: 10px;
-  font-weight: 600;
-}
-
-.btn-admin-primary:hover {
-  background: #2e59d9 !important;
-}
-
-.btn-admin-outline {
-  background: transparent;
-  border: 1px solid #d1d3e2;
-  color: #858796;
-  padding: 10px;
-  border-radius: 10px;
-  font-weight: 600;
-}
-
-.btn-admin-outline:hover {
-  background: #f8f9fc;
-}
-
-/* ===== ICON BUTTON ===== */
-.btn-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  border: none;
-  margin: 0 4px;
-  transition: 0.2s;
-}
-
-.btn-icon.edit {
-  background: #eef2ff;
-  color: var(--primary);
-}
-
-.btn-icon.delete {
-  background: #fff1f0;
-  color: #ff4d4f;
-}
-
-.btn-icon:hover {
-  transform: scale(1.1);
-}
-
-/* ===== MODAL ===== */
-.admin-modal-overlay {
+/* Fix Layout agar nempel ke pinggir */
+.app-container {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  background-color: #f8fafc;
+  overflow: hidden;
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(30, 30, 45, 0.6);
-  backdrop-filter: blur(4px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
+  font-family: 'Public Sans', sans-serif;
 }
 
-.admin-modal-box {
-  background: white;
-  padding: 30px;
-  border-radius: 16px;
-  width: 400px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-  animation: scaleIn 0.3s ease;
+.content-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  background-color: #f8fafc;
 }
 
-.modal-header-admin h4 {
-  font-weight: 800;
-  color: var(--text-main);
-  margin: 0;
+/* UI Elements */
+.text-indigo { color: #4f46e5; }
+
+.btn-back {
+  background: white; color: #64748b; border: 1px solid #e2e8f0;
+  border-radius: 50px; padding: 0.4rem 1.2rem; font-weight: 600; font-size: 0.85rem;
 }
 
-.modal-header-admin p {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  margin-bottom: 20px;
+.btn-primary-jeprut {
+  background: #4f46e5; border: none; color: white;
+  font-weight: 700; transition: 0.3s;
+}
+.btn-primary-jeprut:hover {
+  background: #3730a3; transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4);
 }
 
-.input-group-admin {
-  margin-bottom: 15px;
+.badge-stats {
+  background: #eef2ff; color: #4f46e5; padding: 6px 14px;
+  border-radius: 50px; font-weight: 800; font-size: 0.75rem; display: inline-block;
 }
 
-.input-group-admin label {
-  display: block;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #4e5d78;
-  margin-bottom: 5px;
+/* Table Design */
+.bg-header-table { background-color: #f8fafc; }
+.tracking-wider { letter-spacing: 0.05em; font-size: 0.7rem; font-weight: 800; color: #94a3b8; }
+
+.avatar-gradient {
+  width: 42px; height: 42px;
+  background: linear-gradient(135deg, #818cf8 0%, #4f46e5 100%);
+  color: white; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
 }
 
-.input-group-admin input {
-  width: 100%;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  transition: 0.2s;
+.badge-soft-indigo {
+  background-color: #eef2ff; color: #4f46e5; border-radius: 8px;
+  font-weight: 700; font-size: 0.85rem;
 }
 
-.input-group-admin input:focus {
-  outline: none;
-  border-color: var(--primary);
+/* Action Buttons */
+.btn-action-edit {
+  background: #f0fdf4; color: #16a34a; border: none; width: 38px; height: 38px; border-radius: 10px; transition: 0.2s;
 }
+.btn-action-edit:hover { background: #16a34a; color: white; }
 
-/* FIX tombol biar gak putih */
-.btn-tambah {
-  background: #4e73df !important;
-  color: #fff !important;
-  border: none !important;
+.btn-action-delete {
+  background: #fff1f2; color: #e11d48; border: none; width: 38px; height: 38px; border-radius: 10px; transition: 0.2s;
 }
+.btn-action-delete:hover { background: #e11d48; color: white; }
 
-.btn-tambah:hover {
-  background: #2e59d9 !important;
-  color: #fff !important;
+/* Modal Design */
+.admin-modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(5px);
+  display: flex; align-items: center; justify-content: center; z-index: 9999;
 }
+.admin-modal-box { background: white; width: 450px; overflow: hidden; }
+.custom-input { border-radius: 0 12px 12px 0; border-color: #e2e8f0; padding: 12px; }
+.input-group-text { border-radius: 12px 0 0 12px; border-color: #e2e8f0; }
 
-/* ===== ANIMATIONS ===== */
-@keyframes fadeInPage {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+/* Animations */
+.animate-home { animation: slideUp 0.4s ease-out; }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-@keyframes scaleIn {
-  from {
-    transform: scale(0.9);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
+.slide-up-enter-active, .slide-up-leave-active { transition: all 0.3s ease; }
+.slide-up-enter-from, .slide-up-leave-to { opacity: 0; transform: translateY(20px); }
 </style>
