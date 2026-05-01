@@ -143,7 +143,8 @@ export default {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800&display=swap');
+@import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
 
 /* ANTI-MELESAT: Layout Lock */
 .app-container {
@@ -225,10 +226,21 @@ export default {
 /* Form Elements */
 .custom-label { font-weight: 800; font-size: 0.7rem; letter-spacing: 1px; color: #94a3b8; margin-bottom: 8px; display: block; }
 .custom-input {
-  width: 100%; border: 2px solid #f1f5f9; background: #f8fafc; border-radius: 16px;
-  padding: 14px 20px; font-weight: 600; color: #1e293b; transition: 0.3s;
+  width: 100%;
+  border: 2px solid #f1f5f9;
+  background: #f8fafc;
+  border-radius: 14px;
+  padding: 12px 18px;
+  font-weight: 500;
+  transition: 0.3s;
 }
-.custom-input:focus { border-color: #4f46e5; background: white; outline: none; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+
+.custom-input:focus {
+  border-color: #6366f1;
+  background: white;
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
 
 /* Action Buttons */
 .btn-save-action {
@@ -240,9 +252,9 @@ export default {
   flex: 1; background: #f1f5f9; color: #64748b; border: none;
   padding: 18px; border-radius: 20px; font-weight: 700; transition: 0.3s;
 }
-.btn-cancel:hover { background: #e2e8f0; color: #1e293b; }
 
-/* Global Fade In */
-.animate-profile { animation: fadeIn 0.4s ease-out; }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.btn-cancel:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
 </style>
