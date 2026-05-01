@@ -1,355 +1,284 @@
 <template>
-  <div class="app-container animate-home">
-    <nav class="navbar navbar-expand-lg px-4 bg-white border-bottom shadow-sm">
+  <div class="app-layout">
+    <nav class="navbar bg-white border-bottom shadow-sm px-3">
       <div class="container-fluid p-0">
-        <span class="navbar-brand d-flex align-items-center m-0">
-          <i class="bi bi-shield-check me-2 text-indigo"></i>
-          <span class="fw-bold text-dark">JeprutSchool</span>
-          <span class="badge-admin ms-2">ADMIN</span>
-        </span>
+        <div class="d-flex align-items-center">
+          <button class="btn d-lg-none me-2 p-0 border-0" @click="isSidebarOpen = !isSidebarOpen">
+            <i class="bi bi-list fs-2 text-indigo"></i>
+          </button>
+          <span class="navbar-brand d-flex align-items-center m-0">
+            <i class="bi bi-shield-check-fill me-2 text-indigo"></i>
+            <span class="fw-bold text-dark">JeprutSchool</span>
+          </span>
+        </div>
+
         <div class="d-flex align-items-center gap-3">
-          <span class="text-secondary small d-none d-md-block">{{ tanggalSekarang }}</span>
-          
-          <router-link to="/profile" class="profile-link" title="Buka Profil">
-            <i class="bi bi-person-circle text-indigo"></i>
+          <div class="text-end d-none d-md-block">
+            <p class="small fw-bold mb-0 text-dark">Administrator</p>
+            <p class="small text-muted mb-0" style="font-size: 10px;">{{ tanggalSekarang }}</p>
+          </div>
+          <router-link to="/profile" class="profile-link shadow-sm">
+            <div class="avatar-aj">AJ</div>
           </router-link>
         </div>
       </div>
     </nav>
 
-    <div class="dashboard-wrapper">
-      <div class="row g-0 h-100 w-100 m-0">
-        
-        <div class="col-auto sidebar-box bg-white border-end shadow-sm">
-          <div class="p-4 d-flex flex-column h-100">
-            <h6 class="sidebar-title">Main Navigation</h6>
-            <ul class="nav flex-column gap-2 flex-grow-1">
-              <li>
-                <router-link to="/dashboard" class="menu-link active">
-                  <i class="bi bi-grid-1x2"></i><span>Dashboard</span>
-                </router-link>
-              </li>
-              <li>
-                <router-link to="/siswa" class="menu-link">
-                  <i class="bi bi-people"></i><span>Data Siswa</span>
-                </router-link>
-              </li>
-              <li>
-                <router-link to="/kelas" class="menu-link">
-                  <i class="bi bi-building"></i><span>Data Kelas</span>
-                </router-link>
-              </li>
-              <li>
-                <router-link to="/guru" class="menu-link">
-                  <i class="bi bi-person-workspace"></i><span>Data Guru</span>
-                </router-link>
-              </li>
-              <li>
-                <router-link to="/jadwal" class="menu-link">
-                  <i class="bi bi-calendar-event"></i><span>Jadwal Pelajaran</span>
-                </router-link>
-              </li>
-            </ul>
-            
-            <div class="logout-section mt-auto">
-              <button @click="logout" class="btn-logout border-0 shadow-sm">
-                <i class="bi bi-box-arrow-left"></i><span>Logout</span>
-              </button>
-            </div>
+    <div class="main-wrapper">
+      <aside class="sidebar bg-white border-end shadow-sm" :class="{ 'show-sidebar': isSidebarOpen }">
+        <div class="p-4 d-flex flex-column h-100">
+          <h6 class="sidebar-title">Menu Utama</h6>
+          <ul class="nav flex-column gap-1 flex-grow-1">
+            <li>
+              <router-link to="/dashboard" class="menu-link active">
+                <i class="bi bi-grid-1x2-fill"></i><span>Dashboard</span>
+              </router-link>
+            </li>
+            <li>
+              <router-link to="/siswa" class="menu-link nowrap-link">
+                <i class="bi bi-people-fill"></i><span>Manajemen Siswa</span>
+              </router-link>
+            </li>
+            <li>
+              <router-link to="/guru" class="menu-link">
+                <i class="bi bi-person-badge-fill"></i><span>Data Pengajar</span>
+              </router-link>
+            </li>
+            <li>
+              <router-link to="/kelas" class="menu-link">
+                <i class="bi bi-door-open-fill"></i><span>Data Kelas</span>
+              </router-link>
+            </li>
+            <li>
+              <router-link to="/jadwal" class="menu-link">
+                <i class="bi bi-calendar-week-fill"></i><span>Jadwal Pelajaran</span>
+              </router-link>
+            </li>
+          </ul>
+          
+          <div class="logout-section mt-auto pt-4 border-top">
+            <button @click="logout" class="btn-logout border-0 shadow-sm w-100">
+              <i class="bi bi-power"></i><span>Keluar Sistem</span>
+            </button>
           </div>
         </div>
+      </aside>
 
-        <div class="col content-scroll-area">
-          <div class="p-4 p-md-5">
-            
-            <div class="hero-banner p-5 mb-5 position-relative overflow-hidden shadow-sm">
-              <div class="position-relative z-1 d-flex justify-content-between align-items-center">
-                <div>
-                  <h1 class="fw-bold text-white mb-2">Welcome back, Administrator</h1>
-                  <p class="text-white opacity-75 mb-0 fs-5">Sistem manajemen sekolah terintegrasi. Pantau aktivitas dalam satu dasbor.</p>
-                </div>
-                <div class="d-none d-xl-block">
-                  <div class="clock-glass p-3 rounded-4 text-center text-white">
-                    <h4 class="fw-bold mb-0" style="min-width: 110px;">{{ jamSekarang }}</h4>
-                    <small class="opacity-75 fw-bold">WIB</small>
-                  </div>
-                </div>
+      <main class="content-area p-3 p-md-4">
+        <div class="container-fluid p-0">
+          
+          <div class="hero-banner p-4 p-md-5 mb-4 position-relative overflow-hidden shadow">
+            <div class="position-relative z-1 text-white">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="badge bg-white text-indigo fw-bold">v2.0.4</span>
+                <span class="small opacity-75 fw-bold">{{ jamSekarang }} WIB</span>
               </div>
-              <i class="bi bi-mortarboard-fill hero-icon"></i>
+              <h1 class="fw-bold mb-2 hero-title">Halo, Admin Jeprut!</h1>
+              <p class="opacity-75 mb-0 fs-5 d-none d-md-block">Sistem Manajemen Sekolah Aktif & Terkendali.</p>
             </div>
+            <i class="bi bi-cpu-fill hero-icon"></i>
+          </div>
 
-            <div class="row g-4 mb-5">
-              <div class="col-md-4">
-                <div class="stat-box border-indigo shadow-sm">
-                  <div class="p-4 d-flex align-items-center">
-                    <div class="stat-icon indigo-bg me-4"><i class="bi bi-mortarboard"></i></div>
-                    <div>
-                      <h2 class="display-6 fw-bold mb-0">1,200</h2>
-                      <p class="text-indigo fw-bold mb-0">Total Siswa</p>
-                    </div>
+          <div class="row g-3 mb-4">
+            <div class="col-12 col-sm-6 col-xl-3" v-for="(stat, i) in stats" :key="i">
+              <div class="stat-card p-3 shadow-sm h-100 bg-white border-0">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <div class="stat-icon-box" :class="stat.bg"><i :class="stat.icon"></i></div>
+                  <div class="text-success small fw-bold"><i class="bi bi-graph-up"></i> +{{ stat.up }}%</div>
+                </div>
+                <h3 class="fw-bold mb-0">{{ stat.val }}</h3>
+                <p class="text-muted small fw-bold mb-0">{{ stat.label }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-4 mb-4">
+            <div class="col-12 col-xl-8">
+              <div class="white-card p-4 shadow-sm border-0 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                  <h5 class="fw-bold mb-0">Statistik Kehadiran Aktif</h5>
+                  <div class="d-flex gap-2">
+                    <span class="badge bg-indigo-light text-indigo small">Minggu Ini</span>
                   </div>
                 </div>
-              </div>
-              <div class="col-md-4">
-                <div class="stat-box border-emerald shadow-sm">
-                  <div class="p-4 d-flex align-items-center">
-                    <div class="stat-icon emerald-bg me-4"><i class="bi bi-person-video3"></i></div>
-                    <div>
-                      <h2 class="display-6 fw-bold mb-0">75</h2>
-                      <p class="text-emerald fw-bold mb-0">Tenaga Pengajar</p>
+                <div class="chart-wrapper d-flex align-items-end justify-content-around px-2">
+                  <div v-for="(val, day) in chartData" :key="day" class="bar-container">
+                    <div class="bar-value small fw-bold text-indigo">{{ val }}%</div>
+                    <div class="bar-fill" :style="{ height: val + '%' }">
+                      <div class="bar-glow"></div>
                     </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="stat-box border-cyan shadow-sm">
-                  <div class="p-4 d-flex align-items-center">
-                    <div class="stat-icon cyan-bg me-4"><i class="bi bi-building"></i></div>
-                    <div>
-                      <h2 class="display-6 fw-bold mb-0">30</h2>
-                      <p class="text-cyan fw-bold mb-0">Ruang Kelas</p>
-                    </div>
+                    <div class="bar-day small fw-bold text-muted mt-3">{{ day }}</div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div class="row g-4 mb-5">
-              <div class="col-xl-8">
-                <div class="white-card p-4 h-100 shadow-sm border-0">
-                  <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="fw-bold mb-0 text-dark">Siswa Baru Terdaftar</h5>
-                    <button @click="$router.push('/siswa')" class="btn btn-link text-indigo text-decoration-none fw-bold small p-0">
-                      Kelola Semua <i class="bi bi-arrow-right"></i>
-                    </button>
+            <div class="col-12 col-xl-4">
+              <div class="white-card p-4 shadow-sm border-0 h-100">
+                <h5 class="fw-bold mb-4">Aktivitas Sistem</h5>
+                <div class="activity-list">
+                  <div class="activity-item d-flex gap-3 mb-4">
+                    <div class="activity-dot bg-indigo"></div>
+                    <div>
+                      <p class="small mb-0 fw-bold">Update Data Guru</p>
+                      <small class="text-muted">Baru saja oleh Admin AJ</small>
+                    </div>
                   </div>
-                  <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                      <thead class="bg-light">
-                        <tr>
-                          <th class="border-0 px-3 py-3 text-muted small fw-bold">NAMA SISWA</th>
-                          <th class="border-0 py-3 text-muted small fw-bold">KELAS</th>
-                          <th class="border-0 py-3 text-muted small fw-bold text-center">STATUS</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr v-for="n in 3" :key="n">
-                          <td class="px-3 py-3">
-                            <div class="d-flex align-items-center">
-                              <div class="avatar-mini me-3">A</div>
-                              <span class="fw-bold">Andi Wijaya</span>
+                  <div class="activity-item d-flex gap-3 mb-4">
+                    <div class="activity-dot bg-emerald"></div>
+                    <div>
+                      <p class="small mb-0 fw-bold">Backup Database Selesai</p>
+                      <small class="text-muted">Otomatis - 2 Jam yang lalu</small>
+                    </div>
+                  </div>
+                  <div class="activity-item d-flex gap-3">
+                    <div class="activity-dot bg-warning"></div>
+                    <div>
+                      <p class="small mb-0 fw-bold">5 Siswa Baru Mendaftar</p>
+                      <small class="text-muted">Lihat di Manajemen Siswa</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-4 mb-4">
+            <div class="col-12">
+              <div class="white-card p-4 shadow-sm border-0">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                  <h5 class="fw-bold mb-0">Siswa Baru Terdaftar</h5>
+                  <router-link to="/siswa" class="btn btn-indigo btn-sm rounded-pill px-4 fw-bold">
+                    Buka Manajemen Siswa <i class="bi bi-arrow-right ms-1"></i>
+                  </router-link>
+                </div>
+                <div class="table-responsive">
+                  <table class="table table-hover align-middle">
+                    <thead class="bg-light">
+                      <tr>
+                        <th class="border-0 small fw-bold p-3">NAMA LENGKAP</th>
+                        <th class="border-0 small fw-bold">KELAS TUJUAN</th>
+                        <th class="border-0 small fw-bold text-center">STATUS AKTIF</th>
+                        <th class="border-0 small fw-bold text-end p-3">AKSI</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="i in 3" :key="i">
+                        <td class="p-3">
+                          <div class="d-flex align-items-center gap-3">
+                            <div class="avatar-sm bg-indigo-light text-indigo fw-bold">
+                              {{ i == 1 ? 'AW' : (i == 2 ? 'RR' : 'DN') }}
                             </div>
-                          </td>
-                          <td class="text-secondary fw-semibold">12 IPA 1</td>
-                          <td class="text-center">
-                            <span class="badge-success-light">Verified</span>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-xl-4">
-                <div class="white-card p-4 h-100 shadow-sm border-0 d-flex flex-column">
-                  <h5 class="fw-bold mb-4 text-dark">Kapasitas Sekolah</h5>
-                  <div class="mb-4">
-                    <div class="d-flex justify-content-between mb-2">
-                      <span class="small fw-bold text-secondary">Kapasitas Siswa</span>
-                      <span class="small fw-bold">85%</span>
-                    </div>
-                    <div class="progress rounded-pill" style="height: 10px;">
-                      <div class="progress-bar bg-indigo" style="width: 85%"></div>
-                    </div>
-                  </div>
-                  <div class="info-alert p-3 rounded-4 mt-auto">
-                    <div class="d-flex gap-3 align-items-center text-indigo">
-                      <i class="bi bi-info-circle-fill fs-4"></i>
-                      <p class="small mb-0 fw-medium">Sistem melakukan backup otomatis pada tengah malam.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="row g-4 pb-5">
-              <div class="col-md-7">
-                <div class="white-card p-4 h-100 shadow-sm border-0">
-                  <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="fw-bold mb-0 text-dark">Log Aktivitas Admin</h5>
-                    <button class="btn btn-sm btn-indigo-light rounded-pill px-3">Lihat Semua</button>
-                  </div>
-                  <div class="activity-list">
-                    <div v-for="(act, index) in activities" :key="index" class="activity-row d-flex gap-3 mb-4">
-                      <div class="dot-indicator"></div>
-                      <div>
-                        <p class="mb-0 fw-bold text-dark">{{ act.text }}</p>
-                        <small class="text-muted">{{ act.time }}</small>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-5">
-                <div class="white-card p-4 h-100 shadow-sm border-0">
-                  <h5 class="fw-bold mb-4 text-dark">Aksi Cepat</h5>
-                  <div class="d-grid gap-3">
-                    <button class="btn-indigo-action" @click="$router.push('/siswa')">
-                      <i class="bi bi-person-plus-fill me-2"></i>Tambah Siswa Baru
-                    </button>
-                    <button class="btn-indigo-outline" @click="$router.push('/jadwal')">
-                      <i class="bi bi-calendar-check me-2"></i>Konfigurasi Jadwal
-                    </button>
-                    <button class="btn-grey-light">
-                      <i class="bi bi-file-earmark-pdf me-2"></i>Cetak Laporan Bulanan
-                    </button>
-                  </div>
+                            <span class="fw-bold small">{{ i == 1 ? 'Andi Wijaya' : (i == 2 ? 'Rina Rose' : 'Dani Noel') }}</span>
+                          </div>
+                        </td>
+                        <td class="small fw-semibold">Kelas {{ 10 + i }} IPA</td>
+                        <td class="text-center"><span class="badge-active">Aktif</span></td>
+                        <td class="text-end p-3">
+                          <button class="btn btn-sm btn-light border fw-bold text-indigo" style="font-size: 11px;">KONTROL</button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
           </div>
+
+          <div class="pb-5"></div>
         </div>
-      </div>
+      </main>
     </div>
+
+    <div v-if="isSidebarOpen" class="sidebar-overlay d-lg-none" @click="isSidebarOpen = false"></div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'FullDashboard',
   data() {
     return {
-      jamSekarang: '--:--:--',
+      isSidebarOpen: false,
+      jamSekarang: '',
       tanggalSekarang: '',
-      timer: null,
-      activities: [
-        { text: 'Update data siswa - Kelas 12 IPA 1', time: '5 menit yang lalu' },
-        { text: 'Penambahan jadwal ujian semester', time: '2 jam yang lalu' },
-        { text: 'Publikasi pengumuman lomba nasional', time: 'Kemarin, 14:00' }
-      ]
+      stats: [
+        { label: 'Total Siswa', val: '1,248', icon: 'bi-people-fill', bg: 'bg-indigo-light', up: 12 },
+        { label: 'Guru Aktif', val: '86', icon: 'bi-person-badge-fill', bg: 'bg-emerald-light', up: 3 },
+        { label: 'Ruang Kelas', val: '32', icon: 'bi-door-open-fill', bg: 'bg-cyan-light', up: 0 },
+        { label: 'Kehadiran', val: '98%', icon: 'bi-check-circle-fill', bg: 'bg-orange-light', up: 5 }
+      ],
+      chartData: { 'Sen': 85, 'Sel': 92, 'Rab': 78, 'Kam': 95, 'Jum': 88, 'Sab': 40, 'Min': 15 }
     }
   },
   methods: {
-    updateWaktu() {
-      const skrg = new Date();
-      
-      // Update Jam
-      const h = String(skrg.getHours()).padStart(2, '0');
-      const m = String(skrg.getMinutes()).padStart(2, '0');
-      const s = String(skrg.getSeconds()).padStart(2, '0');
-      this.jamSekarang = `${h}:${m}:${s}`;
-
-      // Update Tanggal (Format Indonesia)
-      const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-      this.tanggalSekarang = skrg.toLocaleDateString('id-ID', options);
+    updateTime() {
+      const now = new Date();
+      this.jamSekarang = now.toLocaleTimeString('id-ID', { hour12: false });
+      this.tanggalSekarang = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     },
-    logout() {
-      if(confirm('Keluar dari sistem?')) this.$router.push('/');
-    }
+    logout() { if(confirm('Keluar sistem?')) this.$router.push('/'); }
   },
   mounted() {
-    this.updateWaktu();
-    this.timer = setInterval(this.updateWaktu, 1000);
-  },
-  beforeUnmount() {
-    // Penting: Hapus interval agar tidak terjadi memory leak
-    if (this.timer) clearInterval(this.timer);
+    this.updateTime();
+    setInterval(this.updateTime, 1000);
   }
 }
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
 
-/* ANTI-MELESAT: Layout Lock */
-.app-container {
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  flex-direction: column;
-  background-color: #f8fafc;
-  overflow: hidden;
-  position: fixed;
-  top: 0;
-  left: 0;
-  font-family: 'Public Sans', sans-serif;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  transform: translate3d(0,0,0);
-}
+/* LAYOUT CONFIG */
+.app-layout { position: fixed; inset: 0; display: flex; flex-direction: column; background: #f4f7fe; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; }
+.navbar { height: 70px; z-index: 1050; }
+.main-wrapper { display: flex; flex: 1; overflow: hidden; height: calc(100vh - 70px); }
+.sidebar { width: 280px; flex-shrink: 0; background: white; z-index: 1040; transition: 0.3s ease; }
+.content-area { flex: 1; overflow-y: auto; scroll-behavior: smooth; }
 
-.dashboard-wrapper { flex: 1; display: flex; overflow: hidden; }
-.sidebar-box { width: 280px; height: 100%; z-index: 10; }
-.content-scroll-area { flex: 1; height: 100%; overflow-y: auto; background-color: #f8fafc; }
+/* AVATAR AJ */
+.avatar-aj { width: 42px; height: 42px; background: #4f46e5; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; border: 3px solid #eef2ff; }
 
-/* Navbar & Profile Perbaikan */
-.navbar { height: 75px; z-index: 1000; }
-.profile-link {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: #f8fafc;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-.profile-link:hover { background: #eef2ff; transform: scale(1.1); }
-.profile-link i { font-size: 1.6rem !important; line-height: 0; }
+/* SIDEBAR LINK - SATU BARIS RAPI */
+.menu-link { display: flex; align-items: center; gap: 12px; padding: 14px 20px; color: #718096; text-decoration: none; font-weight: 700; border-radius: 14px; transition: 0.2s; }
+.nowrap-link { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.menu-link:hover { background: #f8fafc; color: #4f46e5; }
+.menu-link.active { background: #4f46e5; color: white; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3); }
 
-.badge-admin { background: #eef2ff; color: #4f46e5; font-size: 11px; padding: 5px 12px; border-radius: 8px; font-weight: 800; }
+/* CARDS & UI */
+.white-card { background: white; border-radius: 24px; }
+.hero-banner { background: linear-gradient(135deg, #4f46e5 0%, #312e81 100%); border-radius: 24px; color: white; }
+.hero-icon { position: absolute; right: -20px; bottom: -20px; font-size: 140px; color: rgba(255,255,255,0.1); transform: rotate(-15deg); }
+
+.stat-card { border-radius: 20px; transition: 0.2s; }
+.stat-card:hover { transform: translateY(-5px); }
+.stat-icon-box { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+
+/* CHART AKTIF */
+.chart-wrapper { height: 250px; border-bottom: 2px solid #f1f5f9; padding-bottom: 5px; }
+.bar-container { width: 45px; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; }
+.bar-fill { width: 100%; background: linear-gradient(to top, #4f46e5, #818cf8); border-radius: 12px 12px 4px 4px; position: relative; transition: height 1s ease-in-out; animation: grow 1.2s ease-out; }
+.bar-glow { position: absolute; top: 0; left: 0; right: 0; height: 20px; background: rgba(255,255,255,0.2); filter: blur(5px); border-radius: 12px 12px 0 0; }
+@keyframes grow { from { height: 0; } }
+
+/* UTILS */
+.bg-indigo-light { background: #eef2ff; color: #4f46e5; }
+.bg-emerald-light { background: #ecfdf5; color: #10b981; }
+.bg-cyan-light { background: #ecfeff; color: #06b6d4; }
+.bg-orange-light { background: #fff7ed; color: #f97316; }
 .text-indigo { color: #4f46e5; }
+.btn-indigo { background: #4f46e5; color: white; border: none; }
+.badge-active { background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 800; }
+.avatar-sm { width: 35px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 11px; }
 
-/* Sidebar Menu */
-.sidebar-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 800; color: #94a3b8; margin-bottom: 25px; }
-.menu-link {
-  display: flex; align-items: center; gap: 15px; padding: 15px 20px;
-  color: #64748b; text-decoration: none; font-weight: 700; border-radius: 16px; transition: 0.3s;
+/* ACTIVITY FEED */
+.activity-dot { width: 12px; height: 12px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 0 3px #f1f5f9; margin-top: 5px; }
+.btn-logout { background: #fee2e2; color: #991b1b; padding: 14px; border-radius: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; }
+.btn-logout:hover { background: #fecaca; }
+
+@media (max-width: 991px) {
+  .sidebar { position: fixed; left: -280px; top: 0; bottom: 0; }
+  .sidebar.show-sidebar { left: 0; }
+  .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1030; backdrop-filter: blur(2px); }
+  .bar-container { width: 30px; }
 }
-.menu-link:hover { background: #f1f5f9; color: #4f46e5; }
-.menu-link.active { background: #4f46e5; color: #fff; box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.4); }
-
-.btn-logout {
-  display: flex; align-items: center; gap: 15px; padding: 15px 20px;
-  background: #fff1f2; color: #e11d48; border-radius: 16px; font-weight: 700; width: 100%; transition: 0.3s;
-}
-
-/* Stat Box */
-.stat-box { background: white; border-radius: 24px; border: 1px solid #e2e8f0; border-left-width: 8px !important; }
-.border-indigo { border-left-color: #4f46e5 !important; }
-.border-emerald { border-left-color: #10b981 !important; }
-.border-cyan { border-left-color: #06b6d4 !important; }
-.stat-icon { width: 55px; height: 55px; display: flex; align-items: center; justify-content: center; border-radius: 18px; font-size: 24px; }
-.indigo-bg { background: #eef2ff; color: #4f46e5; }
-.emerald-bg { background: #ecfdf5; color: #10b981; }
-.cyan-bg { background: #ecfeff; color: #06b6d4; }
-.text-emerald { color: #10b981; }
-
-/* Hero UI */
-.hero-banner { background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); border-radius: 32px; }
-.hero-icon { position: absolute; right: -30px; bottom: -30px; font-size: 180px; color: rgba(255,255,255,0.1); transform: rotate(-15deg); }
-.clock-glass { background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.3); min-width: 130px; }
-
-/* Card & Tables */
-.white-card { background: white; border-radius: 32px; }
-.avatar-mini { width: 32px; height: 32px; background: #eef2ff; color: #4f46e5; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 11px; }
-.badge-success-light { background: #ecfdf5; color: #10b981; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; }
-.bg-indigo { background-color: #4f46e5 !important; }
-.info-alert { background: #f5f3ff; border: 1px solid #ddd6fe; }
-.dot-indicator { width: 10px; height: 10px; background: #4f46e5; border-radius: 50%; margin-top: 6px; box-shadow: 0 0 0 4px #eef2ff; }
-
-/* Actions */
-.btn-indigo-action { background: #4f46e5; color: white; border: none; padding: 16px; border-radius: 18px; font-weight: 700; text-align: left; transition: 0.3s; }
-.btn-indigo-outline { background: white; border: 2px solid #4f46e5; color: #4f46e5; padding: 16px; border-radius: 18px; font-weight: 700; text-align: left; }
-.btn-grey-light { background: #f1f5f9; color: #64748b; border: none; padding: 16px; border-radius: 18px; font-weight: 700; text-align: left; }
-.btn-indigo-light { background: #f5f3ff; color: #4f46e5; border: none; }
-.btn-indigo-action:hover { transform: translateX(5px); background: #3730a3; }
-
-/* Animasi */
-.animate-home { animation: fadeIn 0.4s ease-out; }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 </style>
