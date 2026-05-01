@@ -2,7 +2,7 @@
   <div class="app-container animate-fade-in">
     <header class="header-glass py-3 px-md-5">
       <div class="d-flex justify-content-between align-items-center">
-        <button class="btn-back-modern" @click="$router.push('/dashboard')">
+        <button class="btn-back-modern ripple" @click="$router.push('/dashboard')">
           <div class="icon-circle">
             <i class="bi bi-arrow-left-short"></i>
           </div>
@@ -137,7 +137,33 @@
   </div>
 </template>
 
+<script>
+export default {
+  data() {
+    return {
+      adminData: {
+        name: 'ADMIN JPRT',
+        role: 'SYSTEM ARCHITECT',
+        email: 'admin@purple.id',
+        bio: 'Membangun ekosistem digital sekolah dengan standar industri dan keamanan modern.',
+        profileImage: 'https://i.pravatar.cc/300?u=purple_admin'
+      }
+    }
+  },
+  methods: {
+    onFileChange(e) {
+      const file = e.target.files[0];
+      if (file) this.adminData.profileImage = URL.createObjectURL(file);
+    },
+    syncData() { 
+      alert("System Deployed: Config pushed to core."); 
+    }
+  }
+}
+</script>
+
 <style scoped>
+@import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css');
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap');
 
 .app-container { height: 100vh; background: #f4f6fc; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; position: fixed; inset: 0; }
@@ -151,7 +177,7 @@
   box-shadow: 0 15px 35px rgba(79, 70, 229, 0.08);
 }
 
-/* TOMBOL DASHBOARD PREMIUM (FIXED) */
+/* BUTTONS */
 .btn-back-modern {
   display: flex; align-items: center; gap: 12px; background: white; border: 1px solid #e2e8f0;
   padding: 8px 20px 8px 8px; border-radius: 100px; cursor: pointer; transition: 0.3s ease;
@@ -162,35 +188,19 @@
 }
 .btn-back-modern span { font-weight: 800; font-size: 0.75rem; color: #4f46e5; letter-spacing: 1px; }
 .btn-back-modern:hover { transform: translateX(-5px); box-shadow: 0 10px 25px rgba(79, 70, 229, 0.2); border-color: #4f46e5; }
+.btn-deploy-purple { background: #1e293b; color: #4ade80; border: none; padding: 12px 25px; border-radius: 15px; font-weight: 900; cursor: pointer; }
 
-/* NAMA & ROLE (RENOVASI WARNA) */
+/* TYPOGRAPHY */
+.admin-title-purple { font-weight: 900; font-size: 0.85rem; color: #4f46e5; letter-spacing: 2px; }
+.brand-logo-purple { width: 45px; height: 45px; background: #4f46e5; color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; margin: 0 auto; }
 .input-name-purple { width: 100%; background: transparent; border: none; outline: none; text-align: center; font-weight: 900; font-size: 1.8rem; color: #1e293b; }
-.input-role-purple { 
-  background: transparent; border: none; outline: none; 
-  font-weight: 800; font-size: 0.8rem; 
-  color: #4338ca; /* WARNA UNGU TUA AGAR TERLIHAT JELAS */
-  text-transform: uppercase; letter-spacing: 1px;
-}
-.role-dot { width: 10px; height: 10px; background: #4f46e5; border-radius: 50%; margin-right: 8px; display: inline-block; }
+.input-role-purple { background: transparent; border: none; outline: none; font-weight: 800; font-size: 0.8rem; color: #4338ca; text-transform: uppercase; letter-spacing: 1px; }
 
-/* INPUTS & TEXTAREA (BENING TAPI TEKS JELAS) */
-.textarea-purple-glass { 
-  width: 100%; background: rgba(79, 70, 229, 0.05); border: 1px solid rgba(79, 70, 229, 0.1); 
-  border-radius: 20px; padding: 15px; font-size: 0.9rem; font-weight: 600; 
-  color: #334155; min-height: 90px; resize: none; outline: none; 
-}
-.input-wrapper-purple { 
-  background: rgba(79, 70, 229, 0.05); border: 1px solid rgba(79, 70, 229, 0.1); 
-  border-radius: 15px; display: flex; align-items: center; padding: 12px 15px; gap: 10px; 
-}
+/* INPUT FIELDS */
+.textarea-purple-glass { width: 100%; background: rgba(79, 70, 229, 0.05); border: 1px solid rgba(79, 70, 229, 0.1); border-radius: 20px; padding: 15px; font-size: 0.9rem; font-weight: 600; color: #334155; min-height: 90px; resize: none; outline: none; }
+.input-wrapper-purple { background: rgba(79, 70, 229, 0.05); border: 1px solid rgba(79, 70, 229, 0.1); border-radius: 15px; display: flex; align-items: center; padding: 12px 15px; gap: 10px; }
 .input-purple-glass { background: transparent; border: none; outline: none; width: 100%; font-weight: 700; color: #334155; }
-.text-purple-bold { color: #4338ca; }
-
-/* MOUNTAIN GRAPH (SMOOTH) */
-.mountain-container { position: relative; width: 100%; height: 220px; margin-top: 20px; }
-.mountain-svg { width: 100%; height: 100%; }
-.wave-path { animation: waveFlow 8s infinite ease-in-out; }
-.wave-path.opacity-50 { animation-delay: -4s; opacity: 0.3; }
+.label-purple { font-size: 0.7rem; font-weight: 900; color: #64748b; letter-spacing: 1.5px; margin-bottom: 8px; margin-left: 5px; display: block; }
 
 /* PROFILE CIRCLE */
 .profile-container-circle { position: relative; width: 170px; height: 170px; margin: 0 auto; }
@@ -198,48 +208,19 @@
 .pulse-ring-purple { position: absolute; inset: -8px; border-radius: 50%; border: 3px solid #6366f1; animation: pulsePurple 2s infinite; }
 .edit-btn-purple { position: absolute; bottom: 8px; right: 12px; width: 45px; height: 45px; background: #4f46e5; color: white; border-radius: 50%; border: 4px solid white; display: flex; align-items: center; justify-content: center; z-index: 10; cursor: pointer; }
 
-/* UTILS */
-.btn-deploy-purple { background: #1e293b; color: #4ade80; border: none; padding: 12px 25px; border-radius: 15px; font-weight: 900; }
-.avg-indicator-purple { background: #1e293b; color: #4ade80; padding: 10px 20px; border-radius: 15px; font-weight: 900; }
+/* CHART & MONITOR */
+.mountain-container { position: relative; width: 100%; height: 220px; margin-top: 20px; }
+.mountain-svg { width: 100%; height: 100%; }
 .progress-track-purple { width: 100%; height: 10px; background: #e2e8f0; border-radius: 10px; }
 .progress-bar-purple { height: 100%; background: #4f46e5; border-radius: 10px; }
-.command-input-purple { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 15px; padding: 12px 15px; display: flex; align-items: center; gap: 12px; }
-.command-input-purple input { background: transparent; border: none; outline: none; width: 100%; font-weight: 600; color: #334155; }
-.info-box-purple { background: rgba(79, 70, 229, 0.08); padding: 15px; border-radius: 20px; }
 .status-pill-purple { background: #1e293b; color: white; padding: 8px 18px; border-radius: 50px; font-size: 0.7rem; font-weight: 900; display: flex; align-items: center; gap: 8px; }
 .dot-live { width: 8px; height: 8px; background: #4ade80; border-radius: 50%; box-shadow: 0 0 10px #4ade80; animation: blink 1s infinite; }
 
+/* ANIMATIONS */
 @keyframes waveFlow { 
   0%, 100% { d: path("M0,300 L0,150 Q150,50 300,180 T600,100 T1000,150 L1000,300 Z"); } 
   50% { d: path("M0,300 L0,180 Q150,100 300,150 T600,150 T1000,180 L1000,300 Z"); } 
 }
 @keyframes pulsePurple { 0% { transform: scale(1); opacity: 0.4; } 50% { transform: scale(1.15); opacity: 0; } 100% { transform: scale(1); opacity: 0.4; } }
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-
-.label-purple { font-size: 0.7rem; font-weight: 900; color: #64748b; letter-spacing: 1.5px; margin-bottom: 8px; margin-left: 5px; display: block; }
-.xs-text { font-size: 0.75rem; }
-.text-purple-bold { color: #4338ca; font-weight: 900; }
 </style>
-
-<script>
-export default {
-  data() {
-    return {
-      adminData: {
-        name: 'ADMIN JPRT',
-        role: 'SYSTEM ARCHITECT', // INI SEKARANG WARNA UNGU PEKAT
-        email: 'admin@purple.id',
-        bio: 'Membangun ekosistem digital sekolah dengan standar industri dan keamanan modern.',
-        profileImage: 'https://i.pravatar.cc/300?u=purple_admin'
-      }
-    }
-  },
-  methods: {
-    onFileChange(e) {
-      const file = e.target.files[0];
-      if (file) this.adminData.profileImage = URL.createObjectURL(file);
-    },
-    syncData() { alert("System Deployed: Config pushed to core."); }
-  }
-}
-</script>

@@ -35,9 +35,7 @@
 
         <div class="timeline-container">
           <transition-group name="list">
-            <div v-for="(item, index) in jadwalList" :key="item.id" 
-                 class="timeline-item">
-              
+            <div v-for="(item, index) in jadwalList" :key="item.id" class="timeline-item">
               <div class="time-col">
                 <div class="time-bubble shadow-sm">{{ item.waktu.split(' - ')[0] }}</div>
                 <div class="time-line" v-if="index !== jadwalList.length - 1"></div>
@@ -109,7 +107,7 @@
                 </div>
               </div>
               <div class="col-md-6">
-                <label class="small fw-800 text-muted mb-2 ls-wide">WAKTU (MULAI)</label>
+                <label class="small fw-800 text-muted mb-2 ls-wide">WAKTU (00:00 - 00:00)</label>
                 <div class="input-premium">
                   <i class="bi bi-clock text-indigo"></i>
                   <input v-model="form.waktu" type="text" placeholder="07:00 - 08:30">
@@ -200,12 +198,13 @@ export default {
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css');
 
 /* --- LAYOUT --- */
 .app-container { height: 100vh; background: #f4f7fe; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; position: fixed; inset: 0; }
 .content-scroll-area { flex: 1; overflow-y: auto; height: calc(100vh - 120px); scroll-behavior: smooth; }
 
-/* --- HEADER AJ --- */
+/* --- HEADER --- */
 .header-glass { background: white; border-bottom: 1px solid #f1f5f9; min-height: 100px; }
 .avatar-aj { width: 44px; height: 44px; background: #4f46e5; color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; margin-bottom: 4px; border: 3px solid #eef2ff; }
 .h-line { width: 40px; height: 3px; background: #4f46e5; border-radius: 10px; margin-top: 4px; }
@@ -213,8 +212,9 @@ export default {
 .btn-add-premium { background: #4f46e5; color: white; border: none; width: 48px; height: 48px; border-radius: 14px; font-weight: 700; }
 .qs-badge { background: white; padding: 8px 15px; border-radius: 12px; border: 1px solid #eef2ff; gap: 8px; }
 .qs-val { font-weight: 800; color: #4f46e5; }
+.text-indigo { color: #4f46e5; }
 
-/* --- TIMELINE & AGENDA --- */
+/* --- TIMELINE --- */
 .agenda-wrapper { max-width: 850px; position: relative; padding-bottom: 50px; }
 .day-marker { display: flex; align-items: center; gap: 15px; margin-bottom: 40px; }
 .day-text { font-weight: 800; color: #4f46e5; letter-spacing: 2px; font-size: 0.85rem; }
@@ -232,10 +232,10 @@ export default {
 }
 .agenda-card:hover { transform: scale(1.02); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1) !important; }
 
-/* --- CARD COLORS --- */
 .card-glass-overlay { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.6)); z-index: 1; }
 .icon-box-floating { width: 60px; height: 60px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: white; position: relative; z-index: 2; }
 
+/* Colors */
 .card-color-0 .icon-box-floating { background: linear-gradient(135deg, #6366f1, #4f46e5); }
 .card-color-1 .icon-box-floating { background: linear-gradient(135deg, #f59e0b, #d97706); }
 .card-color-2 .icon-box-floating { background: linear-gradient(135deg, #10b981, #059669); }
@@ -247,7 +247,7 @@ export default {
 .teacher-avatar { width: 40px; height: 40px; border-radius: 50%; background: #eef2ff; color: #4f46e5; display: flex; align-items: center; justify-content: center; font-weight: 800; border: 2px solid white; }
 .teacher-name { font-size: 0.7rem; font-weight: 800; color: #475569; }
 
-/* --- CARD FLOATING ACTIONS --- */
+/* Actions */
 .card-actions { 
   position: absolute; top: 50%; right: -60px; transform: translateY(-50%); 
   display: flex; flex-direction: column; gap: 10px; padding: 10px; 
@@ -260,8 +260,8 @@ export default {
 
 /* --- MODAL --- */
 .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-.modal-box { width: 100%; max-width: 500px; }
-.btn-close-modern { position: absolute; top: 25px; right: 25px; border: none; background: #f1f5f9; width: 40px; height: 40px; border-radius: 50%; color: #94a3b8; }
+.modal-box { width: 100%; max-width: 500px; position: relative; }
+.btn-close-modern { position: absolute; top: 25px; right: 25px; border: none; background: #f1f5f9; width: 40px; height: 40px; border-radius: 50%; color: #94a3b8; z-index: 10; }
 .modal-icon-header { width: 50px; height: 50px; background: #eef2ff; color: #4f46e5; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
 .input-premium { background: #f8fafc; border: 2px solid #f1f5f9; padding: 12px 18px; border-radius: 16px; display: flex; align-items: center; gap: 12px; transition: 0.3s; }
 .input-premium:focus-within { border-color: #4f46e5; background: white; }
@@ -272,11 +272,8 @@ export default {
 /* --- ANIMATIONS --- */
 .list-enter-active, .list-leave-active { transition: all 0.4s ease; }
 .list-enter-from, .list-leave-to { opacity: 0; transform: scale(0.9); }
-
 .animate-fade-in { animation: fadeIn 0.6s ease; }
-.animate-slide-up { animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
 .animate-pop { animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes pop { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
 </style>
