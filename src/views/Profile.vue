@@ -81,8 +81,10 @@
                           <stop offset="100%" style="stop-color:#6366f1;stop-opacity:0" />
                         </linearGradient>
                       </defs>
-                      <path d="M0,300 L0,150 Q150,50 300,180 T600,100 T1000,150 L1000,300 Z" fill="url(#mountainGrad)" class="wave-path opacity-50" />
-                      <path d="M0,300 L0,200 Q200,100 400,220 T800,120 T1000,200 L1000,300 Z" fill="url(#mountainGrad)" class="wave-path" />
+                      <path d="M0,300 L0,150 Q150,50 300,180 T600,100 T1000,150 L1000,300 Z" 
+                            fill="url(#mountainGrad)" class="wave-path opacity-50" />
+                      <path d="M0,300 L0,200 Q200,100 400,220 T800,120 T1000,200 L1000,300 Z" 
+                            fill="url(#mountainGrad)" class="wave-path" />
                     </svg>
                     <div class="d-flex justify-content-between mt-3 px-4">
                       <span class="bar-label-purple" v-for="day in ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']" :key="day">{{ day }}</span>
@@ -166,18 +168,19 @@ export default {
 @import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css');
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap');
 
+/* --- LAYOUT CORE --- */
 .app-container { height: 100vh; background: #f4f6fc; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; position: fixed; inset: 0; }
 .content-scroll-area { flex: 1; overflow-y: auto; height: calc(100vh - 95px); }
 .max-width-xl { max-width: 1250px; margin: 0 auto; }
 
-/* GLASS CARD */
+/* --- GLASS DESIGN --- */
 .glass-card-purple { 
   background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); 
   border-radius: 35px; border: 1px solid rgba(255, 255, 255, 1);
   box-shadow: 0 15px 35px rgba(79, 70, 229, 0.08);
 }
 
-/* BUTTONS */
+/* --- BUTTONS --- */
 .btn-back-modern {
   display: flex; align-items: center; gap: 12px; background: white; border: 1px solid #e2e8f0;
   padding: 8px 20px 8px 8px; border-radius: 100px; cursor: pointer; transition: 0.3s ease;
@@ -190,37 +193,52 @@ export default {
 .btn-back-modern:hover { transform: translateX(-5px); box-shadow: 0 10px 25px rgba(79, 70, 229, 0.2); border-color: #4f46e5; }
 .btn-deploy-purple { background: #1e293b; color: #4ade80; border: none; padding: 12px 25px; border-radius: 15px; font-weight: 900; cursor: pointer; }
 
-/* TYPOGRAPHY */
-.admin-title-purple { font-weight: 900; font-size: 0.85rem; color: #4f46e5; letter-spacing: 2px; }
-.brand-logo-purple { width: 45px; height: 45px; background: #4f46e5; color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; margin: 0 auto; }
-.input-name-purple { width: 100%; background: transparent; border: none; outline: none; text-align: center; font-weight: 900; font-size: 1.8rem; color: #1e293b; }
-.input-role-purple { background: transparent; border: none; outline: none; font-weight: 800; font-size: 0.8rem; color: #4338ca; text-transform: uppercase; letter-spacing: 1px; }
-
-/* INPUT FIELDS */
-.textarea-purple-glass { width: 100%; background: rgba(79, 70, 229, 0.05); border: 1px solid rgba(79, 70, 229, 0.1); border-radius: 20px; padding: 15px; font-size: 0.9rem; font-weight: 600; color: #334155; min-height: 90px; resize: none; outline: none; }
-.input-wrapper-purple { background: rgba(79, 70, 229, 0.05); border: 1px solid rgba(79, 70, 229, 0.1); border-radius: 15px; display: flex; align-items: center; padding: 12px 15px; gap: 10px; }
-.input-purple-glass { background: transparent; border: none; outline: none; width: 100%; font-weight: 700; color: #334155; }
-.label-purple { font-size: 0.7rem; font-weight: 900; color: #64748b; letter-spacing: 1.5px; margin-bottom: 8px; margin-left: 5px; display: block; }
-
-/* PROFILE CIRCLE */
+/* --- PROFILE IMAGE --- */
 .profile-container-circle { position: relative; width: 170px; height: 170px; margin: 0 auto; }
 .profile-img-circle { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; border: 6px solid white; position: relative; z-index: 2; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
 .pulse-ring-purple { position: absolute; inset: -8px; border-radius: 50%; border: 3px solid #6366f1; animation: pulsePurple 2s infinite; }
 .edit-btn-purple { position: absolute; bottom: 8px; right: 12px; width: 45px; height: 45px; background: #4f46e5; color: white; border-radius: 50%; border: 4px solid white; display: flex; align-items: center; justify-content: center; z-index: 10; cursor: pointer; }
 
-/* CHART & MONITOR */
+/* --- FORM ELEMENTS --- */
+.input-name-purple { width: 100%; background: transparent; border: none; outline: none; text-align: center; font-weight: 900; font-size: 1.8rem; color: #1e293b; }
+.input-role-purple { background: transparent; border: none; outline: none; font-weight: 800; font-size: 0.8rem; color: #4338ca; text-transform: uppercase; letter-spacing: 1px; }
+.textarea-purple-glass { width: 100%; background: rgba(79, 70, 229, 0.05); border: 1px solid rgba(79, 70, 229, 0.1); border-radius: 20px; padding: 15px; font-size: 0.9rem; font-weight: 600; color: #334155; min-height: 90px; resize: none; outline: none; }
+.input-wrapper-purple { background: rgba(79, 70, 229, 0.05); border: 1px solid rgba(79, 70, 229, 0.1); border-radius: 15px; display: flex; align-items: center; padding: 12px 15px; gap: 10px; }
+.input-purple-glass { background: transparent; border: none; outline: none; width: 100%; font-weight: 700; color: #334155; }
+.label-purple { font-size: 0.7rem; font-weight: 900; color: #64748b; letter-spacing: 1.5px; margin-bottom: 8px; margin-left: 5px; display: block; }
+
+/* --- MOUNTAIN GRAPH ANIMATION (FIXED) --- */
 .mountain-container { position: relative; width: 100%; height: 220px; margin-top: 20px; }
 .mountain-svg { width: 100%; height: 100%; }
-.progress-track-purple { width: 100%; height: 10px; background: #e2e8f0; border-radius: 10px; }
-.progress-bar-purple { height: 100%; background: #4f46e5; border-radius: 10px; }
+.wave-path { 
+  animation: waveFlow 8s infinite ease-in-out; 
+  transform-box: fill-box;
+}
+.wave-path.opacity-50 { 
+  animation-delay: -4s; 
+  opacity: 0.3; 
+}
+
+@keyframes waveFlow { 
+  0%, 100% { 
+    d: path("M0,300 L0,150 Q150,50 300,180 T600,100 T1000,150 L1000,300 Z"); 
+  } 
+  50% { 
+    d: path("M0,300 L0,180 Q150,100 300,150 T600,150 T1000,180 L1000,300 Z"); 
+  } 
+}
+
+/* --- UTILS & STATUS --- */
 .status-pill-purple { background: #1e293b; color: white; padding: 8px 18px; border-radius: 50px; font-size: 0.7rem; font-weight: 900; display: flex; align-items: center; gap: 8px; }
 .dot-live { width: 8px; height: 8px; background: #4ade80; border-radius: 50%; box-shadow: 0 0 10px #4ade80; animation: blink 1s infinite; }
+.progress-track-purple { width: 100%; height: 10px; background: #e2e8f0; border-radius: 10px; }
+.progress-bar-purple { height: 100%; background: #4f46e5; border-radius: 10px; }
+.avg-indicator-purple { background: #1e293b; color: #4ade80; padding: 10px 20px; border-radius: 15px; font-weight: 900; }
+.bar-label-purple { font-size: 0.7rem; font-weight: 800; color: #94a3b8; }
 
-/* ANIMATIONS */
-@keyframes waveFlow { 
-  0%, 100% { d: path("M0,300 L0,150 Q150,50 300,180 T600,100 T1000,150 L1000,300 Z"); } 
-  50% { d: path("M0,300 L0,180 Q150,100 300,150 T600,150 T1000,180 L1000,300 Z"); } 
-}
+/* --- GLOBAL ANIMATIONS --- */
 @keyframes pulsePurple { 0% { transform: scale(1); opacity: 0.4; } 50% { transform: scale(1.15); opacity: 0; } 100% { transform: scale(1); opacity: 0.4; } }
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.animate-fade-in { animation: fadeIn 0.6s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 </style>
