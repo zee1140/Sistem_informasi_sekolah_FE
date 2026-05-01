@@ -134,24 +134,13 @@ export default {
   background-color: #f8fafc;
 }
 
-/* Header & Breadcrumb */
-.text-indigo { color: #4f46e5; }
-.btn-back {
-  background: white; color: #64748b; border: 1px solid #e2e8f0;
-  border-radius: 50px; padding: 0.4rem 1rem; font-weight: 600; font-size: 0.85rem;
-}
+/* Sidebar & Hero */
+.glass-card { background: white; border: 1px solid #e3e6f0; border-radius: 18px; }
+.menu-btn { display: flex; align-items: center; gap: 12px; padding: 12px 16px; width: 100%; color: #5a5c69; text-decoration: none; font-weight: 500; border-radius: 12px; transition: 0.25s; }
+.router-link-active.menu-btn { background: linear-gradient(135deg, #4e73df, #224abe); color: #fff !important; }
 
-.btn-primary-jeprut {
-  background: #4f46e5; border: none; color: white;
-  font-weight: 700; transition: 0.3s;
-}
-.btn-primary-jeprut:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4); }
-
-.select-kelas { padding: 10px 15px; border-radius: 12px; font-size: 0.85rem; color: #4f46e5; cursor: pointer; min-width: 160px; }
-
-/* Hero Banner */
-.admin-hero { background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); border-radius: 32px; }
-.hero-bg-icon { position: absolute; right: -20px; bottom: -20px; font-size: 160px; color: rgba(255,255,255,0.1); transform: rotate(-15deg); }
+.admin-hero { background: linear-gradient(135deg, #4e73df 0%, #224abe 100%); color: white; border-radius: 20px; }
+.hero-bg-icon { position: absolute; right: -20px; bottom: -20px; font-size: 180px; color: rgba(255,255,255,0.1); transform: rotate(-15deg); }
 
 /* Table Styles */
 .bg-header-table { background-color: #f8fafc; }

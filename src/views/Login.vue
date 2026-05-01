@@ -50,7 +50,10 @@ export default {
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
+.login-wrapper {
+  width: 100vw; /* paksa full layar */
+  min-height: 100vh;
+}
 .login-wrapper {
   position: fixed;
   inset: 0; /* full layar semua sisi */
