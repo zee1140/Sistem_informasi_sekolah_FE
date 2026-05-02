@@ -1,19 +1,20 @@
-// src/services/axios.js
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: 'http://localhost:3000', // ganti kalau backend kamu beda
+  baseURL: 'http://192.168.1.14:3000', // sesuaikan IP backend lu
   headers: {
     'Content-Type': 'application/json'
   }
 })
 
-// OPTIONAL: kalau mau pakai token
+// otomatis kirim token
 api.interceptors.request.use(config => {
   const token = localStorage.getItem('token')
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
+
   return config
 })
 
