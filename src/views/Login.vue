@@ -56,18 +56,15 @@ export default {
 }
 .login-wrapper {
   position: fixed;
-  inset: 0; /* full layar semua sisi */
-}
-
-
-.login-wrapper {
+  inset: 0;
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: #f8fafc;
-  background-image: radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.05) 0, transparent 50%), 
-                    radial-gradient(at 50% 0%, rgba(37, 99, 235, 0.05) 0, transparent 50%);
+  /* Aksen halus warna Indigo di latar belakang */
+  background-image: radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.05) 0, transparent 50%), 
+                    radial-gradient(at 50% 0%, rgba(99, 102, 241, 0.05) 0, transparent 50%);
   font-family: 'Inter', sans-serif;
 }
 
@@ -87,7 +84,8 @@ export default {
 
 .brand-icon {
   font-size: 40px;
-  color: #2563eb;
+  /* Warna Indigo sesuai Dashboard */
+  color: #6366f1;
   margin-bottom: 10px;
 }
 
@@ -98,7 +96,8 @@ export default {
 }
 
 .brand-name span {
-  color: #2563eb;
+  /* Warna Indigo untuk teks 'School' */
+  color: #6366f1;
 }
 
 .animate-in {
@@ -131,9 +130,10 @@ export default {
 }
 
 .input:focus {
-  border-color: #2563eb;
+  /* Border warna Indigo saat diklik */
+  border-color: #6366f1;
   background-color: #fff;
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
   outline: none;
 }
 
@@ -143,25 +143,27 @@ export default {
 }
 
 .forgot:hover {
-  color: #2563eb;
+  color: #6366f1;
   text-decoration: underline;
 }
 
 .login-btn {
-  background-color: #2563eb;
+  /* Menggunakan warna utama dashboard */
+  background-color: #6366f1;
   color: white;
   border-radius: 12px;
   padding: 14px;
   border: none;
   font-weight: 600;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);
 }
 
 .login-btn:hover {
-  background-color: #1d4ed8;
+  /* Warna sedikit lebih gelap saat hover */
+  background-color: #4f46e5;
   transform: translateY(-1px);
-  box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
 }
 
 .register-text {
@@ -170,7 +172,7 @@ export default {
 }
 
 .register-link {
-  color: #2563eb;
+  color: #6366f1;
   font-weight: 600;
   text-decoration: none;
 }
