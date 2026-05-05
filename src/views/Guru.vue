@@ -111,18 +111,24 @@
 
             <div class="mb-4">
               <label class="small fw-800 text-muted mb-2 ls-wide">NAMA LENGKAP & GELAR</label>
-              <div class="input-premium">
+              <div class="input-premium" :class="{'border-danger-custom': errors.nama}">
                 <i class="bi bi-person-badge text-indigo"></i>
                 <input v-model="formGuru.nama" type="text" placeholder="Contoh: Dr. Budi Santoso" :readonly="isView">
               </div>
+              <small v-if="errors.nama" class="text-danger-custom fw-bold mt-1 d-block animate-pop">
+                <i class="bi bi-exclamation-circle"></i> Nama dan gelar wajib diisi!
+              </small>
             </div>
 
             <div class="mb-5">
               <label class="small fw-800 text-muted mb-2 ls-wide">MATA PELAJARAN</label>
-              <div class="input-premium">
+              <div class="input-premium" :class="{'border-danger-custom': errors.mapel}">
                 <i class="bi bi-journal-bookmark text-indigo"></i>
                 <input v-model="formGuru.mapel" type="text" placeholder="Contoh: Matematika / Fisika" :readonly="isView">
               </div>
+              <small v-if="errors.mapel" class="text-danger-custom fw-bold mt-1 d-block animate-pop">
+                <i class="bi bi-exclamation-circle"></i> Mata pelajaran tidak boleh kosong!
+              </small>
             </div>
 
             <div class="d-flex gap-3">
@@ -148,6 +154,7 @@ export default {
       isView: false,
       editId: null,
       formGuru: { nama: '', mapel: '' },
+      errors: { nama: false, mapel: false }, // State Error
       daftarGuru: [
         { id: 1, nama: 'Budi Santoso, S.Pd', mapel: 'Matematika' },
         { id: 2, nama: 'Siti Aminah, M.Si', mapel: 'Fisika' },
@@ -165,18 +172,36 @@ export default {
   },
   methods: {
     getInitials(name) {
+      if(!name) return '??';
       return name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
     },
     bukaModal(guru = null) {
       this.isView = false;
-      if (guru) { this.isEdit = true; this.editId = guru.id; this.formGuru = { ...guru }; }
-      else { this.isEdit = false; this.formGuru = { nama: '', mapel: '' }; }
+      this.errors = { nama: false, mapel: false }; // Reset error
+      if (guru) { 
+        this.isEdit = true; 
+        this.editId = guru.id; 
+        this.formGuru = { ...guru }; 
+      } else { 
+        this.isEdit = false; 
+        this.formGuru = { nama: '', mapel: '' }; 
+      }
       this.showModal = true;
     },
-    viewGuru(guru) { this.isView = true; this.formGuru = { ...guru }; this.showModal = true; },
+    viewGuru(guru) { 
+      this.isView = true; 
+      this.errors = { nama: false, mapel: false };
+      this.formGuru = { ...guru }; 
+      this.showModal = true; 
+    },
     tutupModal() { this.showModal = false; },
     simpanGuru() {
-      if (!this.formGuru.nama || !this.formGuru.mapel) return;
+      // Validasi input
+      this.errors.nama = !this.formGuru.nama.trim();
+      this.errors.mapel = !this.formGuru.mapel.trim();
+
+      if (this.errors.nama || this.errors.mapel) return;
+
       if (this.isEdit) {
         const idx = this.daftarGuru.findIndex(g => g.id === this.editId);
         this.daftarGuru[idx] = { ...this.formGuru };
@@ -185,13 +210,27 @@ export default {
       }
       this.tutupModal();
     },
-    hapusGuru(id) { if (confirm("Hapus data pengajar ini?")) this.daftarGuru = this.daftarGuru.filter(g => g.id !== id); }
+    hapusGuru(id) { 
+      if (confirm("Hapus data pengajar ini?")) {
+        this.daftarGuru = this.daftarGuru.filter(g => g.id !== id);
+      }
+    }
   }
 }
 </script>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* VALIDATION CUSTOM STYLES */
+.border-danger-custom {
+  border-color: #ef4444 !important;
+  background: #fff5f5 !important;
+}
+.text-danger-custom {
+  color: #ef4444 !important;
+  font-size: 0.75rem;
+}
 
 /* GLOBAL */
 .app-container { height: 100vh; background: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; position: fixed; inset: 0; }
@@ -284,7 +323,6 @@ export default {
 @keyframes slideRight { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
 @keyframes pop { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
 
-/* List Transition */
 .list-enter-active, .list-leave-active { transition: all 0.4s ease; }
 .list-enter-from, .list-leave-to { opacity: 0; transform: translateX(-30px); }
 </style>

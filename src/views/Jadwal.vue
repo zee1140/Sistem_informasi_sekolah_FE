@@ -101,31 +101,38 @@
             <div class="row g-3">
               <div class="col-12">
                 <label class="small fw-800 text-muted mb-2 ls-wide">MATA PELAJARAN</label>
-                <div class="input-premium">
+                <div class="input-premium" :class="{'border-danger-custom': errors.mapel}">
                   <i class="bi bi-book text-indigo"></i>
                   <input v-model="form.mapel" type="text" placeholder="Contoh: Matematika">
                 </div>
+                <small v-if="errors.mapel" class="text-danger-custom fw-bold mt-1 d-block animate-pop">Wajib diisi!</small>
               </div>
+
               <div class="col-md-6">
                 <label class="small fw-800 text-muted mb-2 ls-wide">WAKTU (00:00 - 00:00)</label>
-                <div class="input-premium">
+                <div class="input-premium" :class="{'border-danger-custom': errors.waktu}">
                   <i class="bi bi-clock text-indigo"></i>
                   <input v-model="form.waktu" type="text" placeholder="07:00 - 08:30">
                 </div>
+                <small v-if="errors.waktu" class="text-danger-custom fw-bold mt-1 d-block animate-pop">Waktu tidak valid!</small>
               </div>
+
               <div class="col-md-6">
                 <label class="small fw-800 text-muted mb-2 ls-wide">RUANG</label>
-                <div class="input-premium">
+                <div class="input-premium" :class="{'border-danger-custom': errors.ruang}">
                   <i class="bi bi-geo-alt text-indigo"></i>
                   <input v-model="form.ruang" type="text" placeholder="LAB-01">
                 </div>
+                <small v-if="errors.ruang" class="text-danger-custom fw-bold mt-1 d-block animate-pop">Ruang harus diisi!</small>
               </div>
+
               <div class="col-12">
                 <label class="small fw-800 text-muted mb-2 ls-wide">GURU PENGAMPU</label>
-                <div class="input-premium">
+                <div class="input-premium" :class="{'border-danger-custom': errors.guru}">
                   <i class="bi bi-person-badge text-indigo"></i>
                   <input v-model="form.guru" type="text" placeholder="Nama Guru">
                 </div>
+                <small v-if="errors.guru" class="text-danger-custom fw-bold mt-1 d-block animate-pop">Wajib mencantumkan guru!</small>
               </div>
             </div>
 
@@ -150,6 +157,7 @@ export default {
       isEdit: false,
       editIndex: null,
       form: { id: null, waktu: '', mapel: '', kelas: '12 IPA 1', guru: '', ruang: '' },
+      errors: { mapel: false, waktu: false, ruang: false, guru: false },
       jadwalList: [
         { id: 1, waktu: '07:00 - 08:30', mapel: 'Matematika', kelas: '12 IPA 1', guru: 'Budi Santoso', ruang: 'LAB-01' },
         { id: 2, waktu: '08:30 - 10:00', mapel: 'Bahasa Inggris', kelas: '11 IPS 2', guru: 'Dewi Lestari', ruang: 'R.102' },
@@ -159,6 +167,7 @@ export default {
   },
   methods: {
     getIcon(mapel) {
+      if(!mapel) return 'bi-book';
       const m = mapel.toLowerCase();
       if (m.includes('mat')) return 'bi-calculator';
       if (m.includes('inggris')) return 'bi-translate';
@@ -169,6 +178,7 @@ export default {
     openModal() {
       this.isEdit = false;
       this.form = { id: Date.now(), waktu: '', mapel: '', kelas: '12 IPA 1', guru: '', ruang: '' };
+      this.errors = { mapel: false, waktu: false, ruang: false, guru: false };
       this.showModal = true;
     },
     closeModal() { this.showModal = false; },
@@ -176,10 +186,18 @@ export default {
       this.isEdit = true;
       this.editIndex = index;
       this.form = { ...item };
+      this.errors = { mapel: false, waktu: false, ruang: false, guru: false };
       this.showModal = true;
     },
     saveJadwal() {
-      if (!this.form.mapel || !this.form.waktu) return alert("Isi Mapel & Waktu!");
+      // Validasi
+      this.errors.mapel = !this.form.mapel.trim();
+      this.errors.waktu = !this.form.waktu.trim();
+      this.errors.ruang = !this.form.ruang.trim();
+      this.errors.guru = !this.form.guru.trim();
+
+      if (Object.values(this.errors).some(e => e)) return;
+
       if (this.isEdit) {
         this.jadwalList[this.editIndex] = { ...this.form };
       } else {
@@ -198,7 +216,10 @@ export default {
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-@import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css');
+
+/* --- VALIDATION --- */
+.border-danger-custom { border-color: #ef4444 !important; background: #fff5f5 !important; }
+.text-danger-custom { color: #ef4444 !important; font-size: 0.7rem; }
 
 /* --- LAYOUT --- */
 .app-container { height: 100vh; background: #f4f7fe; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; position: fixed; inset: 0; }
@@ -235,7 +256,7 @@ export default {
 .card-glass-overlay { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.6)); z-index: 1; }
 .icon-box-floating { width: 60px; height: 60px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: white; position: relative; z-index: 2; }
 
-/* Colors */
+/* Dynamic Card Themes */
 .card-color-0 .icon-box-floating { background: linear-gradient(135deg, #6366f1, #4f46e5); }
 .card-color-1 .icon-box-floating { background: linear-gradient(135deg, #f59e0b, #d97706); }
 .card-color-2 .icon-box-floating { background: linear-gradient(135deg, #10b981, #059669); }
@@ -266,7 +287,7 @@ export default {
 .input-premium { background: #f8fafc; border: 2px solid #f1f5f9; padding: 12px 18px; border-radius: 16px; display: flex; align-items: center; gap: 12px; transition: 0.3s; }
 .input-premium:focus-within { border-color: #4f46e5; background: white; }
 .input-premium input { border: none; background: transparent; outline: none; width: 100%; font-weight: 600; }
-.btn-save-modern { background: #4f46e5; color: white; border: none; border-radius: 16px; padding: 15px; }
+.btn-save-modern { background: #4f46e5; color: white; border: none; border-radius: 16px; padding: 15px; transition: 0.3s; }
 .btn-cancel-modern { background: #f1f5f9; color: #64748b; border: none; border-radius: 16px; padding: 15px; }
 
 /* --- ANIMATIONS --- */
