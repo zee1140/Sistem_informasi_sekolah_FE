@@ -105,30 +105,36 @@
         </h4>
       </div>
 
-      <!-- FORM -->
-      <div class="form-group mb-3">
-        <label>MAPEL</label>
-        <div class="input-modern">
-          <i class="bi bi-book"></i>
-          <input v-model="form.mapel" placeholder="Contoh: Matematika">
-        </div>
-      </div>
-
-      <div class="form-group mb-3">
-        <label>WAKTU</label>
-        <div class="input-modern">
-          <i class="bi bi-clock"></i>
-          <input v-model="form.waktu" placeholder="07:00 - 08:30">
-        </div>
-      </div>
-
-      <div class="form-group mb-3">
-        <label>RUANG</label>
-        <div class="input-modern">
-          <i class="bi bi-geo-alt"></i>
-          <input v-model="form.ruang" placeholder="LAB-01">
-        </div>
-      </div>
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="small fw-800 text-muted mb-2 ls-wide">MATA PELAJARAN</label>
+                <div class="input-premium">
+                  <i class="bi bi-book text-indigo"></i>
+                  <input v-model="form.mapel" type="text" placeholder="Contoh: Matematika">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="small fw-800 text-muted mb-2 ls-wide">WAKTU (00:00 - 00:00)</label>
+                <div class="input-premium">
+                  <i class="bi bi-clock text-indigo"></i>
+                  <input v-model="form.waktu" type="text" placeholder="07:00 - 08:30">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="small fw-800 text-muted mb-2 ls-wide">RUANG</label>
+                <div class="input-premium">
+                  <i class="bi bi-geo-alt text-indigo"></i>
+                  <input v-model="form.ruang" type="text" placeholder="LAB-01">
+                </div>
+              </div>
+              <div class="col-12">
+                <label class="small fw-800 text-muted mb-2 ls-wide">GURU PENGAMPU</label>
+                <div class="input-premium">
+                  <i class="bi bi-person-badge text-indigo"></i>
+                  <input v-model="form.guru" type="text" placeholder="Nama Guru">
+                </div>
+              </div>
+            </div>
 
       <div class="form-group mb-4">
         <label>GURU</label>
@@ -164,6 +170,7 @@ export default {
       isEdit: false,
       editIndex: null,
       form: { id: null, waktu: '', mapel: '', kelas: '12 IPA 1', guru: '', ruang: '' },
+      errors: { mapel: false, waktu: false, ruang: false, guru: false },
       jadwalList: [
         { id: 1, waktu: '07:00 - 08:30', mapel: 'Matematika', kelas: '12 IPA 1', guru: 'Budi Santoso', ruang: 'LAB-01' },
         { id: 2, waktu: '08:30 - 10:00', mapel: 'Bahasa Inggris', kelas: '11 IPS 2', guru: 'Dewi Lestari', ruang: 'R.102' },
@@ -173,26 +180,27 @@ export default {
   },
   methods: {
     getIcon(mapel) {
-      const m = mapel.toLowerCase()
-      if (m.includes('mat')) return 'bi-calculator'
-      if (m.includes('inggris')) return 'bi-translate'
-      if (m.includes('info')) return 'bi-cpu'
-      return 'bi-book'
+      const m = mapel.toLowerCase();
+      if (m.includes('mat')) return 'bi-calculator';
+      if (m.includes('inggris')) return 'bi-translate';
+      if (m.includes('info') || m.includes('kom')) return 'bi-cpu';
+      if (m.includes('fisika')) return 'bi-rocket-takeoff';
+      return 'bi-book';
     },
     openModal() {
-      this.isEdit = false
-      this.form = { id: Date.now(), waktu: '', mapel: '', kelas: '12 IPA 1', guru: '', ruang: '' }
-      this.showModal = true
+      this.isEdit = false;
+      this.form = { id: Date.now(), waktu: '', mapel: '', kelas: '12 IPA 1', guru: '', ruang: '' };
+      this.showModal = true;
     },
     closeModal() { this.showModal = false },
     editJadwal(item, index) {
-      this.isEdit = true
-      this.editIndex = index
-      this.form = { ...item }
-      this.showModal = true
+      this.isEdit = true;
+      this.editIndex = index;
+      this.form = { ...item };
+      this.showModal = true;
     },
     saveJadwal() {
-      if (!this.form.mapel) return
+      if (!this.form.mapel || !this.form.waktu) return alert("Isi Mapel & Waktu!");
       if (this.isEdit) {
         this.jadwalList[this.editIndex] = { ...this.form }
       } else {
@@ -209,6 +217,7 @@ export default {
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css');
 
 /* --- LAYOUT & THEME --- */
 .app-container { height: 100vh; background: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; position: fixed; inset: 0; }
@@ -289,146 +298,42 @@ export default {
   border:1px solid #eef2ff;
 }
 
-.avatar-sm {
-  width:46px;
-  height:46px;
-  border-radius:14px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:white;
-}
+.card-glass-overlay { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.6)); z-index: 1; }
+.icon-box-floating { width: 60px; height: 60px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: white; position: relative; z-index: 2; }
 
-.bg-indigo-grad {
-  background: linear-gradient(135deg, #6366f1, #4f46e5);
-}
+/* Colors */
+.card-color-0 .icon-box-floating { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+.card-color-1 .icon-box-floating { background: linear-gradient(135deg, #f59e0b, #d97706); }
+.card-color-2 .icon-box-floating { background: linear-gradient(135deg, #10b981, #059669); }
+.card-color-3 .icon-box-floating { background: linear-gradient(135deg, #f43f5e, #e11d48); }
 
-/* BUTTON TOOL (SAMA SISWA) */
-.btn-tool {
-  width:38px;
-  height:38px;
-  border-radius:12px;
-  border:none;
-}
+.mapel-title { font-weight: 800; color: #1e293b; font-size: 1.25rem; margin: 0; }
+.badge-status-mini { font-size: 0.65rem; font-weight: 800; background: rgba(79, 70, 229, 0.1); color: #4f46e5; padding: 4px 10px; border-radius: 8px; }
+.info-row { display: flex; align-items: center; gap: 15px; font-weight: 600; color: #64748b; font-size: 0.85rem; }
+.teacher-avatar { width: 40px; height: 40px; border-radius: 50%; background: #eef2ff; color: #4f46e5; display: flex; align-items: center; justify-content: center; font-weight: 800; border: 2px solid white; }
+.teacher-name { font-size: 0.7rem; font-weight: 800; color: #475569; }
 
-.btn-e { background:#f0fdf4; color:#16a34a; }
-.btn-d { background:#fff1f2; color:#e11d48; }
-
-/* MODAL */
-.modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-.modal-box { width: 100%; max-width: 480px; }
-.btn-close-modern {
-  position: absolute; top: 25px; right: 25px; width: 40px; height: 40px; border-radius: 50%;
-  background: #f1f5f9; border: none; color: #94a3b8;
-  display: flex; align-items: center; justify-content: center;
-  transition: 0.3s; z-index: 10;
+/* Actions */
+.card-actions { 
+  position: absolute; top: 50%; right: -60px; transform: translateY(-50%); 
+  display: flex; flex-direction: column; gap: 10px; padding: 10px; 
+  background: white; border-radius: 15px 0 0 15px; transition: 0.3s; z-index: 10;
 }
-.btn-close-modern:hover { background: #fee2e2; color: #ef4444; transform: rotate(90deg); }
+.agenda-card:hover .card-actions { right: 0; }
+.btn-card-tool { width: 35px; height: 35px; border-radius: 10px; border: none; background: #f1f5f9; color: #4f46e5; transition: 0.2s; }
+.btn-card-tool:hover { background: #4f46e5; color: white; transform: scale(1.1); }
+.btn-card-tool.del:hover { background: #fee2e2; color: #ef4444; }
 
-/* INPUT */
-.input-premium {
-  background:#f8fafc;
-  padding:12px;
-  border-radius:14px;
-}
-
-.input-premium input {
-  border:none;
-  outline:none;
-  width:100%;
-}
-
-/* ANIMATION */
-.animate-slide-up {
-  animation: slideUp 0.5s ease both;
-}
-
-/* OVERLAY */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.4);
-  backdrop-filter: blur(10px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
-
-/* BOX */
-.modal-box {
-  width: 100%;
-  max-width: 420px;
-  background: #ffffff;
-  padding: 30px;
-  border-radius: 24px;
-  position: relative;
-  box-shadow: 0 25px 60px rgba(0,0,0,0.15);
-}
-
-/* CLOSE BUTTON */
-.btn-close-modern {
-  position: absolute;
-  top: 18px;
-  right: 18px;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  border: none;
-  background: #f1f5f9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* ICON */
-.modal-icon {
-  width: 45px;
-  height: 45px;
-  background: #eef2ff;
-  color: #4f46e5;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-}
-
-/* INPUT */
-.input-modern {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: #f8fafc;
-  border: 2px solid #f1f5f9;
-  padding: 12px 15px;
-  border-radius: 14px;
-}
-
-.input-modern input {
-  border: none;
-  outline: none;
-  width: 100%;
-  background: transparent;
-}
-
-/* BUTTON */
-.btn-save {
-  background: #4f46e5;
-  color: white;
-  border: none;
-  border-radius: 14px;
-  padding: 12px;
-  font-weight: 600;
-}
-
-.btn-cancel {
-  background: #f1f5f9;
-  border: none;
-  border-radius: 14px;
-  padding: 12px;
-  font-weight: 600;
-}
+/* --- MODAL --- */
+.modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+.modal-box { width: 100%; max-width: 500px; position: relative; }
+.btn-close-modern { position: absolute; top: 25px; right: 25px; border: none; background: #f1f5f9; width: 40px; height: 40px; border-radius: 50%; color: #94a3b8; z-index: 10; }
+.modal-icon-header { width: 50px; height: 50px; background: #eef2ff; color: #4f46e5; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+.input-premium { background: #f8fafc; border: 2px solid #f1f5f9; padding: 12px 18px; border-radius: 16px; display: flex; align-items: center; gap: 12px; transition: 0.3s; }
+.input-premium:focus-within { border-color: #4f46e5; background: white; }
+.input-premium input { border: none; background: transparent; outline: none; width: 100%; font-weight: 600; }
+.btn-save-modern { background: #4f46e5; color: white; border: none; border-radius: 16px; padding: 15px; }
+.btn-cancel-modern { background: #f1f5f9; color: #64748b; border: none; border-radius: 16px; padding: 15px; }
 
 /* 🔥 ANIMASI ZOOM (INI YANG LU MAU) */
 .modal-zoom-enter-active {

@@ -97,23 +97,32 @@
               <div class="modal-icon-header"><i class="bi bi-person-bounding-box"></i></div>
               <h4 class="fw-800 mb-0">{{ isView ? 'Detail' : (isEdit ? 'Edit' : 'Tambah') }} Siswa</h4>
             </div>
+
             <div class="form-group mb-4">
               <label class="small fw-800 text-muted mb-2 ls-wide">NAMA LENGKAP</label>
-              <div class="input-premium">
+              <div class="input-premium" :class="{'border-danger-custom': errors.nama}">
                 <i class="bi bi-person text-indigo"></i>
                 <input v-model="formSiswa.nama" type="text" placeholder="Masukkan nama..." :readonly="isView">
               </div>
+              <small v-if="errors.nama" class="text-danger-custom fw-bold mt-1 d-block animate-pop">
+                <i class="bi bi-exclamation-circle"></i> Nama wajib diisi!
+              </small>
             </div>
+
             <div class="form-group mb-5">
               <label class="small fw-800 text-muted mb-2 ls-wide">KELAS</label>
-              <div class="input-premium">
+              <div class="input-premium" :class="{'border-danger-custom': errors.kelas}">
                 <i class="bi bi-building-check text-indigo"></i>
                 <select v-model="formSiswa.kelas" :disabled="isView">
                   <option value="" disabled>Pilih Kelas</option>
                   <option v-for="c in classes" :key="c" :value="c">{{ c }}</option>
                 </select>
               </div>
+              <small v-if="errors.kelas" class="text-danger-custom fw-bold mt-1 d-block animate-pop">
+                <i class="bi bi-exclamation-circle"></i> Pilih kelas terlebih dahulu!
+              </small>
             </div>
+
             <div class="d-flex gap-3">
               <button class="btn btn-cancel-modern flex-grow-1 fw-bold ripple" @click="tutupModal">Kembali</button>
               <button v-if="!isView" class="btn btn-save-modern flex-grow-1 fw-bold ripple shadow-lg" @click="simpanSiswa">
@@ -131,8 +140,14 @@
 export default {
   data() {
     return {
-      search: "", showModal: false, isEdit: false, isView: false, editId: null,
+      search: "", 
+      showModal: false, 
+      isEdit: false, 
+      isView: false, 
+      editId: null,
       formSiswa: { nama: '', kelas: '' },
+      // State untuk menyimpan status error
+      errors: { nama: false, kelas: false },
       classes: ['10 IPA 1', '11 IPA 1', '12 IPA 1', '10 IPS 1'],
       daftarSiswa: [
         { id: 1, nama: 'Andi Wijaya', kelas: '12 IPA 1' },
@@ -143,34 +158,78 @@ export default {
   },
   computed: {
     filteredSiswa() {
-      return this.daftarSiswa.filter(s => s.nama.toLowerCase().includes(this.search.toLowerCase()) || s.kelas.toLowerCase().includes(this.search.toLowerCase()))
+      return this.daftarSiswa.filter(s => 
+        s.nama.toLowerCase().includes(this.search.toLowerCase()) || 
+        s.kelas.toLowerCase().includes(this.search.toLowerCase())
+      )
     }
   },
   methods: {
-    getInitials(name) { return name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase(); },
+    getInitials(name) { 
+      return name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase(); 
+    },
     bukaModal(siswa = null) {
       this.isView = false;
-      if (siswa) { this.isEdit = true; this.editId = siswa.id; this.formSiswa = { ...siswa }; }
-      else { this.isEdit = false; this.formSiswa = { nama: '', kelas: '' }; }
+      // Reset error saat buka modal
+      this.errors = { nama: false, kelas: false };
+      
+      if (siswa) { 
+        this.isEdit = true; 
+        this.editId = siswa.id; 
+        this.formSiswa = { ...siswa }; 
+      }
+      else { 
+        this.isEdit = false; 
+        this.formSiswa = { nama: '', kelas: '' }; 
+      }
       this.showModal = true;
     },
-    viewSiswa(siswa) { this.isView = true; this.formSiswa = { ...siswa }; this.showModal = true; },
-    tutupModal() { this.showModal = false; },
+    viewSiswa(siswa) { 
+      this.isView = true; 
+      this.formSiswa = { ...siswa }; 
+      this.errors = { nama: false, kelas: false };
+      this.showModal = true; 
+    },
+    tutupModal() { 
+      this.showModal = false; 
+    },
     simpanSiswa() {
-      if (!this.formSiswa.nama || !this.formSiswa.kelas) return;
+      // Validasi: cek jika kosong
+      this.errors.nama = !this.formSiswa.nama;
+      this.errors.kelas = !this.formSiswa.kelas;
+
+      // Jika ada yang belum diisi, jangan lanjut simpan
+      if (this.errors.nama || this.errors.kelas) return;
+
       if (this.isEdit) {
         const idx = this.daftarSiswa.findIndex(s => s.id === this.editId);
         this.daftarSiswa[idx] = { ...this.formSiswa };
-      } else { this.daftarSiswa.unshift({ id: Date.now(), ...this.formSiswa }); }
+      } else { 
+        this.daftarSiswa.unshift({ id: Date.now(), ...this.formSiswa }); 
+      }
       this.tutupModal();
     },
-    hapusSiswa(id) { if (confirm("Hapus data siswa?")) this.daftarSiswa = this.daftarSiswa.filter(s => s.id !== id); }
+    hapusSiswa(id) { 
+      if (confirm("Hapus data siswa?")) {
+        this.daftarSiswa = this.daftarSiswa.filter(s => s.id !== id);
+      }
+    }
   }
 }
 </script>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* --- VALIDATION STYLES --- */
+.border-danger-custom {
+  border-color: #ef4444 !important;
+  background: #fff5f5 !important;
+}
+.text-danger-custom {
+  color: #ef4444 !important;
+  font-size: 0.75rem;
+}
 
 /* --- LAYOUT & THEME --- */
 .app-container { height: 100vh; background: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; position: fixed; inset: 0; }
@@ -236,7 +295,6 @@ export default {
 @keyframes slideRight { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
 @keyframes pop { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
 
-/* Transition Group for list */
 .list-enter-active, .list-leave-active { transition: all 0.4s ease; }
 .list-enter-from, .list-leave-to { opacity: 0; transform: translateX(-30px); }
 

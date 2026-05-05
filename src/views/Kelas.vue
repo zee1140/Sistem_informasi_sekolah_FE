@@ -115,26 +115,35 @@
 
             <div class="mb-4">
               <label class="small fw-800 text-muted mb-2 ls-wide">NAMA KELAS</label>
-              <div class="input-premium">
+              <div class="input-premium" :class="{'border-danger-custom': errors.nama}">
                 <i class="bi bi-door-open text-indigo"></i>
                 <input v-model="form.nama" type="text" placeholder="Contoh: 10 IPA 1">
               </div>
+              <small v-if="errors.nama" class="text-danger-custom fw-bold mt-1 d-block animate-pop">
+                <i class="bi bi-exclamation-circle"></i> Nama kelas harus diisi!
+              </small>
             </div>
 
             <div class="mb-4">
               <label class="small fw-800 text-muted mb-2 ls-wide">WALI KELAS</label>
-              <div class="input-premium">
+              <div class="input-premium" :class="{'border-danger-custom': errors.wali}">
                 <i class="bi bi-person-workspace text-indigo"></i>
                 <input v-model="form.wali" type="text" placeholder="Nama Guru Wali">
               </div>
+              <small v-if="errors.wali" class="text-danger-custom fw-bold mt-1 d-block animate-pop">
+                <i class="bi bi-exclamation-circle"></i> Wali kelas tidak boleh kosong!
+              </small>
             </div>
 
             <div class="mb-5">
               <label class="small fw-800 text-muted mb-2 ls-wide">JUMLAH SISWA</label>
-              <div class="input-premium">
+              <div class="input-premium" :class="{'border-danger-custom': errors.jumlah}">
                 <i class="bi bi-people text-indigo"></i>
                 <input v-model="form.jumlah" type="number" placeholder="0">
               </div>
+              <small v-if="errors.jumlah" class="text-danger-custom fw-bold mt-1 d-block animate-pop">
+                <i class="bi bi-exclamation-circle"></i> Isi kapasitas siswa saat ini!
+              </small>
             </div>
 
             <div class="d-flex gap-3">
@@ -163,7 +172,8 @@ export default {
         { nama: "11 IPS 2", wali: "Siti Aminah, M.Si", jumlah: 30 },
         { nama: "12 IPA 3", wali: "Rian Hidayat, S.Kom", jumlah: 28 }
       ],
-      form: { nama: "", wali: "", jumlah: "" }
+      form: { nama: "", wali: "", jumlah: "" },
+      errors: { nama: false, wali: false, jumlah: false }
     }
   },
   computed: {
@@ -178,11 +188,19 @@ export default {
     openModal() {
       this.isEdit = false;
       this.form = { nama: "", wali: "", jumlah: "" };
+      this.errors = { nama: false, wali: false, jumlah: false };
       this.showModal = true;
     },
     closeModal() { this.showModal = false; },
     saveData() {
-      if (!this.form.nama || !this.form.wali) return;
+      // Validasi input
+      this.errors.nama = !this.form.nama.trim();
+      this.errors.wali = !this.form.wali.trim();
+      this.errors.jumlah = this.form.jumlah === "" || this.form.jumlah === null;
+
+      // Jika ada error, berhenti
+      if (this.errors.nama || this.errors.wali || this.errors.jumlah) return;
+
       if (this.isEdit) {
         this.kelasList[this.editIndex] = { ...this.form };
       } else {
@@ -193,6 +211,7 @@ export default {
     editData(index) {
       this.form = { ...this.kelasList[index] };
       this.editIndex = index;
+      this.errors = { nama: false, wali: false, jumlah: false };
       this.isEdit = true;
       this.showModal = true;
     },
@@ -205,6 +224,16 @@ export default {
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* --- VALIDATION CUSTOM STYLES --- */
+.border-danger-custom {
+  border-color: #ef4444 !important;
+  background: #fff5f5 !important;
+}
+.text-danger-custom {
+  color: #ef4444 !important;
+  font-size: 0.75rem;
+}
 
 /* --- LAYOUT & THEME --- */
 .app-container { height: 100vh; background: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; position: fixed; inset: 0; }
@@ -304,7 +333,6 @@ export default {
 /* --- UI ELEMENTS --- */
 .avatar-sm { width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; }
 .bg-indigo-grad { background: linear-gradient(135deg, #6366f1, #4f46e5); font-size: 1.2rem; }
-.class-tag { background: #eef2ff; color: #4f46e5; padding: 6px 14px; border-radius: 10px; font-weight: 700; font-size: 11px; }
 .badge-soft-indigo { background: #eef2ff; color: #4f46e5; padding: 4px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; }
 
 .btn-tool { width: 38px; height: 38px; border-radius: 12px; border: none; margin-left: 6px; }
