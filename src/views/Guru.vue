@@ -80,7 +80,7 @@
                     <div class="d-flex justify-content-md-end gap-2 mt-2 mt-md-0">
                       <button class="btn-tool btn-v ripple" @click="viewGuru(guru)" title="Lihat"><i class="bi bi-eye"></i></button>
                       <button class="btn-tool btn-e ripple" @click="bukaModal(guru)" title="Edit"><i class="bi bi-pencil-square"></i></button>
-                      <button class="btn-tool btn-d ripple" @click="hapusGuru(guru.id)" title="Hapus"><i class="bi bi-trash3"></i></button>
+                      <button class="btn-tool btn-d ripple" @click="konfirmasiHapus(guru.id)" title="Hapus"><i class="bi bi-trash3"></i></button>
                     </div>
                   </td>
                 </tr>
@@ -141,6 +141,28 @@
         </div>
       </div>
     </transition>
+
+    <transition name="modal-zoom">
+      <div v-if="showConfirm" class="modal-overlay px-3" @click.self="showConfirm = false">
+        <div class="modal-box bg-white shadow-2xl rounded-5 overflow-hidden text-center animate-pop" style="max-width: 400px;">
+          <div class="p-4 p-md-5">
+            <div class="mb-4">
+              <div class="mx-auto rounded-circle d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background: #fff1f2; color: #e11d48;">
+                <i class="bi bi-trash3-fill fs-1"></i>
+              </div>
+            </div>
+            <h4 class="fw-800 text-dark mb-2">Hapus Pengajar?</h4>
+            <p class="text-muted mb-4">Apakah anda yakin ingin menghapus data guru ini? Data yang dihapus tidak bisa dikembalikan.</p>
+            <div class="d-flex gap-3">
+              <button class="btn btn-cancel-modern flex-grow-1 fw-bold ripple" @click="showConfirm = false">Batal</button>
+              <button class="btn btn-d flex-grow-1 fw-bold ripple shadow-sm py-3" style="border-radius: 16px;" @click="hapusGuru">
+                Ya, Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -150,11 +172,13 @@ export default {
     return {
       search: "",
       showModal: false,
+      showConfirm: false, // State Popup Hapus
+      selectedId: null,   // Simpan ID yang akan dihapus
       isEdit: false,
       isView: false,
       editId: null,
       formGuru: { nama: '', mapel: '' },
-      errors: { nama: false, mapel: false }, // State Error
+      errors: { nama: false, mapel: false },
       daftarGuru: [
         { id: 1, nama: 'Budi Santoso, S.Pd', mapel: 'Matematika' },
         { id: 2, nama: 'Siti Aminah, M.Si', mapel: 'Fisika' },
@@ -177,7 +201,7 @@ export default {
     },
     bukaModal(guru = null) {
       this.isView = false;
-      this.errors = { nama: false, mapel: false }; // Reset error
+      this.errors = { nama: false, mapel: false };
       if (guru) { 
         this.isEdit = true; 
         this.editId = guru.id; 
@@ -196,12 +220,9 @@ export default {
     },
     tutupModal() { this.showModal = false; },
     simpanGuru() {
-      // Validasi input
       this.errors.nama = !this.formGuru.nama.trim();
       this.errors.mapel = !this.formGuru.mapel.trim();
-
       if (this.errors.nama || this.errors.mapel) return;
-
       if (this.isEdit) {
         const idx = this.daftarGuru.findIndex(g => g.id === this.editId);
         this.daftarGuru[idx] = { ...this.formGuru };
@@ -210,51 +231,43 @@ export default {
       }
       this.tutupModal();
     },
-    hapusGuru(id) { 
-      if (confirm("Hapus data pengajar ini?")) {
-        this.daftarGuru = this.daftarGuru.filter(g => g.id !== id);
-      }
+    // Fungsi baru untuk memicu popup
+    konfirmasiHapus(id) {
+      this.selectedId = id;
+      this.showConfirm = true;
+    },
+    // Fungsi hapus yang dijalankan setelah konfirmasi
+    hapusGuru() { 
+      this.daftarGuru = this.daftarGuru.filter(g => g.id !== this.selectedId);
+      this.showConfirm = false;
+      this.selectedId = null;
     }
   }
 }
 </script>
 
 <style scoped>
+/* Style tetap sama sesuai file asli Anda */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
-/* VALIDATION CUSTOM STYLES */
-.border-danger-custom {
-  border-color: #ef4444 !important;
-  background: #fff5f5 !important;
-}
-.text-danger-custom {
-  color: #ef4444 !important;
-  font-size: 0.75rem;
-}
-
-/* GLOBAL */
+.border-danger-custom { border-color: #ef4444 !important; background: #fff5f5 !important; }
+.text-danger-custom { color: #ef4444 !important; font-size: 0.75rem; }
 .app-container { height: 100vh; background: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; position: fixed; inset: 0; }
 .content-scroll-area { flex: 1; overflow-y: auto; height: calc(100vh - 120px); scroll-behavior: smooth; }
 .fw-800 { font-weight: 800; }
 .ls-wide { letter-spacing: 0.05em; }
 .text-indigo { color: #4f46e5; }
 .shadow-premium { box-shadow: 0 10px 30px -5px rgba(0,0,0,0.05); }
-
-/* HEADER CENTERED */
 .header-glass { background: white; border-bottom: 1px solid #f1f5f9; min-height: 100px; }
 .header-side-left, .header-side-right { flex: 1; }
 .avatar-aj { width: 44px; height: 44px; background: #4f46e5; color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; margin-bottom: 4px; border: 3px solid #eef2ff; }
 .h-line { width: 40px; height: 3px; background: #4f46e5; border-radius: 10px; margin-top: 4px; }
-
-/* BUTTONS */
 .ripple { transition: all 0.2s ease; cursor: pointer; }
 .ripple:active { transform: scale(0.95); opacity: 0.8; }
 .btn-back-modern { background: #f1f5f9; border: none; border-radius: 12px; font-weight: 700; font-size: 0.75rem; padding: 10px 18px; color: #64748b; }
 .btn-add-premium { background: #4f46e5; color: white; border: none; padding: 12px 24px; border-radius: 14px; font-weight: 700; }
 .qs-badge { background: white; padding: 12px 20px; border-radius: 14px; border: 1px solid #eef2ff; display: flex; align-items: center; gap: 8px; }
 .qs-val { font-weight: 800; color: #4f46e5; }
-
-/* SEARCH GLASS */
 .search-wrapper { max-width: 800px; margin: 0 auto; }
 .search-inner-glass {
   background: rgba(255, 255, 255, 0.6) !important; backdrop-filter: blur(15px);
@@ -265,50 +278,34 @@ export default {
 .btn-clear { border: none; background: transparent; color: #cbd5e1; transition: 0.2s; }
 .btn-clear:hover { color: #ef4444; }
 
-/* RESPONSIVE TABLE TO CARDS */
 @media (max-width: 768px) {
   .header-glass { padding: 15px !important; min-height: 120px; }
   .header-side-left, .header-side-right { width: 100%; display: flex; justify-content: center; }
   .header-center { order: -1; margin-bottom: 10px; }
   .fs-4-mobile { font-size: 1.25rem; }
-  
   .mobile-grid { display: grid; grid-template-columns: 1fr; gap: 15px; padding: 15px; }
-  .mobile-card { 
-    display: block !important; background: white; border-radius: 20px !important; 
-    padding: 20px; border: 1px solid #eef2ff !important; box-shadow: 0 4px 15px rgba(0,0,0,0.02);
-  }
+  .mobile-card { display: block !important; background: white; border-radius: 20px !important; padding: 20px; border: 1px solid #eef2ff !important; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
   .border-0-mobile { border: none !important; padding: 5px 0 !important; }
   .mobile-label { display: block !important; font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px; }
 }
 
-/* UI ELEMENTS */
 .avatar-sm { width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; }
 .bg-indigo-grad { background: linear-gradient(135deg, #6366f1, #4f46e5); }
 .class-tag { background: #eef2ff; color: #4f46e5; padding: 6px 14px; border-radius: 10px; font-weight: 700; font-size: 11px; border: 1px solid #e0e7ff; }
 .status-pill { background: #dcfce7; color: #15803d; padding: 6px 14px; border-radius: 50px; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center; gap: 6px; }
 .dot { width: 6px; height: 6px; background: #22c55e; border-radius: 50%; }
-
 .btn-tool { width: 38px; height: 38px; border-radius: 12px; border: none; margin-left: 6px; }
 .btn-v { background: #f0f9ff; color: #0369a1; }
 .btn-e { background: #f0fdf4; color: #16a34a; }
 .btn-d { background: #fff1f2; color: #e11d48; }
 
-/* MODAL & X BUTTON */
 .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 9999; }
 .modal-box { width: 100%; max-width: 480px; }
-.btn-close-modern {
-  position: absolute; top: 25px; right: 25px; width: 40px; height: 40px; border-radius: 50%;
-  background: #f1f5f9; border: none; color: #94a3b8;
-  display: flex; align-items: center; justify-content: center;
-  transition: 0.3s; z-index: 10;
-}
+.btn-close-modern { position: absolute; top: 25px; right: 25px; width: 40px; height: 40px; border-radius: 50%; background: #f1f5f9; border: none; color: #94a3b8; display: flex; align-items: center; justify-content: center; transition: 0.3s; z-index: 10; }
 .btn-close-modern:hover { background: #fee2e2; color: #ef4444; transform: rotate(90deg); }
-
 .modal-icon-header { width: 50px; height: 50px; background: #eef2ff; color: #4f46e5; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
 .input-premium { background: #f8fafc; border: 2px solid #f1f5f9; padding: 14px 20px; border-radius: 16px; display: flex; align-items: center; gap: 12px; transition: 0.3s; }
-.input-premium:focus-within { border-color: #4f46e5; background: white; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
 .input-premium input { border: none; background: transparent; outline: none; width: 100%; font-weight: 600; color: #1e293b; }
-
 .btn-save-modern { background: #4f46e5; color: white; border: none; border-radius: 16px; padding: 16px; transition: 0.3s; }
 .btn-cancel-modern { background: #f1f5f9; color: #64748b; border: none; border-radius: 16px; padding: 16px; }
 
@@ -317,12 +314,10 @@ export default {
 .animate-slide-up { animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
 .animate-slide-right { animation: slideRight 0.6s ease both; }
 .animate-pop { animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both; }
-
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes slideRight { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
 @keyframes pop { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
-
 .list-enter-active, .list-leave-active { transition: all 0.4s ease; }
 .list-enter-from, .list-leave-to { opacity: 0; transform: translateX(-30px); }
 </style>

@@ -70,7 +70,7 @@
                   <button class="btn-card-tool" @click="editJadwal(item, index)" title="Edit Sesi">
                     <i class="bi bi-pencil-fill"></i>
                   </button>
-                  <button class="btn-card-tool del" @click="hapusJadwal(index)" title="Hapus Sesi">
+                  <button class="btn-card-tool del" @click="confirmDelete(index)" title="Hapus Sesi">
                     <i class="bi bi-trash3-fill"></i>
                   </button>
                 </div>
@@ -146,6 +146,28 @@
         </div>
       </div>
     </transition>
+
+    <transition name="modal-zoom">
+      <div v-if="showConfirm" class="modal-overlay px-3" @click.self="showConfirm = false">
+        <div class="modal-box bg-white shadow-2xl rounded-5 overflow-hidden text-center animate-pop" style="max-width: 400px;">
+          <div class="p-4 p-md-5">
+            <div class="mb-4">
+              <div class="mx-auto rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 80px; height: 80px; background: #fff1f2; color: #e11d48;">
+                <i class="bi bi-calendar-x-fill fs-1"></i>
+              </div>
+            </div>
+            <h4 class="fw-800 text-dark mb-2">Hapus Jadwal?</h4>
+            <p class="text-muted mb-4">Sesi ini akan dihapus permanen dari agenda harian. Lanjutkan?</p>
+            <div class="d-flex gap-3">
+              <button class="btn btn-cancel-modern flex-grow-1 fw-bold ripple" @click="showConfirm = false">Batal</button>
+              <button class="btn btn-save-modern flex-grow-1 fw-bold ripple shadow-sm" style="background: #e11d48;" @click="hapusJadwal">
+                Ya, Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -154,6 +176,8 @@ export default {
   data() {
     return {
       showModal: false,
+      showConfirm: false,
+      selectedIndex: null,
       isEdit: false,
       editIndex: null,
       form: { id: null, waktu: '', mapel: '', kelas: '12 IPA 1', guru: '', ruang: '' },
@@ -190,7 +214,6 @@ export default {
       this.showModal = true;
     },
     saveJadwal() {
-      // Validasi
       this.errors.mapel = !this.form.mapel.trim();
       this.errors.waktu = !this.form.waktu.trim();
       this.errors.ruang = !this.form.ruang.trim();
@@ -205,10 +228,14 @@ export default {
       }
       this.closeModal();
     },
-    hapusJadwal(index) {
-      if (confirm("Hapus jadwal ini?")) {
-        this.jadwalList.splice(index, 1);
-      }
+    confirmDelete(index) {
+      this.selectedIndex = index;
+      this.showConfirm = true;
+    },
+    hapusJadwal() {
+      this.jadwalList.splice(this.selectedIndex, 1);
+      this.showConfirm = false;
+      this.selectedIndex = null;
     }
   }
 }

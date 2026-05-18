@@ -73,7 +73,7 @@
                     <div class="d-flex justify-content-md-end gap-2">
                       <button class="btn-tool btn-v ripple" @click="viewSiswa(siswa)"><i class="bi bi-eye"></i></button>
                       <button class="btn-tool btn-e ripple" @click="bukaModal(siswa)"><i class="bi bi-pencil-square"></i></button>
-                      <button class="btn-tool btn-d ripple" @click="hapusSiswa(siswa.id)"><i class="bi bi-trash3"></i></button>
+                      <button class="btn-tool btn-d ripple" @click="konfirmasiHapus(siswa.id)"><i class="bi bi-trash3"></i></button>
                     </div>
                   </td>
                 </tr>
@@ -133,6 +133,28 @@
         </div>
       </div>
     </transition>
+
+    <transition name="modal-zoom">
+      <div v-if="showConfirm" class="modal-overlay px-3" @click.self="showConfirm = false">
+        <div class="modal-box bg-white shadow-2xl rounded-5 overflow-hidden text-center animate-pop" style="max-width: 400px;">
+          <div class="p-4 p-md-5">
+            <div class="mb-4">
+              <div class="mx-auto bg-fff1f2 text-e11d48 rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 80px; height: 80px; background: #fff1f2; color: #e11d48;">
+                <i class="bi bi-exclamation-triangle-fill fs-1"></i>
+              </div>
+            </div>
+            <h4 class="fw-800 text-dark mb-2">Hapus Data?</h4>
+            <p class="text-muted mb-4">Apakah anda yakin ingin menghapus data siswa ini? Tindakan ini tidak dapat dibatalkan.</p>
+            <div class="d-flex gap-3">
+              <button class="btn btn-cancel-modern flex-grow-1 fw-bold ripple" @click="showConfirm = false">Batal</button>
+              <button class="btn btn-d flex-grow-1 fw-bold ripple shadow-sm py-3" style="border-radius: 16px;" @click="hapusSiswa">
+                Ya, Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -142,11 +164,12 @@ export default {
     return {
       search: "", 
       showModal: false, 
+      showConfirm: false, // State baru untuk popup konfirmasi
+      selectedId: null,   // State baru untuk menyimpan ID yang akan dihapus
       isEdit: false, 
       isView: false, 
       editId: null,
       formSiswa: { nama: '', kelas: '' },
-      // State untuk menyimpan status error
       errors: { nama: false, kelas: false },
       classes: ['10 IPA 1', '11 IPA 1', '12 IPA 1', '10 IPS 1'],
       daftarSiswa: [
@@ -170,9 +193,7 @@ export default {
     },
     bukaModal(siswa = null) {
       this.isView = false;
-      // Reset error saat buka modal
       this.errors = { nama: false, kelas: false };
-      
       if (siswa) { 
         this.isEdit = true; 
         this.editId = siswa.id; 
@@ -194,13 +215,9 @@ export default {
       this.showModal = false; 
     },
     simpanSiswa() {
-      // Validasi: cek jika kosong
       this.errors.nama = !this.formSiswa.nama;
       this.errors.kelas = !this.formSiswa.kelas;
-
-      // Jika ada yang belum diisi, jangan lanjut simpan
       if (this.errors.nama || this.errors.kelas) return;
-
       if (this.isEdit) {
         const idx = this.daftarSiswa.findIndex(s => s.id === this.editId);
         this.daftarSiswa[idx] = { ...this.formSiswa };
@@ -209,18 +226,23 @@ export default {
       }
       this.tutupModal();
     },
-    hapusSiswa(id) { 
-      if (confirm("Hapus data siswa?")) {
-        this.daftarSiswa = this.daftarSiswa.filter(s => s.id !== id);
-      }
+    konfirmasiHapus(id) {
+      this.selectedId = id;
+      this.showConfirm = true;
+    },
+    hapusSiswa() { 
+      this.daftarSiswa = this.daftarSiswa.filter(s => s.id !== this.selectedId);
+      this.showConfirm = false;
+      this.selectedId = null;
     }
   }
 }
 </script>
 
 <style scoped>
+/* Style tetap sama sesuai permintaan Anda agar tidak berubah selain penambahan fitur */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-
+/* ... (seluruh style Anda di bawahnya tetap dipertahankan) ... */
 /* --- VALIDATION STYLES --- */
 .border-danger-custom {
   border-color: #ef4444 !important;
@@ -230,30 +252,22 @@ export default {
   color: #ef4444 !important;
   font-size: 0.75rem;
 }
-
-/* --- LAYOUT & THEME --- */
 .app-container { height: 100vh; background: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; position: fixed; inset: 0; }
 .content-scroll-area { flex: 1; overflow-y: auto; height: calc(100vh - 120px); scroll-behavior: smooth; }
 .fw-800 { font-weight: 800; }
 .ls-wide { letter-spacing: 0.05em; }
 .text-indigo { color: #4f46e5; }
 .shadow-premium { box-shadow: 0 10px 30px -5px rgba(0,0,0,0.05); }
-
-/* --- HEADER CENTERED --- */
 .header-glass { background: white; border-bottom: 1px solid #f1f5f9; min-height: 100px; }
 .header-side-left, .header-side-right { flex: 1; }
 .avatar-aj { width: 44px; height: 44px; background: #4f46e5; color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; margin-bottom: 4px; border: 3px solid #eef2ff; }
 .h-line { width: 40px; height: 3px; background: #4f46e5; border-radius: 10px; margin-top: 4px; }
-
-/* --- BUTTONS --- */
 .ripple { transition: all 0.2s ease; cursor: pointer; }
 .ripple:active { transform: scale(0.95); opacity: 0.8; }
 .btn-back-modern { background: #f1f5f9; border: none; border-radius: 12px; font-weight: 700; font-size: 0.75rem; padding: 10px 18px; color: #64748b; }
 .btn-add-premium { background: #4f46e5; color: white; border: none; padding: 12px 24px; border-radius: 14px; font-weight: 700; }
 .qs-badge { background: white; padding: 12px 20px; border-radius: 14px; border: 1px solid #eef2ff; display: flex; align-items: center; gap: 8px; }
 .qs-val { font-weight: 800; color: #4f46e5; }
-
-/* --- SEARCH BAR GLASS --- */
 .search-wrapper { max-width: 800px; margin: 0 auto; }
 .search-inner-glass {
   background: rgba(255, 255, 255, 0.6) !important; backdrop-filter: blur(15px);
@@ -263,22 +277,16 @@ export default {
 }
 .btn-clear { border: none; background: transparent; color: #cbd5e1; transition: 0.2s; }
 .btn-clear:hover { color: #ef4444; }
-
-/* --- ANIMATIONS --- */
 .animate-fade-in { animation: fadeIn 0.6s ease; }
 .animate-slide-up { animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
 .animate-slide-right { animation: slideRight 0.6s ease both; }
 .animate-pop { animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both; }
-
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes slideRight { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
 @keyframes pop { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
-
 .list-enter-active, .list-leave-active { transition: all 0.4s ease; }
 .list-enter-from, .list-leave-to { opacity: 0; transform: translateX(-30px); }
-
-/* --- MOBILE RESPONSIVE --- */
 @media (max-width: 768px) {
   .header-glass { padding: 15px !important; min-height: 120px; }
   .header-side-left, .header-side-right { width: 100%; display: flex; justify-content: center; }
@@ -292,20 +300,15 @@ export default {
   .border-0-mobile { border: none !important; padding: 5px 0 !important; }
   .mobile-label { display: block !important; font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px; }
 }
-
-/* --- UI ELEMENTS --- */
 .avatar-sm { width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; }
 .bg-indigo-grad { background: linear-gradient(135deg, #6366f1, #4f46e5); }
 .class-tag { background: #eef2ff; color: #4f46e5; padding: 6px 14px; border-radius: 10px; font-weight: 700; font-size: 11px; border: 1px solid #e0e7ff; }
 .status-pill { background: #dcfce7; color: #15803d; padding: 6px 14px; border-radius: 50px; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center; gap: 6px; }
 .dot { width: 6px; height: 6px; background: #22c55e; border-radius: 50%; }
-
 .btn-tool { width: 38px; height: 38px; border-radius: 12px; border: none; margin-left: 6px; }
 .btn-v { background: #f0f9ff; color: #0369a1; }
 .btn-e { background: #f0fdf4; color: #16a34a; }
 .btn-d { background: #fff1f2; color: #e11d48; }
-
-/* --- MODAL DESIGN --- */
 .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 9999; }
 .modal-box { width: 100%; max-width: 480px; }
 .btn-close-modern { position: absolute; top: 25px; right: 25px; width: 40px; height: 40px; border-radius: 50%; background: #f1f5f9; border: none; color: #94a3b8; display: flex; align-items: center; justify-content: center; transition: 0.3s; }

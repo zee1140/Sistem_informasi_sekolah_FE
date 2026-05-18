@@ -86,7 +86,7 @@
                   <td class="text-md-end pe-md-4 border-0-mobile">
                     <div class="d-flex justify-content-md-end gap-2 mt-2 mt-md-0">
                       <button class="btn-tool btn-e ripple" @click="editData(index)"><i class="bi bi-pencil-square"></i></button>
-                      <button class="btn-tool btn-d ripple" @click="deleteData(index)"><i class="bi bi-trash3"></i></button>
+                      <button class="btn-tool btn-d ripple" @click="confirmDelete(index)"><i class="bi bi-trash3"></i></button>
                     </div>
                   </td>
                 </tr>
@@ -156,6 +156,28 @@
         </div>
       </div>
     </transition>
+
+    <transition name="modal-zoom">
+      <div v-if="showConfirm" class="modal-overlay px-3" @click.self="showConfirm = false">
+        <div class="modal-box bg-white shadow-2xl rounded-5 overflow-hidden text-center animate-pop" style="max-width: 400px;">
+          <div class="p-4 p-md-5">
+            <div class="mb-4">
+              <div class="mx-auto rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 80px; height: 80px; background: #fff1f2; color: #e11d48;">
+                <i class="bi bi-exclamation-octagon-fill fs-1"></i>
+              </div>
+            </div>
+            <h4 class="fw-800 text-dark mb-2">Hapus Kelas?</h4>
+            <p class="text-muted mb-4">Apakah anda yakin ingin menghapus data kelas ini? Semua data terkait mungkin akan terpengaruh.</p>
+            <div class="d-flex gap-3">
+              <button class="btn btn-cancel-modern flex-grow-1 fw-bold ripple" @click="showConfirm = false">Batal</button>
+              <button class="btn btn-d flex-grow-1 fw-bold ripple shadow-sm py-3" style="border-radius: 16px;" @click="deleteData">
+                Ya, Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -165,6 +187,8 @@ export default {
     return {
       search: "",
       showModal: false,
+      showConfirm: false, // State Popup Hapus
+      selectedIndex: null, // Simpan index yang akan dihapus
       isEdit: false,
       editIndex: null,
       kelasList: [
@@ -193,12 +217,10 @@ export default {
     },
     closeModal() { this.showModal = false; },
     saveData() {
-      // Validasi input
       this.errors.nama = !this.form.nama.trim();
       this.errors.wali = !this.form.wali.trim();
       this.errors.jumlah = this.form.jumlah === "" || this.form.jumlah === null;
 
-      // Jika ada error, berhenti
       if (this.errors.nama || this.errors.wali || this.errors.jumlah) return;
 
       if (this.isEdit) {
@@ -215,8 +237,16 @@ export default {
       this.isEdit = true;
       this.showModal = true;
     },
-    deleteData(index) {
-      if (confirm('Hapus data kelas ini?')) this.kelasList.splice(index, 1);
+    // Fungsi baru untuk memicu popup konfirmasi
+    confirmDelete(index) {
+      this.selectedIndex = index;
+      this.showConfirm = true;
+    },
+    // Fungsi hapus yang dijalankan setelah konfirmasi "Ya"
+    deleteData() {
+      this.kelasList.splice(this.selectedIndex, 1);
+      this.showConfirm = false;
+      this.selectedIndex = null;
     }
   }
 }
@@ -314,4 +344,4 @@ export default {
 @keyframes pop { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
 .list-enter-active, .list-leave-active { transition: all 0.4s ease; }
 .list-enter-from, .list-leave-to { opacity: 0; transform: translateX(-30px); }
-</style>
+</style>```
