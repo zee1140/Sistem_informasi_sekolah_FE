@@ -36,19 +36,25 @@
         </div>
       </div>
 
+      <div v-if="pageMessage" class="alert-siswa mb-4 animate-pop">
+        <i class="bi bi-exclamation-circle"></i>
+        <span>{{ pageMessage }}</span>
+        <button type="button" @click="pageMessage = ''"><i class="bi bi-x"></i></button>
+      </div>
+
       <div class="table-card bg-white shadow-premium rounded-4 overflow-hidden animate-slide-up" style="animation-delay: 0.2s">
         <div class="table-responsive">
           <table class="table table-hover align-middle mb-0">
             <thead class="bg-light d-none d-md-table-header-group">
               <tr class="text-uppercase small fw-800 text-muted ls-wide">
                 <th class="ps-4 py-4">Siswa</th>
+                <th>NIS</th>
                 <th>Kelas</th>
                 <th class="text-center">Status</th>
                 <th class="text-end pe-4">Aksi</th>
               </tr>
             </thead>
             <tbody class="mobile-grid">
-              <transition-group name="list">
                 <tr v-for="(siswa, i) in filteredSiswa" :key="siswa.id" class="row-hover mobile-card">
                   <td class="ps-md-4 py-3 border-0-mobile">
                     <div class="d-flex align-items-center gap-3">
@@ -57,13 +63,17 @@
                       </div>
                       <div>
                         <div class="fw-bold text-dark mb-0">{{ siswa.nama }}</div>
-                        <small class="text-muted">ID: #STU-{{ i + 101 }}</small>
+                        <small class="text-muted">ID: {{ siswa.id }}</small>
                       </div>
                     </div>
                   </td>
                   <td class="border-0-mobile">
+                    <div class="mobile-label d-md-none">NIS</div>
+                    <span class="class-tag">{{ siswa.nis || '-' }}</span>
+                  </td>
+                  <td class="border-0-mobile">
                     <div class="mobile-label d-md-none">Kelas</div>
-                    <span class="class-tag">{{ siswa.kelas }}</span>
+                    <span class="class-tag">{{ siswa.kode_kelas }}</span>
                   </td>
                   <td class="text-md-center border-0-mobile">
                     <div class="mobile-label d-md-none">Status</div>
@@ -71,13 +81,12 @@
                   </td>
                   <td class="text-md-end pe-md-4 border-0-mobile">
                     <div class="d-flex justify-content-md-end gap-2">
-                      <button class="btn-tool btn-v ripple" @click="viewSiswa(siswa)"><i class="bi bi-eye"></i></button>
-                      <button class="btn-tool btn-e ripple" @click="bukaModal(siswa)"><i class="bi bi-pencil-square"></i></button>
-                      <button class="btn-tool btn-d ripple" @click="konfirmasiHapus(siswa.id)"><i class="bi bi-trash3"></i></button>
+                      <button type="button" class="btn-tool btn-v ripple" @click.prevent.stop="viewSiswa(siswa)"><i class="bi bi-eye"></i></button>
+                      <button type="button" class="btn-tool btn-e ripple" @click.prevent.stop="bukaModal(siswa)"><i class="bi bi-pencil-square"></i></button>
+                      <button type="button" class="btn-tool btn-d ripple" @click.prevent.stop="konfirmasiHapus(siswa.id)"><i class="bi bi-trash3"></i></button>
                     </div>
                   </td>
                 </tr>
-              </transition-group>
             </tbody>
           </table>
           <div v-if="filteredSiswa.length === 0" class="p-5 text-center animate-pop">
@@ -99,6 +108,17 @@
             </div>
 
             <div class="form-group mb-4">
+              <label class="small fw-800 text-muted mb-2 ls-wide">NIS</label>
+              <div class="input-premium" :class="{'border-danger-custom': errors.nis}">
+                <i class="bi bi-credit-card-2-front text-indigo"></i>
+                <input v-model="formSiswa.nis" type="text" placeholder="Masukkan NIS..." :readonly="isView">
+              </div>
+              <small v-if="errors.nis" class="text-danger-custom fw-bold mt-1 d-block animate-pop">
+                <i class="bi bi-exclamation-circle"></i> NIS tidak valid!
+              </small>
+            </div>
+
+            <div class="form-group mb-4">
               <label class="small fw-800 text-muted mb-2 ls-wide">NAMA LENGKAP</label>
               <div class="input-premium" :class="{'border-danger-custom': errors.nama}">
                 <i class="bi bi-person text-indigo"></i>
@@ -111,22 +131,28 @@
 
             <div class="form-group mb-5">
               <label class="small fw-800 text-muted mb-2 ls-wide">KELAS</label>
-              <div class="input-premium" :class="{'border-danger-custom': errors.kelas}">
+              <div class="input-premium" :class="{'border-danger-custom': errors.kode_kelas}">
                 <i class="bi bi-building-check text-indigo"></i>
-                <select v-model="formSiswa.kelas" :disabled="isView">
+                <select v-model="formSiswa.kode_kelas" :disabled="isView">
                   <option value="" disabled>Pilih Kelas</option>
-                  <option v-for="c in classes" :key="c" :value="c">{{ c }}</option>
+                  <option v-for="kelas in kelasList" :key="kelas.kode_kelas" :value="kelas.kode_kelas">
+                    {{ kelas.kode_kelas }}
+                  </option>
                 </select>
               </div>
-              <small v-if="errors.kelas" class="text-danger-custom fw-bold mt-1 d-block animate-pop">
+              <small v-if="errors.kode_kelas" class="text-danger-custom fw-bold mt-1 d-block animate-pop">
                 <i class="bi bi-exclamation-circle"></i> Pilih kelas terlebih dahulu!
               </small>
             </div>
 
+            <small v-if="errorMessage" class="text-danger-custom fw-bold mb-4 d-block animate-pop">
+              <i class="bi bi-exclamation-circle"></i> {{ errorMessage }}
+            </small>
+
             <div class="d-flex gap-3">
               <button class="btn btn-cancel-modern flex-grow-1 fw-bold ripple" @click="tutupModal">Kembali</button>
-              <button v-if="!isView" class="btn btn-save-modern flex-grow-1 fw-bold ripple shadow-lg" @click="simpanSiswa">
-                {{ isEdit ? 'Update Data' : 'Simpan Siswa' }}
+              <button v-if="!isView" class="btn btn-save-modern flex-grow-1 fw-bold ripple shadow-lg" :disabled="isSaving" @click="simpanSiswa">
+                {{ isSaving ? 'Menyimpan...' : (isEdit ? 'Update Data' : 'Simpan Siswa') }}
               </button>
             </div>
           </div>
@@ -147,8 +173,8 @@
             <p class="text-muted mb-4">Apakah anda yakin ingin menghapus data siswa ini? Tindakan ini tidak dapat dibatalkan.</p>
             <div class="d-flex gap-3">
               <button class="btn btn-cancel-modern flex-grow-1 fw-bold ripple" @click="showConfirm = false">Batal</button>
-              <button class="btn btn-d flex-grow-1 fw-bold ripple shadow-sm py-3" style="border-radius: 16px;" @click="hapusSiswa">
-                Ya, Hapus
+              <button class="btn btn-d flex-grow-1 fw-bold ripple shadow-sm py-3" style="border-radius: 16px;" :disabled="isDeleting" @click="hapusSiswa">
+                {{ isDeleting ? 'Menghapus...' : 'Ya, Hapus' }}
               </button>
             </div>
           </div>
@@ -159,6 +185,8 @@
 </template>
 
 <script>
+import api from '../service/axios.js'
+
 export default {
   data() {
     return {
@@ -169,71 +197,194 @@ export default {
       isEdit: false, 
       isView: false, 
       editId: null,
-      formSiswa: { nama: '', kelas: '' },
-      errors: { nama: false, kelas: false },
-      classes: ['10 IPA 1', '11 IPA 1', '12 IPA 1', '10 IPS 1'],
-      daftarSiswa: [
-        { id: 1, nama: 'Andi Wijaya', kelas: '12 IPA 1' },
-        { id: 2, nama: 'Budi Setiawan', kelas: '11 IPA 1' },
-        { id: 3, nama: 'Citra Lestari', kelas: '10 IPA 1' }
-      ]
+      isSaving: false,
+      isDeleting: false,
+      errorMessage: '',
+      pageMessage: '',
+      formSiswa: { id: '', nama: '', nis: '', kode_kelas: '' },
+      errors: { nama: false, nis: false, kode_kelas: false },
+      kelasList: [],
+      daftarSiswa: []
     }
   },
   computed: {
     filteredSiswa() {
+      const keyword = this.search.toLowerCase()
+
       return this.daftarSiswa.filter(s => 
-        s.nama.toLowerCase().includes(this.search.toLowerCase()) || 
-        s.kelas.toLowerCase().includes(this.search.toLowerCase())
+        String(s.nama || '').toLowerCase().includes(keyword) || 
+        String(s.nis || '').toLowerCase().includes(keyword) ||
+        String(s.kode_kelas || '').toLowerCase().includes(keyword)
       )
     }
   },
+  mounted() {
+    this.getSiswa()
+    this.getKelas()
+  },
   methods: {
     getInitials(name) { 
-      return name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase(); 
+      return (name || '').split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase(); 
+    },
+    createId() {
+      if (window.crypto?.randomUUID) return window.crypto.randomUUID()
+      return `${Date.now()}`
+    },
+    async getSiswa() {
+      try {
+        const response = await api.get('/siswa')
+        this.daftarSiswa = Array.isArray(response.data)
+          ? response.data.map(this.normalizeSiswa)
+          : []
+      } catch (error) {
+        console.log('GET SISWA ERROR:', error.response || error)
+        this.errorMessage = error.response?.data?.message || 'Data siswa gagal dimuat.'
+      }
+    },
+    async getKelas() {
+      try {
+        const response = await api.get('/kelas')
+        this.kelasList = response.data
+      } catch (error) {
+        console.log('GET KELAS ERROR:', error.response || error)
+      }
     },
     bukaModal(siswa = null) {
       this.isView = false;
-      this.errors = { nama: false, kelas: false };
+      this.errorMessage = '';
+      this.errors = { nama: false, nis: false, kode_kelas: false };
       if (siswa) { 
+        const normalized = this.normalizeSiswa(siswa)
         this.isEdit = true; 
-        this.editId = siswa.id; 
-        this.formSiswa = { ...siswa }; 
+        this.editId = normalized.id; 
+        this.formSiswa = {
+          id: normalized.id,
+          nama: normalized.nama,
+          nis: normalized.nis || '',
+          kode_kelas: normalized.kode_kelas
+        }; 
       }
       else { 
         this.isEdit = false; 
-        this.formSiswa = { nama: '', kelas: '' }; 
+        this.formSiswa = { id: '', nama: '', nis: '', kode_kelas: '' }; 
       }
       this.showModal = true;
     },
     viewSiswa(siswa) { 
+      const normalized = this.normalizeSiswa(siswa)
+
       this.isView = true; 
-      this.formSiswa = { ...siswa }; 
-      this.errors = { nama: false, kelas: false };
+      this.formSiswa = {
+        id: normalized.id,
+        nama: normalized.nama,
+        nis: normalized.nis || '',
+        kode_kelas: normalized.kode_kelas
+      }; 
+      this.errorMessage = '';
+      this.errors = { nama: false, nis: false, kode_kelas: false };
       this.showModal = true; 
     },
     tutupModal() { 
       this.showModal = false; 
+      this.errorMessage = '';
     },
-    simpanSiswa() {
-      this.errors.nama = !this.formSiswa.nama;
-      this.errors.kelas = !this.formSiswa.kelas;
-      if (this.errors.nama || this.errors.kelas) return;
-      if (this.isEdit) {
-        const idx = this.daftarSiswa.findIndex(s => s.id === this.editId);
-        this.daftarSiswa[idx] = { ...this.formSiswa };
-      } else { 
-        this.daftarSiswa.unshift({ id: Date.now(), ...this.formSiswa }); 
+    async simpanSiswa() {
+      this.errors.nama = !this.formSiswa.nama.trim();
+      this.errors.nis = false;
+      this.errors.kode_kelas = !this.formSiswa.kode_kelas;
+      if (this.errors.nama || this.errors.nis || this.errors.kode_kelas) return;
+
+      try {
+        this.isSaving = true
+        this.errorMessage = ''
+
+        const payload = {
+          nama: this.formSiswa.nama.trim(),
+          nis: this.formSiswa.nis ? String(this.formSiswa.nis).trim() : null,
+          kode_kelas: this.formSiswa.kode_kelas
+        }
+
+        if (this.isEdit) {
+          await this.updateSiswa(this.editId, payload)
+        } else { 
+          await api.post('/siswa', {
+            id: this.createId(),
+            ...payload
+          })
+        }
+
+        await this.getSiswa()
+        this.tutupModal()
+      } catch (error) {
+        console.log('SAVE SISWA ERROR:', error.response || error)
+        this.errorMessage = this.getErrorMessage(error, 'Data siswa gagal disimpan.')
+      } finally {
+        this.isSaving = false
       }
-      this.tutupModal();
     },
     konfirmasiHapus(id) {
       this.selectedId = id;
+      this.pageMessage = '';
       this.showConfirm = true;
     },
-    hapusSiswa() { 
-      this.daftarSiswa = this.daftarSiswa.filter(s => s.id !== this.selectedId);
-      this.showConfirm = false;
-      this.selectedId = null;
+    async hapusSiswa() { 
+      try {
+        const id = this.selectedId
+
+        if (!id) return
+
+        this.isDeleting = true
+        this.pageMessage = ''
+
+        await this.deleteSiswa(id)
+
+        this.daftarSiswa = this.daftarSiswa.filter(s => s.id !== id)
+        await this.getSiswa()
+        this.showConfirm = false;
+        this.selectedId = null;
+      } catch (error) {
+        console.log('DELETE SISWA ERROR:', error.response || error)
+        this.showConfirm = false;
+        this.pageMessage = this.getErrorMessage(error, 'Data siswa gagal dihapus.')
+      } finally {
+        this.isDeleting = false
+      }
+    },
+    updateSiswa(id, payload) {
+      return api.put(`/siswa/${encodeURIComponent(id)}`, payload)
+    },
+    deleteSiswa(id) {
+      return api.delete(`/siswa/${encodeURIComponent(id)}`)
+    },
+    normalizeSiswa(siswa) {
+      return {
+        id: siswa?.id || '',
+        nama: siswa?.nama || '',
+        nis: siswa?.nis === null || siswa?.nis === undefined ? '' : String(siswa.nis),
+        kode_kelas: siswa?.kode_kelas || ''
+      }
+    },
+    getErrorMessage(error, fallback) {
+      const data = error.response?.data
+
+      if (typeof data === 'string') {
+        const match = data.match(/<pre>(.*?)<\/pre>/i)
+        const message = match?.[1] || data.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
+
+        if (message.includes('Cannot DELETE /siswa/')) {
+          return 'Backend belum punya endpoint DELETE /siswa/:id. Tambahkan route delete di BE lalu restart server.'
+        }
+
+        if (message.includes('Cannot PUT /siswa/')) {
+          return 'Backend belum punya endpoint PUT /siswa/:id. Tambahkan route update di BE lalu restart server.'
+        }
+
+        return message
+      }
+
+      if (data?.message) return data.message
+
+      return fallback
     }
   }
 }
@@ -277,6 +428,8 @@ export default {
 }
 .btn-clear { border: none; background: transparent; color: #cbd5e1; transition: 0.2s; }
 .btn-clear:hover { color: #ef4444; }
+.alert-siswa { max-width: 800px; margin: 0 auto; background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; border-radius: 14px; padding: 12px 16px; display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 0.85rem; }
+.alert-siswa button { margin-left: auto; border: none; background: transparent; color: #e11d48; font-size: 1.1rem; }
 .animate-fade-in { animation: fadeIn 0.6s ease; }
 .animate-slide-up { animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
 .animate-slide-right { animation: slideRight 0.6s ease both; }
