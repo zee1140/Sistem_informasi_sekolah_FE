@@ -67,14 +67,14 @@
                 {{ item.guru }}
               </div>
 
-              <!-- ACTION (SAMA PERSIS SISWA) -->
-              <div class="d-flex gap-2">
-                <button class="btn-tool btn-e ripple" @click="editJadwal(item, index)">
-                  <i class="bi bi-pencil-square"></i>
-                </button>
-                <button class="btn-tool btn-d ripple" @click="hapusJadwal(index)">
-                  <i class="bi bi-trash3"></i>
-                </button>
+                <div class="card-actions shadow-lg">
+                  <button class="btn-card-tool" @click="editJadwal(item, index)" title="Edit Sesi">
+                    <i class="bi bi-pencil-fill"></i>
+                  </button>
+                  <button class="btn-card-tool del" @click="hapusJadwal(index)" title="Hapus Sesi">
+                    <i class="bi bi-trash3-fill"></i>
+                  </button>
+                </div>
               </div>
 
             </div>
@@ -143,22 +143,7 @@
           <input v-model="form.guru" placeholder="Nama Guru">
         </div>
       </div>
-
-      <!-- BUTTON -->
-      <div class="d-flex gap-3">
-        <button class="btn-cancel w-100" @click="closeModal">
-          Kembali
-        </button>
-        <button class="btn-save w-100" @click="saveJadwal">
-          {{ isEdit ? 'Update Data' : 'Simpan' }}
-        </button>
-      </div>
-
-    </div>
-
-  </div>
-</transition>
-
+    </transition>
   </div>
 </template>
 
@@ -167,6 +152,8 @@ export default {
   data() {
     return {
       showModal: false,
+      showConfirm: false,
+      selectedIndex: null,
       isEdit: false,
       editIndex: null,
       form: { id: null, waktu: '', mapel: '', kelas: '12 IPA 1', guru: '', ruang: '' },
@@ -200,7 +187,14 @@ export default {
       this.showModal = true;
     },
     saveJadwal() {
-      if (!this.form.mapel || !this.form.waktu) return alert("Isi Mapel & Waktu!");
+      // Validasi
+      this.errors.mapel = !this.form.mapel.trim();
+      this.errors.waktu = !this.form.waktu.trim();
+      this.errors.ruang = !this.form.ruang.trim();
+      this.errors.guru = !this.form.guru.trim();
+
+      if (Object.values(this.errors).some(e => e)) return;
+
       if (this.isEdit) {
         this.jadwalList[this.editIndex] = { ...this.form }
       } else {
@@ -209,7 +203,9 @@ export default {
       this.closeModal()
     },
     hapusJadwal(index) {
-      if (confirm("Hapus jadwal?")) this.jadwalList.splice(index, 1)
+      if (confirm("Hapus jadwal ini?")) {
+        this.jadwalList.splice(index, 1);
+      }
     }
   }
 }

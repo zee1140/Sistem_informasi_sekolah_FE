@@ -178,7 +178,7 @@ export default {
   background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); 
   border-radius: 35px; border: 1px solid rgba(255, 255, 255, 1);
   box-shadow: 0 15px 35px rgba(79, 70, 229, 0.08);
-}
+} 
 
 /* --- BUTTONS --- */
 .btn-back-modern {
