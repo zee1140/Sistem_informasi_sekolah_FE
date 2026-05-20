@@ -1,167 +1,127 @@
 <template>
   <div class="app-container animate-fade-in">
-    <div class="header-glass py-3 py-md-4 px-3 px-md-5 bg-white border-bottom shadow-sm">
-      <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
-        <div class="header-side-left w-100-mobile">
-          <button class="btn btn-back-modern ripple" @click="$router.push('/dashboard')">
+    <header class="header-glass">
+      <div class="header-inner">
+        <div class="header-side">
+          <button class="btn-back-modern ripple" @click="$router.push('/dashboard')">
             <i class="bi bi-arrow-left"></i> Dashboard
           </button>
         </div>
-        <div class="header-center text-center animate-pop">
-          <div class="d-flex flex-column align-items-center gap-2">
-            <div class="avatar-aj shadow-premium">AJ</div>
-            <h2 class="fw-800 text-dark mb-0 fs-4-mobile">Manajemen Siswa</h2>
-            <div class="h-line"></div>
-          </div>
+
+        <div class="header-center">
+          <div class="avatar-aj shadow-premium">AJ</div>
+          <h2>Manajemen Siswa</h2>
+          <div class="h-line"></div>
         </div>
-        <div class="header-side-right d-flex align-items-center justify-content-end gap-2 gap-md-3 w-100-mobile">
-          <button class="btn btn-absensi-header ripple shadow-sm d-none d-md-flex align-items-center gap-2" @click="$router.push('/absensi')">
-            <i class="bi bi-calendar-check"></i> <span>Absensi</span>
+
+        <div class="header-side header-actions">
+          <button class="btn-stat-link ripple" @click="$router.push('/absensi')">
+            <i class="bi bi-calendar-check"></i>
+            <span>Absensi</span>
           </button>
-
-          <div class="qs-badge shadow-sm animate-slide-right">
-            <span class="qs-lab">TOTAL:</span><span class="qs-val">{{ filteredSiswa.length }}</span>
+          
+          <div class="stats-badge">
+            <span>TOTAL:</span>
+            <strong>{{ daftarSiswa.length }}</strong>
           </div>
-          <button class="btn btn-add-premium ripple shadow-sm" @click="bukaModal()">
-            <i class="bi bi-plus-lg me-md-2"></i><span class="d-none d-md-inline">Tambah Siswa</span>
+
+          <button class="btn-add-premium ripple shadow-sm" @click="openModal()">
+            <i class="bi bi-plus-lg"></i>
+            <span>Tambah Siswa</span>
           </button>
         </div>
       </div>
-    </div>
+    </header>
 
-    <div class="content-scroll-area p-3 p-md-5">
-      <div class="search-wrapper mb-4 mb-md-5 animate-slide-up" style="animation-delay: 0.1s">
-        <div class="search-inner-glass border-0">
-          <i class="bi bi-search text-indigo me-3"></i>
-          <input v-model="search" type="text" placeholder="Cari nama atau kelas siswa..." class="flex-grow-1 border-0 outline-none text-dark fw-600 bg-transparent">
-          <transition name="fade">
-            <button v-if="search" @click="search = ''" class="btn-clear"><i class="bi bi-x-circle-fill"></i></button>
-          </transition>
+    <main class="content-scroll-area">
+      <section class="search-wrapper animate-slide-up">
+        <div class="search-inner-glass">
+          <i class="bi bi-search text-indigo"></i>
+          <input v-model="search" type="text" placeholder="Cari nama atau kelas siswa...">
+          <button v-if="search" type="button" class="btn-clear" @click="search = ''">
+            <i class="bi bi-x-circle-fill"></i>
+          </button>
         </div>
-      </div>
+      </section>
 
-      <div v-if="pageMessage" class="alert-siswa mb-4 animate-pop">
-        <i class="bi bi-exclamation-circle"></i>
-        <span>{{ pageMessage }}</span>
-        <button type="button" @click="pageMessage = ''"><i class="bi bi-x"></i></button>
-      </div>
-
-      <div class="table-card bg-white shadow-premium rounded-4 overflow-hidden animate-slide-up" style="animation-delay: 0.2s">
+      <section class="table-card animate-slide-up">
         <div class="table-responsive">
-          <table class="table table-hover align-middle mb-0">
-            <thead class="bg-light d-none d-md-table-header-group">
-              <tr class="text-uppercase small fw-800 text-muted ls-wide">
-                <th class="ps-4 py-4">Siswa</th>
+          <table>
+            <thead>
+              <tr>
+                <th>NAMA SISWA</th>
                 <th>NIS</th>
-                <th>Kelas</th>
-                <th class="text-center">Status</th>
-                <th class="text-end pe-4">Aksi</th>
+                <th>KELAS</th>
+                <th class="text-end">AKSI</th>
               </tr>
             </thead>
-            <tbody class="mobile-grid">
-                <tr v-for="(siswa, i) in filteredSiswa" :key="siswa.id" class="row-hover mobile-card">
-                  <td class="ps-md-4 py-3 border-0-mobile">
-                    <div class="d-flex align-items-center gap-3">
-                      <div class="avatar-sm initials bg-indigo-grad animate-pop" :style="`animation-delay: ${i * 0.05}s`">
-                        {{ getInitials(siswa.nama) }}
-                      </div>
-                      <div>
-                        <div class="fw-bold text-dark mb-0">{{ siswa.nama }}</div>
-                        <small class="text-muted">ID: {{ siswa.id }}</small>
-                      </div>
-                    </div>
-                  </td>
-                  <td class="border-0-mobile">
-                    <div class="mobile-label d-md-none">NIS</div>
-                    <span class="class-tag">{{ siswa.nis || '-' }}</span>
-                  </td>
-                  <td class="border-0-mobile">
-                    <div class="mobile-label d-md-none">Kelas</div>
-                    <span class="class-tag">{{ siswa.kode_kelas }}</span>
-                  </td>
-                  <td class="text-md-center border-0-mobile">
-                    <div class="mobile-label d-md-none">Status</div>
-                    <span class="status-pill active"><span class="dot"></span> Aktif</span>
-                  </td>
-                  <td class="text-md-end pe-md-4 border-0-mobile">
-                    <div class="d-flex justify-content-md-end gap-2">
-                      <button type="button" class="btn-tool btn-a ripple" title="Absensi" @click.prevent.stop="$router.push(`/absensi/${siswa.id}`)">
-                        <i class="bi bi-calendar-check"></i>
-                      </button>
-                      
-                      <button type="button" class="btn-tool btn-v ripple" @click.prevent.stop="viewSiswa(siswa)"><i class="bi bi-eye"></i></button>
-                      <button type="button" class="btn-tool btn-e ripple" @click.prevent.stop="bukaModal(siswa)"><i class="bi bi-pencil-square"></i></button>
-                      <button type="button" class="btn-tool btn-d ripple" @click.prevent.stop="konfirmasiHapus(siswa.id)"><i class="bi bi-trash3"></i></button>
-                    </div>
-                  </td>
-                </tr>
+            <tbody>
+              <tr v-for="siswa in filteredSiswa" :key="siswa.id">
+                <td>
+                  <div class="student-cell">
+                    <div class="avatar-sm initials">{{ getInitials(siswa.nama) }}</div>
+                    <strong>{{ siswa.nama }}</strong>
+                  </div>
+                </td>
+                <td><span class="status-pill">{{ siswa.nis || '-' }}</span></td>
+                <td><span class="class-tag">{{ siswa.kode_kelas }}</span></td>
+                <td class="text-end">
+                  <div class="action-group">
+                    <button class="btn-tool btn-tool-edit ripple" title="Edit" @click="openModal(siswa)">
+                      <i class="bi bi-pencil-square"></i>
+                    </button>
+                    <button class="btn-tool btn-tool-danger ripple" title="Hapus" @click="openConfirm(siswa)">
+                      <i class="bi bi-trash3"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
             </tbody>
           </table>
-          <div v-if="filteredSiswa.length === 0" class="p-5 text-center animate-pop">
-            <i class="bi bi-search-heart fs-1 text-muted opacity-25"></i>
-            <p class="mt-3 fw-bold text-muted">Data tidak ditemukan...</p>
-          </div>
         </div>
-      </div>
-    </div>
+
+        <div v-if="filteredSiswa.length === 0" class="empty-state">
+          <div class="empty-icon-wrapper">
+             <i class="bi bi-search"></i>
+          </div>
+          <p>Data tidak ditemukan...</p>
+        </div>
+      </section>
+    </main>
 
     <transition name="modal-zoom">
-      <div v-if="showModal" class="modal-overlay px-3" @click.self="tutupModal">
-        <div class="modal-box bg-white shadow-2xl rounded-5 overflow-hidden position-relative animate-pop">
-          <button class="btn-close-modern ripple" @click="tutupModal"><i class="bi bi-x-lg"></i></button>
-          <div class="p-4 p-md-5">
-            <div class="d-flex align-items-center gap-3 mb-5">
-              <div class="modal-icon-header"><i class="bi bi-person-bounding-box"></i></div>
-              <h4 class="fw-800 mb-0">{{ isView ? 'Detail' : (isEdit ? 'Edit' : 'Tambah') }} Siswa</h4>
+      <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+        <div class="modal-box shadow-premium">
+          <div class="modal-content-inner">
+            <div class="modal-heading">
+              <h4>{{ isEdit ? 'Update Data Siswa' : 'Tambah Siswa Baru' }}</h4>
             </div>
-
-            <div class="form-group mb-4">
-              <label class="small fw-800 text-muted mb-2 ls-wide">NIS</label>
-              <div class="input-premium" :class="{'border-danger-custom': errors.nis}">
-                <i class="bi bi-credit-card-2-front text-indigo"></i>
-                <input v-model="formSiswa.nis" type="text" placeholder="Masukkan NIS..." :readonly="isView">
+            <div class="form-group">
+              <label>NAMA LENGKAP</label>
+              <div class="input-premium">
+                <input v-model="form.nama" type="text" placeholder="Masukkan nama lengkap">
               </div>
-              <small v-if="errors.nis" class="text-danger-custom fw-bold mt-1 d-block animate-pop">
-                <i class="bi bi-exclamation-circle"></i> NIS tidak valid!
-              </small>
             </div>
-
-            <div class="form-group mb-4">
-              <label class="small fw-800 text-muted mb-2 ls-wide">NAMA LENGKAP</label>
-              <div class="input-premium" :class="{'border-danger-custom': errors.nama}">
-                <i class="bi bi-person text-indigo"></i>
-                <input v-model="formSiswa.nama" type="text" placeholder="Masukkan nama..." :readonly="isView">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>NIS</label>
+                <div class="input-premium">
+                  <input v-model="form.nis" type="text" placeholder="NIS">
+                </div>
               </div>
-              <small v-if="errors.nama" class="text-danger-custom fw-bold mt-1 d-block animate-pop">
-                <i class="bi bi-exclamation-circle"></i> Nama wajib diisi!
-              </small>
-            </div>
-
-            <div class="form-group mb-5">
-              <label class="small fw-800 text-muted mb-2 ls-wide">KELAS</label>
-              <div class="input-premium" :class="{'border-danger-custom': errors.kode_kelas}">
-                <i class="bi bi-building-check text-indigo"></i>
-                <select v-model="formSiswa.kode_kelas" :disabled="isView">
-                  <option value="" disabled>Pilih Kelas</option>
-                  <option v-for="kelas in kelasList" :key="kelas.kode_kelas" :value="kelas.kode_kelas">
-                    {{ kelas.kode_kelas }}
-                  </option>
-                </select>
+              <div class="form-group">
+                <label>KELAS</label>
+                <div class="input-premium">
+                  <select v-model="form.kode_kelas">
+                    <option value="" disabled>Pilih Kelas</option>
+                    <option v-for="k in kelasList" :key="k.kode_kelas" :value="k.kode_kelas">{{ k.kode_kelas }}</option>
+                  </select>
+                </div>
               </div>
-              <small v-if="errors.kode_kelas" class="text-danger-custom fw-bold mt-1 d-block animate-pop">
-                <i class="bi bi-exclamation-circle"></i> Pilih kelas terlebih dahulu!
-              </small>
             </div>
-
-            <small v-if="errorMessage" class="text-danger-custom fw-bold mb-4 d-block animate-pop">
-              <i class="bi bi-exclamation-circle"></i> {{ errorMessage }}
-            </small>
-
-            <div class="d-flex gap-3">
-              <button class="btn btn-cancel-modern flex-grow-1 fw-bold ripple" @click="tutupModal">Kembali</button>
-              <button v-if="!isView" class="btn btn-save-modern flex-grow-1 fw-bold ripple shadow-lg" :disabled="isSaving" @click="simpanSiswa">
-                {{ isSaving ? 'Menyimpan...' : (isEdit ? 'Update Data' : 'Simpan Siswa') }}
-              </button>
+            <div class="modal-actions">
+              <button class="btn-cancel-modern ripple" @click="closeModal">Batal</button>
+              <button class="btn-save-modern ripple" @click="handleSave">Simpan</button>
             </div>
           </div>
         </div>
@@ -169,22 +129,14 @@
     </transition>
 
     <transition name="modal-zoom">
-      <div v-if="showConfirm" class="modal-overlay px-3" @click.self="showConfirm = false">
-        <div class="modal-box bg-white shadow-2xl rounded-5 overflow-hidden text-center animate-pop" style="max-width: 400px;">
-          <div class="p-4 p-md-5">
-            <div class="mb-4">
-              <div class="mx-auto bg-fff1f2 text-e11d48 rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 80px; height: 80px; background: #fff1f2; color: #e11d48;">
-                <i class="bi bi-exclamation-triangle-fill fs-1"></i>
-              </div>
-            </div>
-            <h4 class="fw-800 text-dark mb-2">Hapus Data?</h4>
-            <p class="text-muted mb-4">Apakah anda yakin ingin menghapus data siswa ini? Tindakan ini tidak dapat dibatalkan.</p>
-            <div class="d-flex gap-3">
-              <button class="btn btn-cancel-modern flex-grow-1 fw-bold ripple" @click="showConfirm = false">Batal</button>
-              <button class="btn btn-d flex-grow-1 fw-bold ripple shadow-sm py-3" style="border-radius: 16px;" :disabled="isDeleting" @click="hapusSiswa">
-                {{ isDeleting ? 'Menghapus...' : 'Ya, Hapus' }}
-              </button>
-            </div>
+      <div v-if="showConfirm" class="modal-overlay" @click.self="closeConfirm">
+        <div class="modal-box modal-confirm">
+          <div class="confirm-icon"><i class="bi bi-exclamation-triangle"></i></div>
+          <h4>Hapus Data?</h4>
+          <p>Data siswa <strong>{{ selectedSiswa?.nama }}</strong> akan dihapus permanen.</p>
+          <div class="modal-actions">
+            <button class="btn-cancel-modern ripple" @click="closeConfirm">Batal</button>
+            <button class="btn-delete-modern ripple" @click="handleDelete">Ya, Hapus</button>
           </div>
         </div>
       </div>
@@ -192,198 +144,153 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, computed, onMounted } from 'vue'
 import api from '../service/axios.js'
 
-export default {
-  data() {
-    return {
-      search: "", 
-      showModal: false, 
-      showConfirm: false, 
-      selectedId: null,   
-      isEdit: false, 
-      isView: false, 
-      editId: null,
-      isSaving: false,
-      isDeleting: false,
-      errorMessage: '',
-      pageMessage: '',
-      formSiswa: { id: '', nama: '', nis: '', kode_kelas: '' },
-      errors: { nama: false, nis: false, kode_kelas: false },
-      kelasList: [],
-      daftarSiswa: []
-    }
-  },
-  computed: {
-    filteredSiswa() {
-      const keyword = this.search.toLowerCase()
-      return this.daftarSiswa.filter(s => 
-        String(s.nama || '').toLowerCase().includes(keyword) || 
-        String(s.nis || '').toLowerCase().includes(keyword) ||
-        String(s.kode_kelas || '').toLowerCase().includes(keyword)
-      )
-    }
-  },
-  mounted() {
-    this.getSiswa()
-    this.getKelas()
-  },
-  methods: {
-    getInitials(name) { 
-      return (name || '').split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase(); 
-    },
-    createId() {
-      if (window.crypto?.randomUUID) return window.crypto.randomUUID()
-      return `${Date.now()}`
-    },
-    async getSiswa() {
-      try {
-        const response = await api.get('/siswa')
-        this.daftarSiswa = Array.isArray(response.data) ? response.data.map(this.normalizeSiswa) : []
-      } catch (error) {
-        this.errorMessage = error.response?.data?.message || 'Data siswa gagal dimuat.'
-      }
-    },
-    async getKelas() {
-      try {
-        const response = await api.get('/kelas')
-        this.kelasList = response.data
-      } catch (error) {
-        console.log('GET KELAS ERROR')
-      }
-    },
-    bukaModal(siswa = null) {
-      this.isView = false;
-      this.errorMessage = '';
-      this.errors = { nama: false, nis: false, kode_kelas: false };
-      if (siswa) { 
-        const normalized = this.normalizeSiswa(siswa)
-        this.isEdit = true; 
-        this.editId = normalized.id; 
-        this.formSiswa = { id: normalized.id, nama: normalized.nama, nis: normalized.nis || '', kode_kelas: normalized.kode_kelas }; 
-      } else { 
-        this.isEdit = false; 
-        this.formSiswa = { id: '', nama: '', nis: '', kode_kelas: '' }; 
-      }
-      this.showModal = true;
-    },
-    viewSiswa(siswa) { 
-      const n = this.normalizeSiswa(siswa)
-      this.isView = true; 
-      this.formSiswa = { id: n.id, nama: n.nama, nis: n.nis || '', kode_kelas: n.kode_kelas }; 
-      this.showModal = true; 
-    },
-    tutupModal() { 
-      this.showModal = false; 
-      this.errorMessage = '';
-    },
-    async simpanSiswa() {
-      this.errors.nama = !this.formSiswa.nama.trim();
-      this.errors.kode_kelas = !this.formSiswa.kode_kelas;
-      if (this.errors.nama || this.errors.kode_kelas) return;
-      try {
-        this.isSaving = true
-        const payload = { nama: this.formSiswa.nama.trim(), nis: this.formSiswa.nis ? String(this.formSiswa.nis).trim() : null, kode_kelas: this.formSiswa.kode_kelas }
-        if (this.isEdit) { await this.updateSiswa(this.editId, payload) } 
-        else { await api.post('/siswa', { id: this.createId(), ...payload }) }
-        await this.getSiswa(); this.tutupModal();
-      } catch (error) {
-        this.errorMessage = this.getErrorMessage(error, 'Data gagal disimpan.')
-      } finally { this.isSaving = false }
-    },
-    konfirmasiHapus(id) {
-      this.selectedId = id; this.showConfirm = true;
-    },
-    async hapusSiswa() { 
-      try {
-        this.isDeleting = true
-        await this.deleteSiswa(this.selectedId)
-        await this.getSiswa()
-        this.showConfirm = false;
-      } catch (error) {
-        this.pageMessage = this.getErrorMessage(error, 'Gagal menghapus.')
-      } finally { this.isDeleting = false }
-    },
-    updateSiswa(id, payload) { return api.put(`/siswa/${encodeURIComponent(id)}`, payload) },
-    deleteSiswa(id) { return api.delete(`/siswa/${encodeURIComponent(id)}`) },
-    normalizeSiswa(s) {
-      return { id: s?.id || '', nama: s?.nama || '', nis: s?.nis === null || s?.nis === undefined ? '' : String(s.nis), kode_kelas: s?.kode_kelas || '' }
-    },
-    getErrorMessage(error, fallback) {
-      const data = error.response?.data
-      if (data?.message) return data.message
-      return fallback
-    }
-  }
+// Logic States
+const search = ref('')
+const showModal = ref(false)
+const showConfirm = ref(false)
+const isEdit = ref(false)
+const selectedSiswa = ref(null)
+const daftarSiswa = ref([])
+const kelasList = ref([])
+const form = ref({ id: '', nama: '', nis: '', kode_kelas: '' })
+
+// Lifecycle - API fetch tetep aman
+onMounted(() => { 
+  fetchSiswa() 
+  fetchKelas()
+})
+
+// Search Logic
+const filteredSiswa = computed(() => {
+  const q = search.value.toLowerCase()
+  return (daftarSiswa.value || []).filter(s => 
+    s.nama?.toLowerCase().includes(q) || s.kode_kelas?.toLowerCase().includes(q)
+  )
+})
+
+// API Functions
+const fetchSiswa = async () => { 
+  try { 
+    const res = await api.get('/siswa')
+    daftarSiswa.value = Array.isArray(res.data) ? res.data : []
+  } catch (e) { console.error("API Error fetch siswa:", e) } 
 }
+
+const fetchKelas = async () => {
+  try {
+    const res = await api.get('/kelas')
+    kelasList.value = Array.isArray(res.data) ? res.data : []
+  } catch (e) { console.error("API Error fetch kelas:", e) }
+}
+
+const handleSave = async () => {
+  try {
+    if (isEdit.value) await api.put(`/siswa/${form.value.id}`, form.value)
+    else await api.post('/siswa', { ...form.value, id: Date.now().toString() })
+    fetchSiswa(); closeModal();
+  } catch (e) { alert('Gagal menyimpan data!'); }
+}
+
+const handleDelete = async () => {
+  try {
+    await api.delete(`/siswa/${selectedSiswa.value.id}`)
+    fetchSiswa(); closeConfirm();
+  } catch (e) { alert('Gagal menghapus data!'); }
+}
+
+// UI Helpers
+const openModal = (item = null) => {
+  isEdit.value = !!item
+  form.value = item ? { ...item } : { id: '', nama: '', nis: '', kode_kelas: '' }
+  showModal.value = true
+}
+const closeModal = () => { showModal.value = false }
+const openConfirm = (item) => { selectedSiswa.value = item; showConfirm.value = true; }
+const closeConfirm = () => { showConfirm.value = false }
+const getInitials = (n) => n ? n.split(' ').map(x => x[0]).join('').toUpperCase().substring(0, 2) : '?'
 </script>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
-/* STYLE TOMBOL ABSENSI BARU */
-.btn-absensi-header {
-  background: #eef2ff;
-  color: #4f46e5;
-  border: none;
-  padding: 12px 20px;
-  border-radius: 14px;
-  font-weight: 700;
-  font-size: 0.85rem;
-}
-.btn-a { background: #eef2ff; color: #4f46e5; }
-.btn-a:hover { background: #4f46e5; color: white; }
+.app-container { min-height: 100vh; background: #fcfdfe; font-family: 'Plus Jakarta Sans', sans-serif; color: #1e293b; }
 
-/* STYLE ASLI ANDA */
-.border-danger-custom { border-color: #ef4444 !important; background: #fff5f5 !important; }
-.text-danger-custom { color: #ef4444 !important; font-size: 0.75rem; }
-.app-container { height: 100vh; background: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; position: fixed; inset: 0; }
-.content-scroll-area { flex: 1; overflow-y: auto; height: calc(100vh - 120px); scroll-behavior: smooth; }
-.fw-800 { font-weight: 800; }
-.ls-wide { letter-spacing: 0.05em; }
-.text-indigo { color: #4f46e5; }
-.shadow-premium { box-shadow: 0 10px 30px -5px rgba(0,0,0,0.05); }
-.header-glass { background: white; border-bottom: 1px solid #f1f5f9; min-height: 100px; }
-.header-side-left, .header-side-right { flex: 1; }
-.avatar-aj { width: 44px; height: 44px; background: #4f46e5; color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; margin-bottom: 4px; border: 3px solid #eef2ff; }
-.h-line { width: 40px; height: 3px; background: #4f46e5; border-radius: 10px; margin-top: 4px; }
-.ripple { transition: all 0.2s ease; cursor: pointer; }
-.ripple:active { transform: scale(0.95); opacity: 0.8; }
-.btn-back-modern { background: #f1f5f9; border: none; border-radius: 12px; font-weight: 700; font-size: 0.75rem; padding: 10px 18px; color: #64748b; }
-.btn-add-premium { background: #4f46e5; color: white; border: none; padding: 12px 24px; border-radius: 14px; font-weight: 700; }
-.qs-badge { background: white; padding: 12px 20px; border-radius: 14px; border: 1px solid #eef2ff; display: flex; align-items: center; gap: 8px; }
-.qs-val { font-weight: 800; color: #4f46e5; }
-.search-wrapper { max-width: 800px; margin: 0 auto; }
-.search-inner-glass {
-  background: rgba(255, 255, 255, 0.6) !important; backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.8) !important; border-radius: 20px;
-  padding: 16px 28px; display: flex; align-items: center;
-  box-shadow: 0 15px 35px rgba(31, 38, 135, 0.05) !important;
+/* Header Luxury (Match Gambar 2 & Warna Ungu Indigo) */
+.header-glass { background: white; border-bottom: 1px solid #f1f5f9; padding: 12px 60px; position: sticky; top: 0; z-index: 100; }
+.header-inner { display: flex; align-items: center; justify-content: space-between; }
+.header-side { flex: 1; }
+
+.header-center { text-align: center; }
+.header-center h2 { 
+  margin: 0; 
+  font-size: 1.4rem; /* Diperkecil biar pas */
+  font-weight: 700; 
+  letter-spacing: -0.5px; 
 }
-.btn-clear { border: none; background: transparent; color: #cbd5e1; }
-.alert-siswa { max-width: 800px; margin: 0 auto; background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; border-radius: 14px; padding: 12px 16px; display: flex; align-items: center; gap: 10px; font-weight: 800; }
-.animate-fade-in { animation: fadeIn 0.6s ease; }
-.animate-slide-up { animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.animate-pop { animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both; }
+.avatar-aj { width: 38px; height: 38px; background: #6366f1; color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; margin: 0 auto 4px; font-size: 0.9rem; }
+.h-line { width: 30px; height: 3px; background: #6366f1; border-radius: 10px; margin: 0 auto; }
+
+.header-actions { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+
+/* Buttons & Badges (Indigo Theme) */
+.btn-stat-link { background: #f5f3ff; color: #6366f1; border: 1px solid #ede9fe; padding: 8px 18px; border-radius: 10px; font-weight: 700; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.stats-badge { background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px 18px; border-radius: 10px; font-size: 0.85rem; color: #64748b; }
+.stats-badge strong { color: #6366f1; margin-left: 5px; }
+.btn-add-premium { background: #6366f1; color: white; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.btn-back-modern { background: #f1f5f9; color: #64748b; border: none; padding: 8px 16px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+
+/* Content Section */
+.content-scroll-area { padding: 40px 60px; }
+
+/* Search Bar (Clean White) */
+.search-wrapper { max-width: 750px; margin: 0 auto 40px; }
+.search-inner-glass { background: white; border: 1px solid #e2e8f0; border-radius: 20px; padding: 14px 25px; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+.search-inner-glass input { width: 100%; border: none; outline: none; font-size: 1rem; font-weight: 500; background: transparent; color: #1e293b; }
+.text-indigo { color: #6366f1; }
+
+/* Table Section */
+.table-card { background: transparent; }
+table { width: 100%; border-collapse: separate; border-spacing: 0 0px; }
+th { padding: 15px 25px; color: #94a3b8; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; text-align: left; }
+td { padding: 20px 25px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+
+.student-cell { display: flex; align-items: center; gap: 15px; }
+.avatar-sm { width: 40px; height: 40px; background: #f5f3ff; color: #6366f1; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; }
+.class-tag { background: #f1f5f9; color: #6366f1; padding: 6px 14px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; }
+
+/* Actions */
+.action-group { display: flex; justify-content: flex-end; gap: 8px; }
+.btn-tool { background: transparent; border: none; color: #cbd5e1; font-size: 1.1rem; padding: 6px; cursor: pointer; transition: 0.2s; }
+.btn-tool:hover { color: #6366f1; transform: translateY(-2px); }
+.btn-tool-danger:hover { color: #ef4444; }
+
+/* Empty State */
+.empty-state { text-align: center; padding: 100px 0; color: #cbd5e1; }
+.empty-icon-wrapper { font-size: 4rem; margin-bottom: 10px; opacity: 0.5; }
+
+/* Modal System */
+.modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.3); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+.modal-box { background: white; padding: 35px; border-radius: 24px; width: 100%; max-width: 480px; }
+.modal-heading h4 { margin: 0 0 25px; font-size: 1.3rem; font-weight: 800; text-align: center; }
+.form-group { margin-bottom: 15px; }
+.form-group label { font-size: 0.7rem; font-weight: 800; color: #94a3b8; display: block; margin-bottom: 6px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.input-premium { border: 1px solid #e2e8f0; padding: 12px 16px; border-radius: 12px; background: #f8fafc; }
+.input-premium input, .input-premium select { width: 100%; border: none; outline: none; background: transparent; font-weight: 600; }
+.modal-actions { display: flex; gap: 12px; margin-top: 30px; }
+.modal-actions button { flex: 1; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; }
+.btn-save-modern { background: #6366f1; color: white; }
+.btn-cancel-modern { background: #f1f5f9; color: #64748b; }
+
+/* Animations */
+.animate-fade-in { animation: fadeIn 0.4s ease both; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes pop { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
-.avatar-sm { width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; }
-.bg-indigo-grad { background: linear-gradient(135deg, #6366f1, #4f46e5); }
-.class-tag { background: #eef2ff; color: #4f46e5; padding: 6px 14px; border-radius: 10px; font-weight: 700; font-size: 11px; border: 1px solid #e0e7ff; }
-.status-pill { background: #dcfce7; color: #15803d; padding: 6px 14px; border-radius: 50px; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center; gap: 6px; }
-.dot { width: 6px; height: 6px; background: #22c55e; border-radius: 50%; }
-.btn-tool { width: 38px; height: 38px; border-radius: 12px; border: none; margin-left: 6px; }
-.btn-v { background: #f0f9ff; color: #0369a1; }
-.btn-e { background: #f0fdf4; color: #16a34a; }
-.btn-d { background: #fff1f2; color: #e11d48; }
-.modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-.modal-box { width: 100%; max-width: 480px; }
-.btn-close-modern { position: absolute; top: 25px; right: 25px; width: 40px; height: 40px; border-radius: 50%; background: #f1f5f9; border: none; color: #94a3b8; display: flex; align-items: center; justify-content: center; }
-.modal-icon-header { width: 50px; height: 50px; background: #eef2ff; color: #4f46e5; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
-.input-premium { background: #f8fafc; border: 2px solid #f1f5f9; padding: 14px 20px; border-radius: 16px; display: flex; align-items: center; gap: 12px; }
-.input-premium input, .input-premium select { border: none; background: transparent; outline: none; width: 100%; font-weight: 600; color: #1e293b; }
-.btn-save-modern { background: #4f46e5; color: white; border: none; border-radius: 16px; padding: 16px; }
-.btn-cancel-modern { background: #f1f5f9; color: #64748b; border: none; border-radius: 16px; padding: 16px; }
+.animate-slide-up { animation: slideUp 0.5s ease both; }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.ripple:active { transform: scale(0.96); }
+.text-end { text-align: right; }
 </style>

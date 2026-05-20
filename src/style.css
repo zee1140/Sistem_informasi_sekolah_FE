@@ -50,32 +50,8 @@
   }
 }
 
-/* ===== FIX GARIS VERTIKAL SAAT PINDAH PAGE ===== */
-
-/* Hilangin border kiri kanan dari #app */
-#app {
-  border-inline: none !important;
-  width: 100%;
-  max-width: 100%;
-}
-
-/* Cegah overflow yang bikin garis */
-html, body {
+body {
   margin: 0;
-  padding: 0;
-  overflow-x: hidden;
-}
-
-/* Biar sizing aman semua */
-* {
-  box-sizing: border-box;
-}
-
-.app-wrapper {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
-  border: none;
 }
 
 h1,
@@ -181,15 +157,17 @@ code {
 }
 
 #app {
-  width: 1126px;
+   width: 100%;
+  height: 100%;
   max-width: 100%;
   margin: 0 auto;
   text-align: center;
-  border-inline: 1px solid var(--border);
   min-height: 100svh;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  border-left: 1px solid var(--border);
+  border-right: none;
 }
 
 #center {

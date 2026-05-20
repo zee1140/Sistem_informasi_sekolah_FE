@@ -450,7 +450,52 @@ export default {
 /* --- BUTTONS & BADGES --- */
 .ripple { transition: all 0.2s ease; cursor: pointer; }
 .ripple:active { transform: scale(0.95); opacity: 0.8; }
-.btn-back-modern { background: #f1f5f9; border: none; border-radius: 12px; font-weight: 700; font-size: 0.75rem; padding: 10px 18px; color: #64748b; }
+.btn-back-modern {
+  background: #eef2ff;
+  color: #4f46e5;
+  border: none;
+  border-radius: 999px; /* bikin pill */
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: 0.2s;
+}
+
+/* hover biar hidup dikit */
+.btn-back-modern:hover {
+  background: #4f46e5;
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* PAKSA KIRI BANGET */
+.header-side-left {
+  display: flex;
+  justify-content: flex-start !important;
+  align-items: center;
+}
+
+/* HILANGIN WIDTH FULL YANG BIKIN KE TENGAH */
+.w-100-mobile {
+  width: auto !important;
+}
+
+/* BIAR CENTER TETEP DI TENGAH */
+.header-center {
+  flex: 1;
+  text-align: center;
+}
+
+/* KANAN TETEP DI KANAN */
+.header-side-right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
 .btn-add-premium { background: #4f46e5; color: white; border: none; padding: 12px 24px; border-radius: 14px; font-weight: 700; }
 .qs-badge { background: white; padding: 12px 20px; border-radius: 14px; border: 1px solid #eef2ff; display: flex; align-items: center; gap: 8px; }
 .qs-val { font-weight: 800; color: #4f46e5; }
