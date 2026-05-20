@@ -54,7 +54,13 @@
                 <i class="bi bi-calendar-week-fill"></i><span>Jadwal Pelajaran</span>
               </router-link>
             </li>
+            <li>
+              <router-link to="/absensi" class="menu-link">
+                <i class="bi bi-check-circle-fill"></i><span>Kehadiran Siswa</span>
+              </router-link>
+            </li>
           </ul>
+          
           
           <div class="logout-section mt-auto pt-4 border-top">
             <button @click="logout" class="btn-logout border-0 shadow-sm w-100">

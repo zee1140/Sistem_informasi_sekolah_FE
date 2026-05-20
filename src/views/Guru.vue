@@ -117,10 +117,21 @@
 
             <div class="mb-4">
               <label class="small fw-800 text-muted mb-2 ls-wide">NIP</label>
-              <div class="input-premium">
+              <div class="input-premium" :class="{'border-danger-custom': errors.nip}">
                 <i class="bi bi-credit-card-2-front text-indigo"></i>
-                <input v-model="formGuru.nip" type="text" placeholder="Opsional" :readonly="isView">
+                <input
+                  v-model="formGuru.nip"
+                  type="text"
+                  inputmode="numeric"
+                  pattern="\d*"
+                  placeholder="Opsional"
+                  :readonly="isView"
+                  @input="onNipInput"
+                >
               </div>
+              <small v-if="errors.nip" class="text-danger-custom fw-bold mt-1 d-block animate-pop">
+                <i class="bi bi-exclamation-circle"></i> NIP harus berupa angka saja!
+              </small>
             </div>
 
             <div class="mb-4">
@@ -138,7 +149,15 @@
               <label class="small fw-800 text-muted mb-2 ls-wide">MATA PELAJARAN</label>
               <div class="input-premium" :class="{'border-danger-custom': errors.mapel}">
                 <i class="bi bi-journal-bookmark text-indigo"></i>
-                <input v-model="formGuru.mapel" type="text" placeholder="Contoh: Matematika / Fisika" :readonly="isView">
+                <select v-model="formGuru.mapel" :disabled="isView">
+                  <option value="" disabled>Pilih Mata Pelajaran</option>
+                  <option>Matematika</option>
+                  <option>Bahasa Indonesia</option>
+                  <option>Bahasa Inggris</option>
+                  <option>PPKn</option>
+                  <option>Informatika</option>
+                  <option>Produktif Jurusan</option>
+                </select>
               </div>
               <small v-if="errors.mapel" class="text-danger-custom fw-bold mt-1 d-block animate-pop">
                 <i class="bi bi-exclamation-circle"></i> Mata pelajaran tidak boleh kosong!
@@ -197,7 +216,7 @@ export default {
       isDeleting: false,
       pageMessage: '',
       formGuru: { id: '', nama: '', nip: '', mapel: '' },
-      errors: { nama: false, mapel: false },
+      errors: { nama: false, mapel: false, nip: false },
       daftarGuru: []
     }
   },
@@ -239,7 +258,7 @@ export default {
     },
     bukaModal(guru = null) {
       this.isView = false;
-      this.errors = { nama: false, mapel: false };
+      this.errors = { nama: false, mapel: false, nip: false };
       if (guru) { 
         const normalized = this.normalizeGuru(guru)
         this.isEdit = true; 
@@ -254,15 +273,22 @@ export default {
     viewGuru(guru) { 
       const normalized = this.normalizeGuru(guru)
       this.isView = true; 
-      this.errors = { nama: false, mapel: false };
+      this.errors = { nama: false, mapel: false, nip: false };
       this.formGuru = { ...normalized }; 
       this.showModal = true; 
     },
     tutupModal() { this.showModal = false; },
+    onNipInput(event) {
+      const raw = event.target.value || ''
+      const cleaned = raw.replace(/\D+/g, '')
+      this.errors.nip = raw !== cleaned
+      this.formGuru.nip = cleaned
+    },
     async simpanGuru() {
       this.errors.nama = !this.formGuru.nama.trim();
-      this.errors.mapel = !this.formGuru.mapel.trim();
-      if (this.errors.nama || this.errors.mapel) return;
+      this.errors.mapel = !this.formGuru.mapel || !String(this.formGuru.mapel).trim();
+      this.errors.nip = this.formGuru.nip ? !/^[0-9]+$/.test(this.formGuru.nip) : false;
+      if (this.errors.nama || this.errors.mapel || this.errors.nip) return;
 
       try {
         this.isSaving = true
@@ -426,7 +452,8 @@ export default {
 .btn-close-modern:hover { background: #fee2e2; color: #ef4444; transform: rotate(90deg); }
 .modal-icon-header { width: 50px; height: 50px; background: #eef2ff; color: #4f46e5; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
 .input-premium { background: #f8fafc; border: 2px solid #f1f5f9; padding: 14px 20px; border-radius: 16px; display: flex; align-items: center; gap: 12px; transition: 0.3s; }
-.input-premium input { border: none; background: transparent; outline: none; width: 100%; font-weight: 600; color: #1e293b; }
+.input-premium input,
+.input-premium select { border: none; background: transparent; outline: none; width: 100%; font-weight: 600; color: #1e293b; }
 .btn-save-modern { background: #4f46e5; color: white; border: none; border-radius: 16px; padding: 16px; transition: 0.3s; }
 .btn-cancel-modern { background: #f1f5f9; color: #64748b; border: none; border-radius: 16px; padding: 16px; }
 

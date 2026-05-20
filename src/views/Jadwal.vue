@@ -1,35 +1,62 @@
 <template>
-  <div class="app-container animate-fade-in">
-    <header class="header-glass">
-      <div class="header-inner">
-        <div class="header-side">
-          <button class="btn-back-modern ripple" @click="$router.push('/dashboard')">
+  <div class="app-container animate-page">
+
+    <!-- HEADER -->
+    <div class="header-glass py-3 py-md-4 px-3 px-md-5 bg-white border-bottom shadow-sm">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+
+        <!-- LEFT -->
+        <div class="header-side-left w-100-mobile">
+          <button class="btn btn-back-modern ripple" @click="$router.push('/dashboard')">
             <i class="bi bi-arrow-left"></i>
             Dashboard
           </button>
         </div>
 
-        <div class="header-center">
-          <div class="avatar-aj shadow-premium">AJ</div>
-          <h2>Agenda Pembelajaran</h2>
-          <div class="h-line"></div>
+        <!-- CENTER -->
+        <div class="header-center text-center animate-pop">
+          <div class="d-flex flex-column align-items-center gap-2">
+            <div class="avatar-aj shadow-premium">AJ</div>
+
+            <h2 class="fw-800 text-dark mb-0 fs-4-mobile">
+              Agenda Pembelajaran
+            </h2>
+
+            <div class="h-line"></div>
+          </div>
         </div>
 
-        <div class="header-side header-actions">
-          <button class="btn-add-premium ripple shadow-sm" @click="openModal()">
-            <i class="bi bi-plus-lg"></i>
-            <span>Tambah Jadwal</span>
+        <!-- RIGHT -->
+        <div class="header-side-right d-flex align-items-center justify-content-end gap-2 gap-md-3 w-100-mobile">
+
+          <div class="qs-badge shadow-sm animate-slide-right">
+            <span class="qs-lab">TOTAL MAPEL:</span>
+            <span class="qs-val">{{ jadwalList.length }}</span>
+          </div>
+
+          <button
+            class="btn btn-add-premium ripple shadow-sm"
+            @click="openModal()"
+          >
+            <i class="bi bi-plus-circle-fill me-md-2"></i>
+            <span class="d-none d-md-inline">Tambah Jadwal</span>
           </button>
+
         </div>
       </div>
-    </header>
+    </div>
 
-    <main class="content-scroll-area">
-      <section class="summary-grid animate-slide-up">
+    <!-- CONTENT -->
+    <div class="content-scroll-area p-3 p-md-5">
+
+      <!-- SUMMARY -->
+      <div class="summary-grid animate-slide-up mb-4 mb-md-5">
+
         <article class="summary-card">
           <div class="summary-icon bg-indigo-soft">
             <i class="bi bi-journal-bookmark-fill"></i>
           </div>
+
           <div>
             <p>Total Mapel</p>
             <h3>{{ jadwalList.length }}</h3>
@@ -40,6 +67,7 @@
           <div class="summary-icon bg-amber-soft">
             <i class="bi bi-clock-fill"></i>
           </div>
+
           <div>
             <p>Status Sesi</p>
             <h3 class="text-amber">Aktif</h3>
@@ -50,154 +78,189 @@
           <div class="summary-icon bg-rose-soft">
             <i class="bi bi-geo-alt-fill"></i>
           </div>
+
           <div>
             <p>Lokasi</p>
             <h3 class="text-rose">Lab Komp</h3>
           </div>
         </article>
-      </section>
 
-      <section class="search-wrapper animate-slide-up" style="animation-delay: 0.08s">
-        <div class="search-inner-glass">
-          <i class="bi bi-search text-indigo"></i>
-          <input v-model="search" type="text" placeholder="Cari mata pelajaran atau guru...">
-          <button v-if="search" type="button" class="btn-clear" @click="search = ''">
-            <i class="bi bi-x-circle-fill"></i>
-          </button>
+      </div>
+
+      <!-- SEARCH -->
+      <div
+        class="search-wrapper mb-4 mb-md-5 animate-slide-up"
+        style="animation-delay: 0.1s"
+      >
+        <div class="search-inner-glass border-0">
+
+          <i class="bi bi-search text-indigo me-3"></i>
+
+          <input
+            v-model="search"
+            type="text"
+            placeholder="Cari mata pelajaran atau guru..."
+            class="flex-grow-1 border-0 outline-none text-dark fw-600 bg-transparent"
+          >
+
+          <transition name="fade">
+            <button
+              v-if="search"
+              class="btn-clear"
+              @click="search = ''"
+            >
+              <i class="bi bi-x-circle-fill"></i>
+            </button>
+          </transition>
+
         </div>
-      </section>
+      </div>
 
-      <section class="table-card animate-slide-up" style="animation-delay: 0.16s">
+      <!-- TABLE -->
+      <div
+        class="table-card bg-white shadow-premium rounded-4 overflow-hidden animate-slide-up"
+        style="animation-delay: 0.2s"
+      >
+
         <div class="table-responsive">
-          <table>
-            <thead>
-              <tr>
+
+          <table class="table table-hover align-middle mb-0">
+
+            <thead class="bg-light d-none d-md-table-header-group">
+              <tr class="text-uppercase small fw-800 text-muted ls-wide">
                 <th>Mata Pelajaran</th>
                 <th>Kelas</th>
                 <th>Waktu</th>
                 <th>Ruang</th>
-                <th class="text-end">Aksi</th>
+                <th class="text-end pe-4">Aksi</th>
               </tr>
             </thead>
-            <tbody>
-              <tr v-for="item in filteredJadwal" :key="item.id">
-                <td>
-                  <div class="student-cell">
-                    <div class="avatar-sm initials">{{ getInitials(item.guru) }}</div>
-                    <div>
-                      <strong>{{ item.mapel }}</strong>
-                      <small>Guru: {{ item.guru }}</small>
+
+            <transition-group
+              name="list"
+              tag="tbody"
+              class="mobile-grid"
+            >
+
+              <tr
+                v-for="item in filteredJadwal"
+                :key="item.id"
+                class="row-hover mobile-card"
+              >
+
+                <!-- MAPEL -->
+                <td class="ps-md-4 py-3 border-0-mobile">
+
+                  <div class="d-flex align-items-center gap-3">
+
+                    <div class="avatar-sm initials bg-indigo-grad animate-pop">
+                      {{ getInitials(item.guru) }}
                     </div>
+
+                    <div>
+                      <div class="fw-bold text-dark mb-0">
+                        {{ item.mapel }}
+                      </div>
+
+                      <small class="text-muted">
+                        Guru: {{ item.guru }}
+                      </small>
+                    </div>
+
                   </div>
+
                 </td>
-                <td><span class="class-tag">{{ item.kelas }}</span></td>
-                <td class="time-text">{{ item.waktu }}</td>
-                <td>
-                  <span class="status-pill status-sakit">
-                    <span class="dot"></span>
-                    {{ item.ruang }}
+
+                <!-- KELAS -->
+                <td class="border-0-mobile">
+
+                  <div class="mobile-label d-md-none">
+                    Kelas
+                  </div>
+
+                  <span class="badge-soft-indigo">
+                    {{ item.kelas }}
                   </span>
+
                 </td>
-                <td class="text-end">
-                  <button type="button" class="btn-tool ripple" @click="openModal(item)">
-                    <i class="bi bi-pencil-square"></i>
-                  </button>
-                  <button type="button" class="btn-tool btn-tool-danger ripple" @click="openConfirm(item)">
-                    <i class="bi bi-trash3"></i>
-                  </button>
+
+                <!-- WAKTU -->
+                <td class="border-0-mobile">
+
+                  <div class="mobile-label d-md-none">
+                    Waktu
+                  </div>
+
+                  <div class="fw-semibold text-secondary">
+                    <i class="bi bi-clock me-1 opacity-50"></i>
+                    {{ item.waktu }}
+                  </div>
+
                 </td>
+
+                <!-- RUANG -->
+                <td class="border-0-mobile">
+
+                  <div class="mobile-label d-md-none">
+                    Ruang
+                  </div>
+
+                  <div class="fw-semibold text-secondary">
+                    <i class="bi bi-geo-alt me-1 opacity-50"></i>
+                    {{ item.ruang }}
+                  </div>
+
+                </td>
+
+                <!-- ACTION -->
+                <td class="text-md-end pe-md-4 border-0-mobile">
+
+                  <div class="d-flex justify-content-md-end gap-2 mt-2 mt-md-0">
+
+                    <button
+                      type="button"
+                      class="btn-tool btn-e ripple"
+                      @click.stop="openModal(item)"
+                    >
+                      <i class="bi bi-pencil-square"></i>
+                    </button>
+
+                    <button
+                      type="button"
+                      class="btn-tool btn-d ripple"
+                      @click.stop="openConfirm(item)"
+                    >
+                      <i class="bi bi-trash3"></i>
+                    </button>
+
+                  </div>
+
+                </td>
+
               </tr>
-            </tbody>
+
+            </transition-group>
+
           </table>
-        </div>
 
-        <div v-if="filteredJadwal.length === 0" class="empty-state">
-          <i class="bi bi-calendar-x"></i>
-          <p>Jadwal tidak ditemukan...</p>
-        </div>
-      </section>
-    </main>
+          <!-- EMPTY -->
+          <div
+            v-if="filteredJadwal.length === 0"
+            class="p-5 text-center animate-pop"
+          >
+            <i class="bi bi-calendar-x fs-1 text-muted opacity-25"></i>
 
-    <transition name="modal-zoom">
-      <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
-        <div class="modal-box">
-          <button class="btn-close-modern ripple" @click="closeModal">
-            <i class="bi bi-x-lg"></i>
-          </button>
-
-          <div class="modal-content-inner">
-            <div class="modal-heading">
-              <div class="modal-icon-header"><i class="bi bi-calendar-plus"></i></div>
-              <h4>{{ isEdit ? 'Edit Jadwal' : 'Tambah Jadwal Baru' }}</h4>
-            </div>
-
-            <div class="form-group">
-              <label>MATA PELAJARAN</label>
-              <div class="input-premium">
-                <i class="bi bi-book text-indigo"></i>
-                <input v-model="form.mapel" type="text" placeholder="Contoh: Pemrograman Web">
-              </div>
-            </div>
-
-            <div class="form-grid">
-              <div class="form-group">
-                <label>KELAS</label>
-                <div class="input-premium">
-                  <i class="bi bi-people text-indigo"></i>
-                  <input v-model="form.kelas" type="text" placeholder="XI-PPLG 1">
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label>WAKTU / JAM</label>
-                <div class="input-premium">
-                  <i class="bi bi-clock text-indigo"></i>
-                  <input v-model="form.waktu" type="text" placeholder="07:00 - 09:00">
-                </div>
-              </div>
-            </div>
-
-            <div class="form-grid">
-              <div class="form-group">
-                <label>RUANG</label>
-                <div class="input-premium">
-                  <i class="bi bi-geo-alt text-indigo"></i>
-                  <input v-model="form.ruang" type="text" placeholder="Lab 01">
-                </div>
-              </div>
-              <div class="form-group">
-                <label>GURU</label>
-                <div class="input-premium">
-                  <i class="bi bi-person-workspace text-indigo"></i>
-                  <input v-model="form.guru" type="text" placeholder="Nama Guru">
-                </div>
-              </div>
-            </div>
-
-            <div class="modal-actions mt-4">
-              <button class="btn-cancel-modern ripple" @click="closeModal">Batal</button>
-              <button class="btn-save-modern ripple" :disabled="isSaving" @click="saveJadwal">
-                {{ isSaving ? 'Menyimpan...' : 'Simpan Jadwal' }}
-              </button>
-            </div>
+            <p class="mt-3 fw-bold text-muted">
+              Jadwal tidak ditemukan...
+            </p>
           </div>
-        </div>
-      </div>
-    </transition>
 
-    <transition name="modal-zoom">
-      <div v-if="showConfirm" class="modal-overlay" @click.self="closeConfirm">
-        <div class="modal-box modal-confirm">
-          <div class="confirm-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
-          <h4>Hapus Jadwal?</h4>
-          <p>Jadwal <strong>{{ selectedJadwal?.mapel }}</strong> akan dihapus permanen.</p>
-          <div class="modal-actions">
-            <button class="btn-cancel-modern ripple" @click="closeConfirm">Batal</button>
-            <button class="btn-delete-modern ripple" @click="deleteJadwal">Ya, Hapus</button>
-          </div>
         </div>
+
       </div>
-    </transition>
+
+    </div>
+
   </div>
 </template>
 
@@ -206,27 +269,26 @@ import { ref, computed, onMounted } from 'vue'
 import api from '../service/axios.js'
 
 const search = ref('')
-const showModal = ref(false)
-const showConfirm = ref(false)
-const isEdit = ref(false)
-const isSaving = ref(false)
-const selectedJadwal = ref(null)
 const jadwalList = ref([])
-
-const form = ref({ id: '', mapel: '', kelas: '', waktu: '', ruang: '', guru: '' })
-
-onMounted(() => { getJadwal() })
 
 const filteredJadwal = computed(() => {
   const k = search.value.toLowerCase()
-  return jadwalList.value.filter(j => 
-    j.mapel.toLowerCase().includes(k) || j.guru.toLowerCase().includes(k)
+
+  return jadwalList.value.filter(j =>
+    j.mapel.toLowerCase().includes(k) ||
+    j.guru.toLowerCase().includes(k)
   )
+})
+
+onMounted(() => {
+  getJadwal()
 })
 
 const getJadwal = async () => {
   try {
+
     const res = await api.get('/jadwal')
+
     jadwalList.value = res.data.map(item => ({
       id: item.id || item.id_jadwal,
       mapel: item.mapel || item.mata_pelajaran || '-',
@@ -235,120 +297,459 @@ const getJadwal = async () => {
       ruang: item.ruang || '-',
       guru: item.guru || item.nama_guru || '-'
     }))
-  } catch (e) { console.error(e) }
+
+  } catch (e) {
+    console.error(e)
+  }
 }
 
 const openModal = (item = null) => {
-  isEdit.value = !!item
-  form.value = item ? { ...item } : { id: '', mapel: '', kelas: '', waktu: '', ruang: '', guru: '' }
-  showModal.value = true
-}
-
-const closeModal = () => { showModal.value = false }
-
-const saveJadwal = async () => {
-  isSaving.value = true
-  try {
-    if(isEdit.value) await api.put(`/jadwal/${form.value.id}`, form.value)
-    else await api.post('/jadwal', { ...form.value, id: Date.now().toString() })
-    getJadwal(); closeModal();
-  } catch (e) { alert('Gagal simpan!'); }
-  finally { isSaving.value = false; }
+  console.log(item)
 }
 
 const openConfirm = (item) => {
-  selectedJadwal.value = item
-  showConfirm.value = true
+  console.log(item)
 }
 
-const closeConfirm = () => { showConfirm.value = false }
-
-const deleteJadwal = async () => {
-  try {
-    await api.delete(`/jadwal/${selectedJadwal.value.id}`)
-    getJadwal(); closeConfirm();
-  } catch (e) { alert('Gagal hapus!'); }
+const getInitials = (n) => {
+  return n
+    ? n
+      .split(' ')
+      .map(x => x[0])
+      .join('')
+      .toUpperCase()
+      .substring(0,2)
+    : '?'
 }
-
-const getInitials = (n) => n ? n.split(' ').map(x=>x[0]).join('').toUpperCase().substring(0,2) : '?'
 </script>
 
 <style scoped>
-/* CSS PERSIS IDENTIK DENGAN ABSENSI & SISWA */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
-.app-container { min-height: 100vh; background: #f8fafc; color: #1e293b; font-family: 'Plus Jakarta Sans', sans-serif; }
-.header-glass { background: white; border-bottom: 1px solid #eef2ff; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05); padding: 22px clamp(18px, 5vw, 64px); }
-.header-inner { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
-.header-side { flex: 1; display: flex; align-items: center; }
-.header-actions { justify-content: flex-end; gap: 12px; }
-.header-center { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-.header-center h2 { margin: 0; font-size: 1.65rem; font-weight: 800; }
-.avatar-aj { width: 42px; height: 42px; background: #4f46e5; color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; border: 3px solid #eef2ff; }
-.h-line { width: 42px; height: 3px; background: #4f46e5; border-radius: 999px; }
+/* =========================
+   LAYOUT
+========================= */
 
-.content-scroll-area { padding: 34px clamp(18px, 5vw, 64px) 56px; }
+.app-container {
+  height: 100vh;
+  background: #f8fafc;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  overflow: hidden;
+  position: fixed;
+  inset: 0;
+}
 
-/* Summary Grid */
-.summary-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 24px; }
-.summary-card { background: white; border: 1px solid #eef2ff; border-radius: 18px; padding: 18px; display: flex; align-items: center; gap: 14px; box-shadow: 0 12px 28px rgba(15, 23, 42, 0.04); }
-.summary-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; }
-.summary-card p { margin: 0; color: #94a3b8; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; }
-.summary-card h3 { margin: 0; color: #4f46e5; font-size: 1.45rem; font-weight: 800; }
-.bg-indigo-soft { background: #eef2ff; color: #4f46e5; }
-.bg-amber-soft { background: #fffbeb; color: #f59e0b; }
-.bg-rose-soft { background: #fff1f2; color: #e11d48; }
-.text-amber { color: #f59e0b !important; }
-.text-rose { color: #e11d48 !important; }
+.content-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  height: calc(100vh - 120px);
+  scroll-behavior: smooth;
+}
 
-/* Search Clean */
-.search-wrapper { max-width: 800px; margin: 0 auto 28px; }
-.search-inner-glass { background: white; border: 1px solid #eef2ff; border-radius: 20px; padding: 16px 24px; display: flex; align-items: center; gap: 14px; box-shadow: 0 18px 40px rgba(79, 70, 229, 0.08); }
-.search-inner-glass input { width: 100%; border: none; outline: none; background: transparent; font-weight: 600; }
-.btn-clear { border: none; background: transparent; color: #cbd5e1; }
-.text-indigo { color: #4f46e5; }
+.fw-800 {
+  font-weight: 800;
+}
 
-/* Table */
-.table-card { background: white; border: 1px solid #eef2ff; border-radius: 20px; box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06); overflow: hidden; }
-.table-responsive { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; }
-thead { background: #f8fafc; }
-th { padding: 18px 24px; color: #64748b; font-size: 0.72rem; font-weight: 800; text-align: left; text-transform: uppercase; }
-td { padding: 16px 24px; border-top: 1px solid #f1f5f9; vertical-align: middle; }
+.ls-wide {
+  letter-spacing: 0.05em;
+}
 
-.student-cell { display: flex; align-items: center; gap: 12px; }
-.avatar-sm { width: 42px; height: 42px; border-radius: 13px; background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; }
-.class-tag { background: #eef2ff; color: #4f46e5; padding: 6px 12px; border-radius: 10px; font-size: 0.72rem; font-weight: 800; }
-.time-text { color: #64748b; font-weight: 700; }
+.shadow-premium {
+  box-shadow: 0 10px 30px -5px rgba(0,0,0,0.05);
+}
 
-.status-pill { border-radius: 999px; padding: 7px 12px; display: inline-flex; align-items: center; gap: 7px; font-size: 0.72rem; font-weight: 800; }
-.status-sakit { background: #e0f2fe; color: #0369a1; }
-.dot { width: 6px; height: 6px; border-radius: 999px; background: currentColor; }
+.text-indigo {
+  color: #4f46e5;
+}
 
-.btn-tool { width: 38px; height: 38px; border: none; border-radius: 12px; background: #f0fdf4; color: #16a34a; margin-left: 6px; }
-.btn-tool-danger { background: #fff1f2; color: #e11d48; }
+/* =========================
+   HEADER
+========================= */
 
-.btn-add-premium, .btn-save-modern { background: #4f46e5; color: white; border: none; border-radius: 14px; padding: 11px 18px; font-weight: 800; display: flex; align-items: center; gap: 8px; box-shadow: 0 14px 28px rgba(79, 70, 229, 0.25); }
-.btn-back-modern, .btn-cancel-modern { background: #f1f5f9; color: #64748b; border: none; border-radius: 14px; padding: 11px 18px; font-weight: 800; }
+.header-glass {
+  background: white;
+  border-bottom: 1px solid #f1f5f9;
+  min-height: 100px;
+}
 
-/* Modal & Animations */
-.modal-overlay { position: fixed; inset: 0; z-index: 9999; background: rgba(15, 23, 42, 0.42); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; padding: 18px; }
-.modal-box { width: 100%; max-width: 520px; background: white; border-radius: 28px; position: relative; box-shadow: 0 24px 80px rgba(15, 23, 42, 0.22); }
-.modal-content-inner { padding: 34px; }
-.input-premium { background: #f8fafc; border: 2px solid #f1f5f9; border-radius: 16px; padding: 13px 16px; display: flex; align-items: center; gap: 12px; }
-.input-premium input { width: 100%; border: none; outline: none; background: transparent; font-weight: 700; color: #1e293b; }
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.form-group { margin-bottom: 18px; }
-.form-group label { display: block; margin-bottom: 8px; color: #64748b; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; }
+.header-side-left,
+.header-side-right {
+  flex: 1;
+}
 
-.animate-fade-in { animation: fadeIn 0.5s ease; }
-.animate-slide-up { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes slideUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+.header-side-left {
+  display: flex;
+  justify-content: flex-start !important;
+  align-items: center;
+}
 
-.text-end { text-align: right; }
-.ripple:active { transform: scale(0.96); transition: 0.1s; }
-.modal-confirm { max-width: 420px; padding: 36px; text-align: center; }
-.confirm-icon { width: 78px; height: 78px; margin: 0 auto 20px; border-radius: 50%; background: #fff1f2; color: #e11d48; display: flex; align-items: center; justify-content: center; font-size: 2rem; }
-.btn-delete-modern { background: #fff1f2; color: #e11d48; border: none; border-radius: 14px; padding: 11px 18px; font-weight: 800; }
+.header-side-right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.header-center {
+  flex: 1;
+  text-align: center;
+}
+
+.w-100-mobile {
+  width: auto !important;
+}
+
+.avatar-aj {
+  width: 44px;
+  height: 44px;
+  background: #4f46e5;
+  color: white;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  margin-bottom: 4px;
+  border: 3px solid #eef2ff;
+}
+
+.h-line {
+  width: 40px;
+  height: 3px;
+  background: #4f46e5;
+  border-radius: 10px;
+  margin-top: 4px;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.ripple {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.ripple:active {
+  transform: scale(0.95);
+  opacity: 0.8;
+}
+
+.btn-back-modern {
+  background: #eef2ff;
+  color: #4f46e5;
+  border: none;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: 0.2s;
+}
+
+.btn-back-modern:hover {
+  background: #4f46e5;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.btn-add-premium {
+  background: #4f46e5;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 14px;
+  font-weight: 700;
+}
+
+.qs-badge {
+  background: white;
+  padding: 12px 20px;
+  border-radius: 14px;
+  border: 1px solid #eef2ff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qs-val {
+  font-weight: 800;
+  color: #4f46e5;
+}
+
+/* =========================
+   SUMMARY
+========================= */
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 16px;
+}
+
+.summary-card {
+  background: white;
+  border: 1px solid #eef2ff;
+  border-radius: 18px;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 12px 28px rgba(15,23,42,0.04);
+}
+
+.summary-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+}
+
+.summary-card p {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.summary-card h3 {
+  margin: 0;
+  color: #4f46e5;
+  font-size: 1.45rem;
+  font-weight: 800;
+}
+
+.bg-indigo-soft {
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+.bg-amber-soft {
+  background: #fffbeb;
+  color: #f59e0b;
+}
+
+.bg-rose-soft {
+  background: #fff1f2;
+  color: #e11d48;
+}
+
+.text-amber {
+  color: #f59e0b !important;
+}
+
+.text-rose {
+  color: #e11d48 !important;
+}
+
+/* =========================
+   SEARCH
+========================= */
+
+.search-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.search-inner-glass {
+  background: rgba(255,255,255,0.6) !important;
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255,255,255,0.8) !important;
+  border-radius: 20px;
+  padding: 16px 28px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 15px 35px rgba(31,38,135,0.05) !important;
+}
+
+.btn-clear {
+  border: none;
+  background: transparent;
+  color: #cbd5e1;
+}
+
+/* =========================
+   TABLE
+========================= */
+
+.avatar-sm {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 800;
+}
+
+.bg-indigo-grad {
+  background: linear-gradient(135deg,#6366f1,#4f46e5);
+}
+
+.badge-soft-indigo {
+  background: #eef2ff;
+  color: #4f46e5;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.btn-tool {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  border: none;
+}
+
+.btn-e {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.btn-d {
+  background: #fff1f2;
+  color: #e11d48;
+}
+
+/* =========================
+   ANIMATIONS
+========================= */
+
+.animate-page {
+  animation: pageEnter 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-slide-up {
+  animation: slideUp 0.8s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+.animate-pop {
+  animation: pop 0.45s cubic-bezier(0.175,0.885,0.32,1.275) both;
+}
+
+.animate-slide-right {
+  animation: slideRight 0.7s ease both;
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: scale(1.02) translateY(20px);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.4s ease;
+}
+
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 768px) {
+
+  .header-glass {
+    padding: 15px !important;
+    min-height: 130px;
+  }
+
+  .header-side-left,
+  .header-side-right {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .header-center {
+    order: -1;
+    margin-bottom: 5px;
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mobile-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .mobile-card {
+    display: block !important;
+    background: white;
+    border-radius: 20px !important;
+    padding: 20px;
+    border: 1px solid #eef2ff !important;
+  }
+
+  .border-0-mobile {
+    border: none !important;
+    padding: 5px 0 !important;
+  }
+
+  .mobile-label {
+    display: block !important;
+    font-size: 10px;
+    font-weight: 800;
+    color: #94a3b8;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+}
 </style>

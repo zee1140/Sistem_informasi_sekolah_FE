@@ -2,10 +2,10 @@
   <div class="app-container animate-fade-in">
     <header class="header-glass">
       <div class="header-inner">
+
         <div class="header-side">
-          <button class="btn-back-modern ripple" @click="router.push('/siswa')">
-            <i class="bi bi-arrow-left"></i>
-            Siswa
+          <button class="btn btn-back-modern ripple" @click="router.push('/dashboard')">
+            <i class="bi bi-arrow-left"></i> Dashboard
           </button>
         </div>
 
@@ -16,24 +16,30 @@
         </div>
 
         <div class="header-side header-actions">
-          <button class="btn-report ripple" @click="downloadLaporan">
+
+          <button class="btn-report ripple btn-hover-premium" @click="downloadLaporan">
             <i class="bi bi-download"></i>
             <span>Laporan</span>
           </button>
-          <button class="btn-add-premium ripple shadow-sm" @click="openModal()">
+
+          <button class="btn-add-premium ripple shadow-sm btn-hover-premium" @click="openModal()">
             <i class="bi bi-plus-lg"></i>
             <span>Catat Absensi</span>
           </button>
+
         </div>
       </div>
     </header>
 
     <main class="content-scroll-area">
+
       <section class="summary-grid animate-slide-up">
+
         <article class="summary-card">
           <div class="summary-icon bg-indigo-soft">
             <i class="bi bi-check2-circle"></i>
           </div>
+
           <div>
             <p>Total Hadir</p>
             <h3>{{ totalHadir }}</h3>
@@ -44,6 +50,7 @@
           <div class="summary-icon bg-amber-soft">
             <i class="bi bi-clipboard-pulse"></i>
           </div>
+
           <div>
             <p>Izin/Sakit</p>
             <h3 class="text-amber">{{ totalIzinSakit }}</h3>
@@ -54,37 +61,44 @@
           <div class="summary-icon bg-rose-soft">
             <i class="bi bi-exclamation-octagon"></i>
           </div>
+
           <div>
             <p>Tanpa Keterangan</p>
             <h3 class="text-rose">{{ totalAlpa }}</h3>
           </div>
         </article>
+
       </section>
 
-      <div v-if="pageMessage" class="alert-absensi animate-slide-up">
-        <i class="bi bi-exclamation-circle"></i>
-        <span>{{ pageMessage }}</span>
-        <button type="button" @click="pageMessage = ''"><i class="bi bi-x"></i></button>
-      </div>
+      <section class="search-wrapper animate-slide-up">
 
-      <section class="search-wrapper animate-slide-up" style="animation-delay: 0.08s">
         <div class="search-inner-glass">
           <i class="bi bi-search text-indigo"></i>
-          <input v-model="search" type="text" placeholder="Cari nama atau kelas siswa...">
-          <button v-if="search" type="button" class="btn-clear" @click="search = ''">
+
+          <input
+            v-model="search"
+            type="text"
+            placeholder="Cari nama atau kelas siswa..."
+          >
+
+          <button
+            v-if="search"
+            type="button"
+            class="btn-clear"
+            @click="search = ''"
+          >
             <i class="bi bi-x-circle-fill"></i>
           </button>
         </div>
+
       </section>
 
-      <section class="table-card animate-slide-up" style="animation-delay: 0.16s">
-        <div v-if="isLoading" class="empty-state">
-          <i class="bi bi-arrow-repeat"></i>
-          <p>Memuat data absensi...</p>
-        </div>
+      <section class="table-card animate-slide-up">
 
-        <div v-else class="table-responsive">
+        <div class="table-responsive">
+
           <table>
+
             <thead>
               <tr>
                 <th>Nama Siswa</th>
@@ -94,273 +108,278 @@
                 <th class="text-end">Aksi</th>
               </tr>
             </thead>
+
             <tbody>
-              <tr v-for="siswa in filteredAbsensi" :key="siswa.absensiId || siswa.id">
+
+              <tr
+                v-for="siswa in filteredAbsensi"
+                :key="siswa.id"
+              >
+
                 <td>
                   <div class="student-cell">
-                    <div class="avatar-sm">{{ getInitials(siswa.nama) }}</div>
+
+                    <div class="avatar-sm">
+                      {{ getInitials(siswa.nama) }}
+                    </div>
+
                     <div>
                       <strong>{{ siswa.nama }}</strong>
-                      <small>ID: {{ siswa.siswaId || siswa.id }}</small>
+                      <small>ID: {{ siswa.id }}</small>
                     </div>
+
                   </div>
                 </td>
-                <td><span class="class-tag">{{ siswa.kelas }}</span></td>
-                <td class="time-text">{{ siswa.waktu }}</td>
+
                 <td>
+                  <span class="class-tag">
+                    {{ siswa.kelas }}
+                  </span>
+                </td>
+
+                <td class="time-text">
+                  {{ siswa.waktu }}
+                </td>
+
+                <td>
+
                   <span class="status-pill" :class="statusClass(siswa.status)">
                     <span class="dot"></span>
                     {{ siswa.status }}
                   </span>
+
                 </td>
+
                 <td class="text-end">
-                  <button type="button" class="btn-tool ripple" title="Edit absensi" @click="openModal(siswa)">
+
+                  <button
+                    class="btn-tool ripple btn-hover-premium"
+                    @click="openModal(siswa)"
+                  >
                     <i class="bi bi-pencil-square"></i>
                   </button>
-                  <button type="button" class="btn-tool btn-tool-danger ripple" title="Hapus absensi" @click="openConfirm(siswa)">
+
+                  <button
+                    class="btn-tool btn-tool-danger ripple btn-hover-premium"
+                    @click="hapusData(siswa.id)"
+                  >
                     <i class="bi bi-trash3"></i>
                   </button>
+
                 </td>
+
               </tr>
+
             </tbody>
+
           </table>
+
         </div>
 
-        <div v-if="!isLoading && filteredAbsensi.length === 0" class="empty-state">
-          <i class="bi bi-calendar-x"></i>
-          <p>Data absensi tidak ditemukan...</p>
-        </div>
       </section>
+
     </main>
 
+    <!-- MODAL -->
     <transition name="modal-zoom">
-      <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+
+      <div
+        v-if="showModal"
+        class="modal-overlay"
+        @click.self="closeModal"
+      >
+
         <div class="modal-box">
-          <button class="btn-close-modern ripple" @click="closeModal">
+
+          <button
+            class="btn-close-modern ripple btn-hover-premium"
+            @click="closeModal"
+          >
             <i class="bi bi-x-lg"></i>
           </button>
 
           <div class="modal-content-inner">
+
             <div class="modal-heading">
-              <div class="modal-icon-header"><i class="bi bi-calendar-check"></i></div>
-              <h4>{{ isEdit ? 'Edit Absensi' : 'Catat Absensi' }}</h4>
+
+              <div class="modal-icon-header">
+                <i class="bi bi-calendar-check"></i>
+              </div>
+
+              <h4>
+                {{ isEdit ? 'Edit Absensi' : 'Catat Absensi' }}
+              </h4>
+
             </div>
 
             <div class="form-group">
-              <label>SISWA</label>
-              <div class="input-premium" :class="{'border-danger-custom': errors.siswa_id}">
+
+              <label>NAMA SISWA</label>
+
+              <div class="input-premium">
                 <i class="bi bi-person text-indigo"></i>
-                <select v-model="form.siswa_id" :disabled="isEdit || Boolean(route.params.id)">
-                  <option value="" disabled>Pilih Siswa</option>
-                  <option v-for="siswa in siswaList" :key="siswa.id" :value="siswa.id">
-                    {{ siswa.nama }} - {{ siswa.kode_kelas }}
-                  </option>
-                </select>
+
+                <input
+                  v-model="form.nama"
+                  type="text"
+                  placeholder="Masukkan nama siswa"
+                >
               </div>
-              <small v-if="errors.siswa_id" class="text-danger-custom">
-                <i class="bi bi-exclamation-circle"></i> Pilih siswa terlebih dahulu!
-              </small>
+
             </div>
 
             <div class="form-grid">
+
               <div class="form-group">
-                <label>TANGGAL</label>
-                <div class="input-premium" :class="{'border-danger-custom': errors.tanggal}">
-                  <i class="bi bi-calendar-date text-indigo"></i>
-                  <input v-model="form.tanggal" type="date">
+
+                <label>KELAS</label>
+
+                <div class="input-premium">
+                  <i class="bi bi-house text-indigo"></i>
+
+                  <input
+                    v-model="form.kelas"
+                    type="text"
+                    placeholder="Contoh XI RPL 1"
+                  >
                 </div>
-                <small v-if="errors.tanggal" class="text-danger-custom">
-                  <i class="bi bi-exclamation-circle"></i> Tanggal wajib diisi!
-                </small>
+
               </div>
 
               <div class="form-group">
+
                 <label>WAKTU MASUK</label>
+
                 <div class="input-premium">
                   <i class="bi bi-clock text-indigo"></i>
-                  <input v-model="form.waktu_masuk" type="time">
+
+                  <input
+                    v-model="form.waktu"
+                    type="time"
+                  >
                 </div>
+
               </div>
+
             </div>
 
             <div class="form-group">
+
               <label>STATUS</label>
-              <div class="input-premium" :class="{'border-danger-custom': errors.status}">
-                <i class="bi bi-clipboard2-check text-indigo"></i>
+
+              <div class="input-premium">
+                <i class="bi bi-check-circle text-indigo"></i>
+
                 <select v-model="form.status">
-                  <option value="" disabled>Pilih Status</option>
-                  <option v-for="status in statusOptions" :key="status" :value="status">{{ status }}</option>
+
+                  <option>Hadir</option>
+                  <option>Izin</option>
+                  <option>Sakit</option>
+                  <option>Alpa</option>
+
                 </select>
-              </div>
-              <small v-if="errors.status" class="text-danger-custom">
-                <i class="bi bi-exclamation-circle"></i> Status wajib dipilih!
-              </small>
-            </div>
 
-            <div class="form-group">
-              <label>KETERANGAN</label>
-              <div class="input-premium textarea-input">
-                <i class="bi bi-chat-left-text text-indigo"></i>
-                <textarea v-model="form.keterangan" rows="3" placeholder="Opsional"></textarea>
               </div>
-            </div>
 
-            <small v-if="modalMessage" class="text-danger-custom modal-message">
-              <i class="bi bi-exclamation-circle"></i> {{ modalMessage }}
-            </small>
+            </div>
 
             <div class="modal-actions">
-              <button class="btn-cancel-modern ripple" @click="closeModal">Batal</button>
-              <button class="btn-save-modern ripple" :disabled="isSaving" @click="saveAbsensi">
-                {{ isSaving ? 'Menyimpan...' : (isEdit ? 'Update Absensi' : 'Simpan Absensi') }}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </transition>
 
-    <transition name="modal-zoom">
-      <div v-if="showConfirm" class="modal-overlay" @click.self="closeConfirm">
-        <div class="modal-box modal-confirm">
-          <div class="confirm-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
-          <h4>Hapus Absensi?</h4>
-          <p>Data absensi ini akan dihapus dari database.</p>
-          <div class="modal-actions">
-            <button class="btn-cancel-modern ripple" @click="closeConfirm">Batal</button>
-            <button class="btn-delete-modern ripple" :disabled="isDeleting" @click="deleteAbsensi">
-              {{ isDeleting ? 'Menghapus...' : 'Ya, Hapus' }}
-            </button>
+              <button
+                class="btn-cancel-modern ripple btn-hover-premium"
+                @click="closeModal"
+              >
+                Batal
+              </button>
+
+              <button
+                class="btn-save-modern ripple btn-hover-premium"
+                @click="simpanData"
+              >
+                {{ isEdit ? 'Update' : 'Simpan' }}
+              </button>
+
+            </div>
+
           </div>
+
         </div>
+
       </div>
+
     </transition>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import api from '../service/axios.js'
+import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const route = useRoute()
+
 const search = ref('')
-const isLoading = ref(false)
-const isSaving = ref(false)
-const isDeleting = ref(false)
-const pageMessage = ref('')
-const modalMessage = ref('')
-const dataAbsensi = ref([])
-const siswaList = ref([])
 const showModal = ref(false)
-const showConfirm = ref(false)
 const isEdit = ref(false)
-const selectedAbsensi = ref(null)
-const statusOptions = ['Hadir', 'Terlambat', 'Izin', 'Sakit', 'Alpa']
-const ABSENSI_ENDPOINT = '/absensi'
+const editId = ref(null)
 
-const today = new Date().toISOString().slice(0, 10)
+const dataAbsensi = ref([
+  {
+    id: 1,
+    nama: 'Andi Wijaya',
+    kelas: 'XI RPL 1',
+    waktu: '07:00',
+    status: 'Hadir'
+  },
+  {
+    id: 2,
+    nama: 'Rina Putri',
+    kelas: 'XI RPL 2',
+    waktu: '07:10',
+    status: 'Izin'
+  }
+])
+
 const form = ref({
-  siswa_id: '',
-  tanggal: today,
-  waktu_masuk: '',
-  status: '',
-  keterangan: ''
-})
-
-const errors = ref({
-  siswa_id: false,
-  tanggal: false,
-  status: false
-})
-
-onMounted(() => {
-  getAbsensi()
-  getSiswa()
+  nama: '',
+  kelas: '',
+  waktu: '',
+  status: 'Hadir'
 })
 
 const filteredAbsensi = computed(() => {
-  const keyword = search.value.toLowerCase()
-
   return dataAbsensi.value.filter(item =>
-    item.nama.toLowerCase().includes(keyword) ||
-    item.kelas.toLowerCase().includes(keyword) ||
-    item.status.toLowerCase().includes(keyword)
+    item.nama.toLowerCase().includes(search.value.toLowerCase()) ||
+    item.kelas.toLowerCase().includes(search.value.toLowerCase())
   )
 })
 
 const totalHadir = computed(() => {
-  return dataAbsensi.value.filter(item => item.status.toLowerCase() === 'hadir').length
+  return dataAbsensi.value.filter(i => i.status === 'Hadir').length
 })
 
 const totalIzinSakit = computed(() => {
-  return dataAbsensi.value.filter(item => {
-    const status = item.status.toLowerCase()
-    return status === 'izin' || status === 'sakit'
-  }).length
+  return dataAbsensi.value.filter(i =>
+    i.status === 'Izin' || i.status === 'Sakit'
+  ).length
 })
 
 const totalAlpa = computed(() => {
-  return dataAbsensi.value.filter(item => {
-    const status = item.status.toLowerCase()
-    return status === 'alpa' || status === 'tanpa keterangan'
-  }).length
+  return dataAbsensi.value.filter(i => i.status === 'Alpa').length
 })
 
-const getAbsensi = async () => {
-  try {
-    isLoading.value = true
-    pageMessage.value = ''
+const openModal = (data = null) => {
 
-    const siswaId = route.params.id
-    const response = await api.get(siswaId ? `/absensi/${encodeURIComponent(siswaId)}` : '/absensi')
-    const rawData = Array.isArray(response.data) ? response.data : [response.data]
-
-    dataAbsensi.value = rawData
-      .filter(Boolean)
-      .map(normalizeAbsensi)
-  } catch (error) {
-    console.log('GET ABSENSI ERROR:', error.response || error)
-    dataAbsensi.value = []
-    pageMessage.value = getErrorMessage(error, 'Data absensi gagal dimuat.')
-  } finally {
-    isLoading.value = false
-  }
-}
-
-const getSiswa = async () => {
-  try {
-    const response = await api.get('/siswa')
-    siswaList.value = Array.isArray(response.data)
-      ? response.data.map(normalizeSiswa)
-      : []
-  } catch (error) {
-    console.log('GET SISWA ABSENSI ERROR:', error.response || error)
-  }
-}
-
-const openModal = (absensi = null) => {
-  isEdit.value = Boolean(absensi)
-  selectedAbsensi.value = absensi
-  modalMessage.value = ''
-  errors.value = { siswa_id: false, tanggal: false, status: false }
-
-  if (absensi) {
-    form.value = {
-      siswa_id: absensi.siswaId || '',
-      tanggal: absensi.tanggal || today,
-      waktu_masuk: normalizeTimeInput(absensi.waktu),
-      status: absensi.status || '',
-      keterangan: absensi.keterangan || ''
-    }
+  if(data){
+    isEdit.value = true
+    editId.value = data.id
+    form.value = { ...data }
   } else {
+    isEdit.value = false
     form.value = {
-      siswa_id: route.params.id || '',
-      tanggal: today,
-      waktu_masuk: '',
-      status: 'Hadir',
-      keterangan: ''
+      nama: '',
+      kelas: '',
+      waktu: '',
+      status: 'Hadir'
     }
   }
 
@@ -369,786 +388,747 @@ const openModal = (absensi = null) => {
 
 const closeModal = () => {
   showModal.value = false
-  modalMessage.value = ''
 }
 
-const saveAbsensi = async () => {
-  errors.value.siswa_id = !form.value.siswa_id
-  errors.value.tanggal = !form.value.tanggal
-  errors.value.status = !form.value.status
+const simpanData = () => {
 
-  if (errors.value.siswa_id || errors.value.tanggal || errors.value.status) return
+  if(isEdit.value){
 
-  try {
-    isSaving.value = true
-    modalMessage.value = ''
+    const index = dataAbsensi.value.findIndex(i => i.id === editId.value)
 
-    const siswa = siswaList.value.find(item => item.id === form.value.siswa_id)
-    const payload = {
-      siswa_id: form.value.siswa_id,
-      id_siswa: form.value.siswa_id,
-      kode_kelas: siswa?.kode_kelas || selectedAbsensi.value?.kelas || '',
-      tanggal: form.value.tanggal,
-      waktu_masuk: form.value.waktu_masuk || null,
-      status: form.value.status,
-      keterangan: form.value.keterangan || null
+    dataAbsensi.value[index] = {
+      ...form.value,
+      id: editId.value
     }
 
-    if (isEdit.value) {
-      const id = selectedAbsensi.value?.absensiId || selectedAbsensi.value?.id
-      await api.put(`${ABSENSI_ENDPOINT}/${encodeURIComponent(id)}`, payload)
-    } else {
-      await api.post(ABSENSI_ENDPOINT, payload)
-    }
+  } else {
 
-    closeModal()
-    await getAbsensi()
-  } catch (error) {
-    console.log('SAVE ABSENSI ERROR:', error.response || error)
-    modalMessage.value = getErrorMessage(error, 'Data absensi gagal disimpan.')
-  } finally {
-    isSaving.value = false
+    dataAbsensi.value.push({
+      ...form.value,
+      id: Date.now()
+    })
+
   }
+
+  closeModal()
 }
 
-const openConfirm = (absensi) => {
-  selectedAbsensi.value = absensi
-  pageMessage.value = ''
-  showConfirm.value = true
+const hapusData = (id) => {
+  dataAbsensi.value = dataAbsensi.value.filter(i => i.id !== id)
 }
 
-const closeConfirm = () => {
-  showConfirm.value = false
-  selectedAbsensi.value = null
-}
-
-const deleteAbsensi = async () => {
-  try {
-    isDeleting.value = true
-    const id = selectedAbsensi.value?.absensiId || selectedAbsensi.value?.id
-
-    if (!id) return
-
-    await api.delete(`${ABSENSI_ENDPOINT}/${encodeURIComponent(id)}`)
-    dataAbsensi.value = dataAbsensi.value.filter(item => (item.absensiId || item.id) !== id)
-    closeConfirm()
-    await getAbsensi()
-  } catch (error) {
-    console.log('DELETE ABSENSI ERROR:', error.response || error)
-    pageMessage.value = getErrorMessage(error, 'Data absensi gagal dihapus.')
-    closeConfirm()
-  } finally {
-    isDeleting.value = false
-  }
-}
-
-const downloadLaporan = () => {
-  const header = ['Nama Siswa', 'Kelas', 'Waktu Masuk', 'Status', 'Keterangan']
-  const rows = filteredAbsensi.value.map(item => [
-    item.nama,
-    item.kelas,
-    item.waktu,
-    item.status,
-    item.keterangan || ''
-  ])
-  const csv = [header, ...rows]
-    .map(row => row.map(escapeCsv).join(','))
-    .join('\n')
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
-  const url = URL.createObjectURL(blob)
-  const link = document.createElement('a')
-
-  link.href = url
-  link.download = `laporan-absensi-${today}.csv`
-  link.click()
-  URL.revokeObjectURL(url)
-}
-
-const normalizeAbsensi = (item) => {
-  return {
-    id: item.id || item.id_absensi || item.siswa_id || item.id_siswa || '',
-    absensiId: item.id_absensi || item.absensi_id || item.id || '',
-    siswaId: item.siswa_id || item.id_siswa || item.siswa?.id || '',
-    nama: item.nama || item.nama_siswa || item.siswa?.nama || '-',
-    kelas: item.kode_kelas || item.kelas || item.siswa?.kode_kelas || '-',
-    waktu: item.waktu || item.waktu_masuk || item.jam_masuk || item.tanggal || '-',
-    tanggal: normalizeDateInput(item.tanggal || item.created_at || ''),
-    status: item.status || item.keterangan || 'Hadir',
-    keterangan: item.catatan || item.note || item.keterangan_absensi || ''
-  }
-}
-
-const normalizeSiswa = (siswa) => {
-  return {
-    id: siswa?.id || '',
-    nama: siswa?.nama || '-',
-    kode_kelas: siswa?.kode_kelas || '-'
-  }
-}
-
-const normalizeTimeInput = (value) => {
-  if (!value || value === '-') return ''
-  const match = String(value).match(/(\d{2}):(\d{2})/)
-  return match ? `${match[1]}:${match[2]}` : ''
-}
-
-const normalizeDateInput = (value) => {
-  if (!value) return ''
-  const match = String(value).match(/\d{4}-\d{2}-\d{2}/)
-  return match ? match[0] : ''
-}
-
-const escapeCsv = (value) => {
-  return `"${String(value ?? '').replaceAll('"', '""')}"`
-}
-
-const getInitials = (name) => {
-  return String(name || '')
+const getInitials = (nama) => {
+  return nama
     .split(' ')
-    .map(part => part[0])
+    .map(i => i[0])
     .join('')
-    .substring(0, 2)
+    .substring(0,2)
     .toUpperCase()
 }
 
 const statusClass = (status) => {
-  switch (status) {
-    case 'Hadir': return 'status-hadir'
-    case 'Terlambat': return 'status-terlambat'
-    case 'Izin': return 'status-izin'
-    case 'Sakit': return 'status-sakit'
-    case 'Alpa': return 'status-alpa'
-    default: return 'status-default'
+
+  switch(status){
+
+    case 'Hadir':
+      return 'status-hadir'
+
+    case 'Izin':
+      return 'status-izin'
+
+    case 'Sakit':
+      return 'status-sakit'
+
+    case 'Alpa':
+      return 'status-alpa'
+
+    default:
+      return 'status-default'
   }
-}
-
-const getErrorMessage = (error, fallback) => {
-  const data = error.response?.data
-
-  if (data?.message) return data.message
-  if (typeof data === 'string') {
-    return data.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
-  }
-
-  return fallback
 }
 </script>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
-.app-container {
-  min-height: 100vh;
-  background: #f8fafc;
-  color: #1e293b;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
 }
 
-.header-glass {
-  background: white;
-  border-bottom: 1px solid #eef2ff;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
-  padding: 22px clamp(18px, 5vw, 64px);
+.app-container{
+  min-height:100vh;
+  background:#f8fafc;
+  font-family:'Plus Jakarta Sans',sans-serif;
 }
 
-.header-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
+/* HEADER */
+
+.header-glass{
+  background:white;
+  padding:22px 40px;
+  border-bottom:1px solid #eef2ff;
+  box-shadow:0 8px 24px rgba(0,0,0,0.04);
 }
 
-.header-side {
-  flex: 1;
-  display: flex;
-  align-items: center;
+.header-inner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
 }
 
-.header-actions {
-  justify-content: flex-end;
-  gap: 12px;
+.header-side{
+  flex:1;
+  display:flex;
+  align-items:center;
 }
 
-.header-center {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
+.header-actions{
+  justify-content:flex-end;
+  gap:12px;
 }
 
-.header-center h2 {
-  margin: 0;
-  font-size: 1.65rem;
-  font-weight: 800;
+.header-center{
+  text-align:center;
 }
 
-.avatar-aj {
-  width: 42px;
-  height: 42px;
-  background: #4f46e5;
-  color: white;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  border: 3px solid #eef2ff;
+.header-center h2{
+  font-weight:800;
+  margin-top:8px;
+  color:#111827;
 }
 
-.h-line {
-  width: 42px;
-  height: 3px;
-  background: #4f46e5;
-  border-radius: 999px;
+.avatar-aj{
+  width:45px;
+  height:45px;
+  border-radius:14px;
+  background:#4f46e5;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:800;
+  margin:auto;
+  border:3px solid #eef2ff;
 }
 
-.content-scroll-area {
-  padding: 34px clamp(18px, 5vw, 64px) 56px;
+.h-line{
+  width:50px;
+  height:4px;
+  border-radius:999px;
+  background:#4f46e5;
+  margin:10px auto 0;
 }
 
-.summary-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
+/* CONTENT */
+
+.content-scroll-area{
+  padding:35px 40px;
 }
 
-.summary-card {
-  background: white;
-  border: 1px solid #eef2ff;
-  border-radius: 18px;
-  padding: 18px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.04);
+/* SUMMARY */
+
+.summary-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+  margin-bottom:30px;
 }
 
-.summary-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.35rem;
+.summary-card{
+  background:white;
+  padding:22px;
+  border-radius:24px;
+  display:flex;
+  align-items:center;
+  gap:15px;
+  border:1px solid #eef2ff;
+  box-shadow:0 10px 30px rgba(0,0,0,0.04);
 }
 
-.summary-card p {
-  margin: 0 0 4px;
-  color: #94a3b8;
-  font-size: 0.72rem;
-  font-weight: 800;
-  text-transform: uppercase;
+.summary-card p{
+  font-size:.75rem;
+  font-weight:800;
+  color:#94a3b8;
+  text-transform:uppercase;
+  margin-bottom:4px;
 }
 
-.summary-card h3 {
-  margin: 0;
-  color: #4f46e5;
-  font-size: 1.45rem;
-  font-weight: 800;
+.summary-card h3{
+  font-size:1.7rem;
+  font-weight:800;
 }
 
-.summary-card h3 span {
-  color: #22c55e;
-  font-size: 0.82rem;
-  font-weight: 700;
+.summary-icon{
+  width:54px;
+  height:54px;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.4rem;
 }
 
-.bg-indigo-soft { background: #eef2ff; color: #4f46e5; }
-.bg-amber-soft { background: #fffbeb; color: #f59e0b; }
-.bg-rose-soft { background: #fff1f2; color: #e11d48; }
-.text-amber { color: #f59e0b !important; }
-.text-rose { color: #e11d48 !important; }
-
-.search-wrapper {
-  max-width: 800px;
-  margin: 0 auto 28px;
+.bg-indigo-soft{
+  background:#eef2ff;
+  color:#4f46e5;
 }
 
-.alert-absensi {
-  max-width: 800px;
-  margin: 0 auto 24px;
-  background: #fff1f2;
-  color: #e11d48;
-  border: 1px solid #fecdd3;
-  border-radius: 14px;
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 0.86rem;
-  font-weight: 800;
+.bg-amber-soft{
+  background:#fffbeb;
+  color:#f59e0b;
 }
 
-.alert-absensi button {
-  margin-left: auto;
-  border: none;
-  background: transparent;
-  color: #e11d48;
-  font-size: 1.1rem;
+.bg-rose-soft{
+  background:#fff1f2;
+  color:#e11d48;
 }
 
-.search-inner-glass {
-  background: rgba(255, 255, 255, 0.75);
-  border: 1px solid rgba(238, 242, 255, 0.95);
-  border-radius: 20px;
-  padding: 16px 24px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  box-shadow: 0 18px 40px rgba(79, 70, 229, 0.08);
+.text-amber{
+  color:#f59e0b;
 }
 
-.search-inner-glass input {
-  width: 100%;
-  border: none;
-  outline: none;
-  background: transparent;
-  color: #1e293b;
-  font-weight: 600;
+.text-rose{
+  color:#e11d48;
 }
 
-.text-indigo { color: #4f46e5; }
+/* SEARCH */
 
-.btn-clear {
-  border: none;
-  background: transparent;
-  color: #cbd5e1;
+.search-wrapper{
+  margin-bottom:28px;
 }
 
-.table-card {
-  background: white;
-  border: 1px solid #eef2ff;
-  border-radius: 20px;
-  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
-  overflow: hidden;
+.search-inner-glass{
+  background:white;
+  border-radius:22px;
+  padding:16px 22px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  border:1px solid #eef2ff;
+  box-shadow:0 10px 25px rgba(0,0,0,0.04);
 }
 
-.table-responsive {
-  overflow-x: auto;
+.search-inner-glass input{
+  width:100%;
+  border:none;
+  outline:none;
+  background:transparent;
+  color:#0f172a;
+  font-weight:600;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
+.text-indigo{
+  color:#4f46e5;
 }
 
-thead {
-  background: #f8fafc;
+.btn-clear{
+  border:none;
+  background:transparent;
+  color:#94a3b8;
+  cursor:pointer;
 }
 
-th {
-  padding: 18px 24px;
-  color: #64748b;
-  font-size: 0.72rem;
-  font-weight: 800;
-  text-align: left;
-  text-transform: uppercase;
+/* TABLE */
+
+.table-card{
+  background:white;
+  border-radius:28px;
+  overflow:hidden;
+  border:1px solid #eef2ff;
+  box-shadow:0 10px 30px rgba(0,0,0,0.04);
 }
 
-td {
-  padding: 16px 24px;
-  border-top: 1px solid #f1f5f9;
-  vertical-align: middle;
+.table-responsive{
+  overflow-x:auto;
 }
 
-tbody tr {
-  transition: background 0.2s ease;
+table{
+  width:100%;
+  border-collapse:collapse;
 }
 
-tbody tr:hover {
-  background: #f8fafc;
+thead{
+  background:#f8fafc;
 }
 
-.student-cell {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+th{
+  padding:18px 24px;
+  text-align:left;
+  font-size:.75rem;
+  color:#64748b;
+  text-transform:uppercase;
+  font-weight:800;
 }
 
-.avatar-sm {
-  width: 42px;
-  height: 42px;
-  border-radius: 13px;
-  background: linear-gradient(135deg, #6366f1, #4f46e5);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
+td{
+  padding:18px 24px;
 }
 
-.student-cell strong {
-  display: block;
-  font-weight: 800;
+tbody tr{
+  border-top:1px solid #f1f5f9;
+  transition:.2s ease;
 }
 
-.student-cell small {
-  color: #94a3b8;
-  font-size: 0.72rem;
-  font-weight: 700;
+tbody tr:hover{
+  background:#f8fafc;
 }
 
-.class-tag {
-  background: #eef2ff;
-  color: #4f46e5;
-  border: 1px solid #e0e7ff;
-  border-radius: 10px;
-  padding: 6px 12px;
-  font-size: 0.72rem;
-  font-weight: 800;
+.student-cell{
+  display:flex;
+  align-items:center;
+  gap:14px;
 }
 
-.time-text {
-  color: #64748b;
-  font-weight: 700;
+.avatar-sm{
+  width:44px;
+  height:44px;
+  border-radius:14px;
+  background:linear-gradient(135deg,#6366f1,#4f46e5);
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:800;
 }
 
-.status-pill {
-  border-radius: 999px;
-  padding: 7px 12px;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 0.72rem;
-  font-weight: 800;
+.student-cell strong{
+  display:block;
+  color:#111827;
+  font-weight:800;
 }
 
-.dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  background: currentColor;
+.student-cell small{
+  color:#94a3b8;
+  font-size:.72rem;
+  font-weight:700;
 }
 
-.status-hadir { background: #dcfce7; color: #15803d; }
-.status-terlambat { background: #fffbeb; color: #b45309; }
-.status-izin { background: #fef3c7; color: #92400e; }
-.status-sakit { background: #e0f2fe; color: #0369a1; }
-.status-alpa { background: #fff1f2; color: #e11d48; }
-.status-default { background: #f1f5f9; color: #64748b; }
-
-.btn-tool {
-  width: 38px;
-  height: 38px;
-  border: none;
-  border-radius: 12px;
-  background: #f0fdf4;
-  color: #16a34a;
-  margin-left: 6px;
+.class-tag{
+  background:#eef2ff;
+  color:#4f46e5;
+  padding:7px 14px;
+  border-radius:10px;
+  font-size:.78rem;
+  font-weight:800;
 }
 
-.btn-tool-danger {
-  background: #fff1f2;
-  color: #e11d48;
+.time-text{
+  font-weight:700;
+  color:#64748b;
 }
+
+.status-pill{
+  padding:8px 14px;
+  border-radius:999px;
+  font-size:.75rem;
+  font-weight:800;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+}
+
+.dot{
+  width:7px;
+  height:7px;
+  border-radius:999px;
+  background:currentColor;
+}
+
+.status-hadir{
+  background:#dcfce7;
+  color:#15803d;
+}
+
+.status-izin{
+  background:#fef3c7;
+  color:#92400e;
+}
+
+.status-sakit{
+  background:#e0f2fe;
+  color:#0369a1;
+}
+
+.status-alpa{
+  background:#fff1f2;
+  color:#e11d48;
+}
+
+.status-default{
+  background:#f1f5f9;
+  color:#64748b;
+}
+
+.text-end{
+  text-align:right;
+}
+
+/* BUTTON */
 
 .btn-back-modern,
 .btn-report,
 .btn-add-premium,
-.btn-cancel-modern,
 .btn-save-modern,
-.btn-delete-modern {
-  border: none;
-  border-radius: 14px;
-  padding: 11px 18px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 800;
+.btn-cancel-modern,
+.btn-tool,
+.btn-close-modern{
+  border:none;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-weight:700;
+  cursor:pointer;
+  transition:0.2s ease;
 }
 
-.btn-back-modern,
-.btn-report,
-.btn-cancel-modern {
-  background: #f1f5f9;
-  color: #64748b;
+/* DASHBOARD BUTTON SAMA PERSIS */
+.ripple { transition: all 0.2s ease; cursor: pointer; }
+.ripple:active { transform: scale(0.95); opacity: 0.8; }
+.btn-back-modern {
+  background: #eef2ff;
+  color: #4f46e5;
+  border: none;
+  border-radius: 999px; /* bikin pill */
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: 0.2s;
+}
+
+/* hover biar hidup dikit */
+.btn-back-modern:hover {
+  background: #4f46e5;
+  color: white;
+  transform: translateY(-1px);
+}
+/* PAKSA KIRI BANGET */
+.header-side-left {
+  display: flex;
+  justify-content: flex-start !important;
+  align-items: center;
+}
+
+/* HILANGIN WIDTH FULL YANG BIKIN KE TENGAH */
+.w-100-mobile {
+  width: auto !important;
+}
+
+/* BIAR CENTER TETEP DI TENGAH */
+.header-center {
+  flex: 1;
+  text-align: center;
+}
+
+/* KANAN TETEP DI KANAN */
+.header-side-right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+
+/* BUTTON LAIN */
+
+.btn-report{
+  background:#f1f5f9;
+  color:#64748b;
+  padding:12px 18px;
+  border-radius:14px;
+}
+
+.btn-report:hover{
+  background:#0f172a;
+  color:white;
 }
 
 .btn-add-premium,
-.btn-save-modern {
-  background: #4f46e5;
-  color: white;
-  box-shadow: 0 14px 28px rgba(79, 70, 229, 0.25);
+.btn-save-modern{
+  background:#4f46e5;
+  color:white;
+  padding:12px 18px;
+  border-radius:14px;
+  box-shadow:0 14px 28px rgba(79,70,229,.2);
 }
 
-.btn-delete-modern {
-  background: #fff1f2;
-  color: #e11d48;
+.btn-add-premium:hover,
+.btn-save-modern:hover{
+  background:#4338ca;
 }
 
-.btn-save-modern:disabled,
-.btn-delete-modern:disabled {
-  cursor: wait;
-  opacity: 0.72;
+.btn-cancel-modern{
+  background:#f1f5f9;
+  color:#64748b;
+  padding:14px;
+  border-radius:16px;
+  justify-content:center;
 }
 
-.ripple {
-  cursor: pointer;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+.btn-cancel-modern:hover{
+  background:#e2e8f0;
 }
 
-.ripple:active {
-  transform: scale(0.96);
-  opacity: 0.82;
+.btn-tool{
+  width:40px;
+  height:40px;
+  justify-content:center;
+  border-radius:12px;
+  background:#ecfdf5;
+  color:#16a34a;
 }
 
-.text-end {
-  text-align: right;
+.btn-tool:hover{
+  background:#22c55e;
+  color:white;
 }
 
-.empty-state {
-  padding: 52px 20px;
-  text-align: center;
-  color: #94a3b8;
-  font-weight: 800;
+.btn-tool-danger{
+  background:#fff1f2;
+  color:#e11d48;
 }
 
-.empty-state i {
-  display: block;
-  margin-bottom: 12px;
-  font-size: 2.4rem;
-  opacity: 0.45;
+.btn-tool-danger:hover{
+  background:#e11d48;
+  color:white;
 }
 
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  background: rgba(15, 23, 42, 0.42);
-  backdrop-filter: blur(10px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 18px;
+.btn-close-modern{
+  position:absolute;
+  top:18px;
+  right:18px;
+  width:42px;
+  height:42px;
+  justify-content:center;
+  border-radius:50%;
+  background:#f1f5f9;
+  color:#94a3b8;
 }
 
-.modal-box {
-  width: 100%;
-  max-width: 520px;
-  background: white;
-  border-radius: 28px;
-  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.22);
-  position: relative;
+.btn-close-modern:hover{
+  background:#4f46e5;
+  color:white;
 }
 
-.modal-content-inner {
-  padding: 34px;
+/* HOVER HALUS */
+
+.btn-hover-premium:hover{
+  transform:translateY(-1px);
 }
 
-.btn-close-modern {
-  position: absolute;
-  top: 22px;
-  right: 22px;
-  width: 40px;
-  height: 40px;
-  border: none;
-  border-radius: 50%;
-  background: #f1f5f9;
-  color: #94a3b8;
+/* MODAL */
+
+.modal-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(15,23,42,.45);
+  backdrop-filter:blur(8px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
 }
 
-.modal-heading {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 28px;
+.modal-box{
+  width:100%;
+  max-width:500px;
+  background:white;
+  border-radius:28px;
+  overflow:hidden;
+  position:relative;
+  box-shadow:0 24px 80px rgba(0,0,0,.2);
 }
 
-.modal-heading h4,
-.modal-confirm h4 {
-  margin: 0;
-  font-size: 1.35rem;
-  font-weight: 800;
+.modal-content-inner{
+  padding:35px;
 }
 
-.modal-icon-header {
-  width: 50px;
-  height: 50px;
-  background: #eef2ff;
-  color: #4f46e5;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.35rem;
+.modal-heading{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:25px;
 }
 
-.form-group {
-  margin-bottom: 18px;
+.modal-heading h4{
+  font-weight:800;
+  color:#111827;
 }
 
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  color: #64748b;
-  font-size: 0.72rem;
-  font-weight: 800;
-  text-transform: uppercase;
+.modal-icon-header{
+  width:50px;
+  height:50px;
+  border-radius:14px;
+  background:#eef2ff;
+  color:#4f46e5;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
+.form-group{
+  margin-bottom:18px;
 }
 
-.input-premium {
-  background: #f8fafc;
-  border: 2px solid #f1f5f9;
-  border-radius: 16px;
-  padding: 13px 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.form-group label{
+  display:block;
+  margin-bottom:8px;
+  font-size:.75rem;
+  font-weight:800;
+  color:#64748b;
 }
 
-.input-premium:focus-within {
-  border-color: #4f46e5;
-  background: white;
-  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+}
+
+.input-premium{
+  background:#f8fafc;
+  border:2px solid #f1f5f9;
+  border-radius:16px;
+  padding:14px 16px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  transition:.2s;
+}
+
+.input-premium:focus-within{
+  border-color:#4f46e5;
+  background:white;
+  box-shadow:0 0 0 4px rgba(79,70,229,.1);
 }
 
 .input-premium input,
-.input-premium select,
-.input-premium textarea {
-  width: 100%;
-  border: none;
-  outline: none;
-  background: transparent;
-  color: #1e293b;
-  font-weight: 700;
+.input-premium select{
+  width:100%;
+  border:none;
+  outline:none;
+  background:transparent;
+  font-weight:700;
+  color:#111827;
 }
 
-.textarea-input {
-  align-items: flex-start;
+.modal-actions{
+  display:flex;
+  gap:14px;
+  margin-top:25px;
 }
 
-.text-danger-custom {
-  color: #ef4444;
-  font-size: 0.74rem;
-  font-weight: 800;
+.modal-actions button{
+  flex:1;
 }
 
-.border-danger-custom {
-  border-color: #ef4444 !important;
-  background: #fff5f5 !important;
+/* RIPPLE */
+
+.ripple{
+  transition:.2s ease;
 }
 
-.modal-message {
-  display: block;
-  margin-bottom: 16px;
+.ripple:active{
+  transform:scale(.96);
 }
 
-.modal-actions {
-  display: flex;
-  gap: 14px;
+/* ANIMATION */
+
+.animate-fade-in{
+  animation:fadeIn .5s ease;
 }
 
-.modal-actions button {
-  flex: 1;
-  justify-content: center;
-  padding: 15px 18px;
-}
-
-.modal-confirm {
-  max-width: 420px;
-  padding: 36px;
-  text-align: center;
-}
-
-.modal-confirm p {
-  color: #64748b;
-  margin: 12px 0 26px;
-}
-
-.confirm-icon {
-  width: 78px;
-  height: 78px;
-  margin: 0 auto 20px;
-  border-radius: 50%;
-  background: #fff1f2;
-  color: #e11d48;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  box-shadow: 0 10px 20px rgba(225, 29, 72, 0.12);
+.animate-slide-up{
+  animation:slideUp .6s ease both;
 }
 
 .modal-zoom-enter-active,
-.modal-zoom-leave-active {
-  transition: all 0.2s ease;
+.modal-zoom-leave-active{
+  transition:.2s ease;
 }
 
 .modal-zoom-enter-from,
-.modal-zoom-leave-to {
-  opacity: 0;
+.modal-zoom-leave-to{
+  opacity:0;
 }
 
 .modal-zoom-enter-from .modal-box,
-.modal-zoom-leave-to .modal-box {
-  transform: scale(0.94);
+.modal-zoom-leave-to .modal-box{
+  transform:scale(.94);
 }
 
-.animate-fade-in { animation: fadeIn 0.5s ease; }
-.animate-slide-up { animation: slideUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) both; }
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+@keyframes fadeIn{
+  from{
+    opacity:0;
+  }
+  to{
+    opacity:1;
+  }
 }
 
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes slideUp{
+  from{
+    opacity:0;
+    transform:translateY(20px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
 }
 
-@media (max-width: 768px) {
-  .header-inner {
-    flex-direction: column;
+/* MOBILE */
+
+@media(max-width:768px){
+
+  .header-inner{
+    flex-direction:column;
   }
 
   .header-side,
-  .header-actions {
-    width: 100%;
-    justify-content: center;
+  .header-actions{
+    width:100%;
+    justify-content:center;
   }
 
-  .summary-grid {
-    grid-template-columns: 1fr;
+  .content-scroll-area{
+    padding:25px 18px;
   }
 
-  .form-grid {
-    grid-template-columns: 1fr;
+  .summary-grid{
+    grid-template-columns:1fr;
   }
 
-  th {
-    display: none;
+  .form-grid{
+    grid-template-columns:1fr;
+  }
+
+  th{
+    display:none;
   }
 
   table,
   tbody,
   tr,
-  td {
-    display: block;
-    width: 100%;
+  td{
+    display:block;
+    width:100%;
   }
 
-  tr {
-    padding: 16px;
-    border-top: 1px solid #f1f5f9;
+  tr{
+    padding:16px;
   }
 
-  td {
-    border: none;
-    padding: 8px 0;
+  td{
+    padding:8px 0;
+    border:none;
   }
 
-  .text-end {
-    text-align: left;
+  .text-end{
+    text-align:left;
   }
 }
 </style>
