@@ -43,6 +43,12 @@
         </div>
       </div>
 
+      <div v-if="pageMessage" class="alert-data mb-4 animate-pop">
+        <i class="bi bi-exclamation-circle"></i>
+        <span>{{ pageMessage }}</span>
+        <button type="button" @click="pageMessage = ''"><i class="bi bi-x"></i></button>
+      </div>
+
       <div class="table-card bg-white shadow-premium rounded-4 overflow-hidden animate-slide-up" style="animation-delay: 0.2s">
         <div class="table-responsive">
           <table class="table table-hover align-middle mb-0">
@@ -55,7 +61,7 @@
               </tr>
             </thead>
             <tbody class="mobile-grid">
-              <transition-group name="list">
+              
                 <tr v-for="(guru, i) in filteredGuru" :key="guru.id" class="row-hover mobile-card">
                   <td class="ps-md-4 py-3 border-0-mobile">
                     <div class="d-flex align-items-center gap-3">
@@ -64,7 +70,7 @@
                       </div>
                       <div>
                         <div class="fw-bold text-dark mb-0">{{ guru.nama }}</div>
-                        <small class="text-muted">NIP. 19800{{ 2026 + i }}</small>
+                        <small class="text-muted">NIP. {{ guru.nip || '-' }}</small>
                       </div>
                     </div>
                   </td>
@@ -78,13 +84,13 @@
                   </td>
                   <td class="text-md-end pe-md-4 border-0-mobile">
                     <div class="d-flex justify-content-md-end gap-2 mt-2 mt-md-0">
-                      <button class="btn-tool btn-v ripple" @click="viewGuru(guru)" title="Lihat"><i class="bi bi-eye"></i></button>
-                      <button class="btn-tool btn-e ripple" @click="bukaModal(guru)" title="Edit"><i class="bi bi-pencil-square"></i></button>
-                      <button class="btn-tool btn-d ripple" @click="konfirmasiHapus(guru.id)" title="Hapus"><i class="bi bi-trash3"></i></button>
+                      <button type="button" class="btn-tool btn-v ripple" @click.prevent.stop="viewGuru(guru)" title="Lihat"><i class="bi bi-eye"></i></button>
+                      <button type="button" class="btn-tool btn-e ripple" @click.prevent.stop="bukaModal(guru)" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                      <button type="button" class="btn-tool btn-d ripple" @click.prevent.stop="konfirmasiHapus(guru.id)" title="Hapus"><i class="bi bi-trash3"></i></button>
                     </div>
                   </td>
                 </tr>
-              </transition-group>
+              
             </tbody>
           </table>
 
@@ -107,6 +113,14 @@
             <div class="d-flex align-items-center gap-3 mb-4 mb-md-5">
                 <div class="modal-icon-header"><i class="bi bi-shield-check"></i></div>
                 <h4 class="fw-800 mb-0 text-dark">{{ isView ? 'Detail' : (isEdit ? 'Ubah' : 'Input') }} Guru</h4>
+            </div>
+
+            <div class="mb-4">
+              <label class="small fw-800 text-muted mb-2 ls-wide">NIP</label>
+              <div class="input-premium">
+                <i class="bi bi-credit-card-2-front text-indigo"></i>
+                <input v-model="formGuru.nip" type="text" placeholder="Opsional" :readonly="isView">
+              </div>
             </div>
 
             <div class="mb-4">
@@ -133,8 +147,8 @@
 
             <div class="d-flex gap-3">
               <button class="btn btn-cancel-modern flex-grow-1 fw-bold ripple" @click="tutupModal">Kembali</button>
-              <button v-if="!isView" class="btn btn-save-modern flex-grow-1 fw-bold ripple shadow-lg" @click="simpanGuru">
-                {{ isEdit ? 'Simpan Perubahan' : 'Daftarkan Guru' }}
+              <button v-if="!isView" class="btn btn-save-modern flex-grow-1 fw-bold ripple shadow-lg" :disabled="isSaving" @click="simpanGuru">
+                {{ isSaving ? 'Menyimpan...' : (isEdit ? 'Simpan Perubahan' : 'Daftarkan Guru') }}
               </button>
             </div>
           </div>
@@ -155,8 +169,8 @@
             <p class="text-muted mb-4">Apakah anda yakin ingin menghapus data guru ini? Data yang dihapus tidak bisa dikembalikan.</p>
             <div class="d-flex gap-3">
               <button class="btn btn-cancel-modern flex-grow-1 fw-bold ripple" @click="showConfirm = false">Batal</button>
-              <button class="btn btn-d flex-grow-1 fw-bold ripple shadow-sm py-3" style="border-radius: 16px;" @click="hapusGuru">
-                Ya, Hapus
+              <button class="btn btn-d flex-grow-1 fw-bold ripple shadow-sm py-3" style="border-radius: 16px;" :disabled="isDeleting" @click="hapusGuru">
+                {{ isDeleting ? 'Menghapus...' : 'Ya, Hapus' }}
               </button>
             </div>
           </div>
@@ -167,6 +181,8 @@
 </template>
 
 <script>
+import api from '../service/axios.js'
+
 export default {
   data() {
     return {
@@ -177,24 +193,46 @@ export default {
       isEdit: false,
       isView: false,
       editId: null,
-      formGuru: { nama: '', mapel: '' },
+      isSaving: false,
+      isDeleting: false,
+      pageMessage: '',
+      formGuru: { id: '', nama: '', nip: '', mapel: '' },
       errors: { nama: false, mapel: false },
-      daftarGuru: [
-        { id: 1, nama: 'Budi Santoso, S.Pd', mapel: 'Matematika' },
-        { id: 2, nama: 'Siti Aminah, M.Si', mapel: 'Fisika' },
-        { id: 3, nama: 'Rian Hidayat, S.Kom', mapel: 'Informatika' }
-      ]
+      daftarGuru: []
     }
   },
   computed: {
     filteredGuru() {
       return this.daftarGuru.filter(g => 
-        g.nama.toLowerCase().includes(this.search.toLowerCase()) || 
-        g.mapel.toLowerCase().includes(this.search.toLowerCase())
+        String(g.nama || '').toLowerCase().includes(this.search.toLowerCase()) || 
+        String(g.mapel || '').toLowerCase().includes(this.search.toLowerCase()) ||
+        String(g.nip || '').toLowerCase().includes(this.search.toLowerCase())
       )
     }
   },
+  mounted() {
+    this.getGuru()
+  },
   methods: {
+    async getGuru() {
+      try {
+        const response = await api.get('/guru')
+        this.daftarGuru = Array.isArray(response.data)
+          ? response.data.map(this.normalizeGuru)
+          : []
+      } catch (error) {
+        console.log('GET GURU ERROR:', error.response || error)
+        this.pageMessage = this.getErrorMessage(error, 'Data guru gagal dimuat.')
+      }
+    },
+    normalizeGuru(guru) {
+      return {
+        id: guru?.id || guru?.id_guru || guru?.kode_guru || guru?.nip || '',
+        nama: guru?.nama || guru?.nama_guru || '-',
+        nip: guru?.nip || guru?.nomor_induk || '',
+        mapel: guru?.mapel || guru?.mata_pelajaran || guru?.pelajaran || '-'
+      }
+    },
     getInitials(name) {
       if(!name) return '??';
       return name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
@@ -203,33 +241,54 @@ export default {
       this.isView = false;
       this.errors = { nama: false, mapel: false };
       if (guru) { 
+        const normalized = this.normalizeGuru(guru)
         this.isEdit = true; 
-        this.editId = guru.id; 
-        this.formGuru = { ...guru }; 
+        this.editId = normalized.id; 
+        this.formGuru = { ...normalized }; 
       } else { 
         this.isEdit = false; 
-        this.formGuru = { nama: '', mapel: '' }; 
+        this.formGuru = { id: '', nama: '', nip: '', mapel: '' }; 
       }
       this.showModal = true;
     },
     viewGuru(guru) { 
+      const normalized = this.normalizeGuru(guru)
       this.isView = true; 
       this.errors = { nama: false, mapel: false };
-      this.formGuru = { ...guru }; 
+      this.formGuru = { ...normalized }; 
       this.showModal = true; 
     },
     tutupModal() { this.showModal = false; },
-    simpanGuru() {
+    async simpanGuru() {
       this.errors.nama = !this.formGuru.nama.trim();
       this.errors.mapel = !this.formGuru.mapel.trim();
       if (this.errors.nama || this.errors.mapel) return;
-      if (this.isEdit) {
-        const idx = this.daftarGuru.findIndex(g => g.id === this.editId);
-        this.daftarGuru[idx] = { ...this.formGuru };
-      } else {
-        this.daftarGuru.unshift({ id: Date.now(), ...this.formGuru });
+
+      try {
+        this.isSaving = true
+        const payload = {
+          id: this.formGuru.id || (window.crypto?.randomUUID ? window.crypto.randomUUID() : `${Date.now()}`),
+          nama: this.formGuru.nama.trim(),
+          nama_guru: this.formGuru.nama.trim(),
+          nip: this.formGuru.nip || null,
+          mapel: this.formGuru.mapel.trim(),
+          mata_pelajaran: this.formGuru.mapel.trim()
+        }
+
+        if (this.isEdit) {
+          await api.put(`/guru/${encodeURIComponent(this.editId)}`, payload)
+        } else {
+          await api.post('/guru', payload)
+        }
+
+        await this.getGuru()
+        this.tutupModal();
+      } catch (error) {
+        console.log('SAVE GURU ERROR:', error.response || error)
+        this.pageMessage = this.getErrorMessage(error, 'Data guru gagal disimpan.')
+      } finally {
+        this.isSaving = false
       }
-      this.tutupModal();
     },
     // Fungsi baru untuk memicu popup
     konfirmasiHapus(id) {
@@ -237,10 +296,27 @@ export default {
       this.showConfirm = true;
     },
     // Fungsi hapus yang dijalankan setelah konfirmasi
-    hapusGuru() { 
-      this.daftarGuru = this.daftarGuru.filter(g => g.id !== this.selectedId);
-      this.showConfirm = false;
-      this.selectedId = null;
+    async hapusGuru() { 
+      try {
+        this.isDeleting = true
+        await api.delete(`/guru/${encodeURIComponent(this.selectedId)}`)
+        this.daftarGuru = this.daftarGuru.filter(g => g.id !== this.selectedId);
+        this.showConfirm = false;
+        this.selectedId = null;
+        await this.getGuru()
+      } catch (error) {
+        console.log('DELETE GURU ERROR:', error.response || error)
+        this.pageMessage = this.getErrorMessage(error, 'Data guru gagal dihapus.')
+        this.showConfirm = false
+      } finally {
+        this.isDeleting = false
+      }
+    },
+    getErrorMessage(error, fallback) {
+      const data = error.response?.data
+      if (data?.message) return data.message
+      if (typeof data === 'string') return data.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
+      return fallback
     }
   }
 }
@@ -277,6 +353,8 @@ export default {
 }
 .btn-clear { border: none; background: transparent; color: #cbd5e1; transition: 0.2s; }
 .btn-clear:hover { color: #ef4444; }
+.alert-data { max-width: 800px; margin: 0 auto; background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; border-radius: 14px; padding: 12px 16px; display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 0.85rem; }
+.alert-data button { margin-left: auto; border: none; background: transparent; color: #e11d48; font-size: 1.1rem; }
 
 @media (max-width: 768px) {
   .header-glass { padding: 15px !important; min-height: 120px; }

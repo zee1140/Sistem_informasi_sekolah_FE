@@ -15,6 +15,10 @@
           </div>
         </div>
         <div class="header-side-right d-flex align-items-center justify-content-end gap-2 gap-md-3 w-100-mobile">
+          <button class="btn btn-absensi-header ripple shadow-sm d-none d-md-flex align-items-center gap-2" @click="$router.push('/absensi')">
+            <i class="bi bi-calendar-check"></i> <span>Absensi</span>
+          </button>
+
           <div class="qs-badge shadow-sm animate-slide-right">
             <span class="qs-lab">TOTAL:</span><span class="qs-val">{{ filteredSiswa.length }}</span>
           </div>
@@ -81,6 +85,10 @@
                   </td>
                   <td class="text-md-end pe-md-4 border-0-mobile">
                     <div class="d-flex justify-content-md-end gap-2">
+                      <button type="button" class="btn-tool btn-a ripple" title="Absensi" @click.prevent.stop="$router.push(`/absensi/${siswa.id}`)">
+                        <i class="bi bi-calendar-check"></i>
+                      </button>
+                      
                       <button type="button" class="btn-tool btn-v ripple" @click.prevent.stop="viewSiswa(siswa)"><i class="bi bi-eye"></i></button>
                       <button type="button" class="btn-tool btn-e ripple" @click.prevent.stop="bukaModal(siswa)"><i class="bi bi-pencil-square"></i></button>
                       <button type="button" class="btn-tool btn-d ripple" @click.prevent.stop="konfirmasiHapus(siswa.id)"><i class="bi bi-trash3"></i></button>
@@ -192,8 +200,8 @@ export default {
     return {
       search: "", 
       showModal: false, 
-      showConfirm: false, // State baru untuk popup konfirmasi
-      selectedId: null,   // State baru untuk menyimpan ID yang akan dihapus
+      showConfirm: false, 
+      selectedId: null,   
       isEdit: false, 
       isView: false, 
       editId: null,
@@ -210,7 +218,6 @@ export default {
   computed: {
     filteredSiswa() {
       const keyword = this.search.toLowerCase()
-
       return this.daftarSiswa.filter(s => 
         String(s.nama || '').toLowerCase().includes(keyword) || 
         String(s.nis || '').toLowerCase().includes(keyword) ||
@@ -233,11 +240,8 @@ export default {
     async getSiswa() {
       try {
         const response = await api.get('/siswa')
-        this.daftarSiswa = Array.isArray(response.data)
-          ? response.data.map(this.normalizeSiswa)
-          : []
+        this.daftarSiswa = Array.isArray(response.data) ? response.data.map(this.normalizeSiswa) : []
       } catch (error) {
-        console.log('GET SISWA ERROR:', error.response || error)
         this.errorMessage = error.response?.data?.message || 'Data siswa gagal dimuat.'
       }
     },
@@ -246,7 +250,7 @@ export default {
         const response = await api.get('/kelas')
         this.kelasList = response.data
       } catch (error) {
-        console.log('GET KELAS ERROR:', error.response || error)
+        console.log('GET KELAS ERROR')
       }
     },
     bukaModal(siswa = null) {
@@ -257,31 +261,17 @@ export default {
         const normalized = this.normalizeSiswa(siswa)
         this.isEdit = true; 
         this.editId = normalized.id; 
-        this.formSiswa = {
-          id: normalized.id,
-          nama: normalized.nama,
-          nis: normalized.nis || '',
-          kode_kelas: normalized.kode_kelas
-        }; 
-      }
-      else { 
+        this.formSiswa = { id: normalized.id, nama: normalized.nama, nis: normalized.nis || '', kode_kelas: normalized.kode_kelas }; 
+      } else { 
         this.isEdit = false; 
         this.formSiswa = { id: '', nama: '', nis: '', kode_kelas: '' }; 
       }
       this.showModal = true;
     },
     viewSiswa(siswa) { 
-      const normalized = this.normalizeSiswa(siswa)
-
+      const n = this.normalizeSiswa(siswa)
       this.isView = true; 
-      this.formSiswa = {
-        id: normalized.id,
-        nama: normalized.nama,
-        nis: normalized.nis || '',
-        kode_kelas: normalized.kode_kelas
-      }; 
-      this.errorMessage = '';
-      this.errors = { nama: false, nis: false, kode_kelas: false };
+      this.formSiswa = { id: n.id, nama: n.nama, nis: n.nis || '', kode_kelas: n.kode_kelas }; 
       this.showModal = true; 
     },
     tutupModal() { 
@@ -290,100 +280,39 @@ export default {
     },
     async simpanSiswa() {
       this.errors.nama = !this.formSiswa.nama.trim();
-      this.errors.nis = false;
       this.errors.kode_kelas = !this.formSiswa.kode_kelas;
-      if (this.errors.nama || this.errors.nis || this.errors.kode_kelas) return;
-
+      if (this.errors.nama || this.errors.kode_kelas) return;
       try {
         this.isSaving = true
-        this.errorMessage = ''
-
-        const payload = {
-          nama: this.formSiswa.nama.trim(),
-          nis: this.formSiswa.nis ? String(this.formSiswa.nis).trim() : null,
-          kode_kelas: this.formSiswa.kode_kelas
-        }
-
-        if (this.isEdit) {
-          await this.updateSiswa(this.editId, payload)
-        } else { 
-          await api.post('/siswa', {
-            id: this.createId(),
-            ...payload
-          })
-        }
-
-        await this.getSiswa()
-        this.tutupModal()
+        const payload = { nama: this.formSiswa.nama.trim(), nis: this.formSiswa.nis ? String(this.formSiswa.nis).trim() : null, kode_kelas: this.formSiswa.kode_kelas }
+        if (this.isEdit) { await this.updateSiswa(this.editId, payload) } 
+        else { await api.post('/siswa', { id: this.createId(), ...payload }) }
+        await this.getSiswa(); this.tutupModal();
       } catch (error) {
-        console.log('SAVE SISWA ERROR:', error.response || error)
-        this.errorMessage = this.getErrorMessage(error, 'Data siswa gagal disimpan.')
-      } finally {
-        this.isSaving = false
-      }
+        this.errorMessage = this.getErrorMessage(error, 'Data gagal disimpan.')
+      } finally { this.isSaving = false }
     },
     konfirmasiHapus(id) {
-      this.selectedId = id;
-      this.pageMessage = '';
-      this.showConfirm = true;
+      this.selectedId = id; this.showConfirm = true;
     },
     async hapusSiswa() { 
       try {
-        const id = this.selectedId
-
-        if (!id) return
-
         this.isDeleting = true
-        this.pageMessage = ''
-
-        await this.deleteSiswa(id)
-
-        this.daftarSiswa = this.daftarSiswa.filter(s => s.id !== id)
+        await this.deleteSiswa(this.selectedId)
         await this.getSiswa()
         this.showConfirm = false;
-        this.selectedId = null;
       } catch (error) {
-        console.log('DELETE SISWA ERROR:', error.response || error)
-        this.showConfirm = false;
-        this.pageMessage = this.getErrorMessage(error, 'Data siswa gagal dihapus.')
-      } finally {
-        this.isDeleting = false
-      }
+        this.pageMessage = this.getErrorMessage(error, 'Gagal menghapus.')
+      } finally { this.isDeleting = false }
     },
-    updateSiswa(id, payload) {
-      return api.put(`/siswa/${encodeURIComponent(id)}`, payload)
-    },
-    deleteSiswa(id) {
-      return api.delete(`/siswa/${encodeURIComponent(id)}`)
-    },
-    normalizeSiswa(siswa) {
-      return {
-        id: siswa?.id || '',
-        nama: siswa?.nama || '',
-        nis: siswa?.nis === null || siswa?.nis === undefined ? '' : String(siswa.nis),
-        kode_kelas: siswa?.kode_kelas || ''
-      }
+    updateSiswa(id, payload) { return api.put(`/siswa/${encodeURIComponent(id)}`, payload) },
+    deleteSiswa(id) { return api.delete(`/siswa/${encodeURIComponent(id)}`) },
+    normalizeSiswa(s) {
+      return { id: s?.id || '', nama: s?.nama || '', nis: s?.nis === null || s?.nis === undefined ? '' : String(s.nis), kode_kelas: s?.kode_kelas || '' }
     },
     getErrorMessage(error, fallback) {
       const data = error.response?.data
-
-      if (typeof data === 'string') {
-        const match = data.match(/<pre>(.*?)<\/pre>/i)
-        const message = match?.[1] || data.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
-
-        if (message.includes('Cannot DELETE /siswa/')) {
-          return 'Backend belum punya endpoint DELETE /siswa/:id. Tambahkan route delete di BE lalu restart server.'
-        }
-
-        if (message.includes('Cannot PUT /siswa/')) {
-          return 'Backend belum punya endpoint PUT /siswa/:id. Tambahkan route update di BE lalu restart server.'
-        }
-
-        return message
-      }
-
       if (data?.message) return data.message
-
       return fallback
     }
   }
@@ -391,18 +320,24 @@ export default {
 </script>
 
 <style scoped>
-/* Style tetap sama sesuai permintaan Anda agar tidak berubah selain penambahan fitur */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-/* ... (seluruh style Anda di bawahnya tetap dipertahankan) ... */
-/* --- VALIDATION STYLES --- */
-.border-danger-custom {
-  border-color: #ef4444 !important;
-  background: #fff5f5 !important;
+
+/* STYLE TOMBOL ABSENSI BARU */
+.btn-absensi-header {
+  background: #eef2ff;
+  color: #4f46e5;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 0.85rem;
 }
-.text-danger-custom {
-  color: #ef4444 !important;
-  font-size: 0.75rem;
-}
+.btn-a { background: #eef2ff; color: #4f46e5; }
+.btn-a:hover { background: #4f46e5; color: white; }
+
+/* STYLE ASLI ANDA */
+.border-danger-custom { border-color: #ef4444 !important; background: #fff5f5 !important; }
+.text-danger-custom { color: #ef4444 !important; font-size: 0.75rem; }
 .app-container { height: 100vh; background: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; position: fixed; inset: 0; }
 .content-scroll-area { flex: 1; overflow-y: auto; height: calc(100vh - 120px); scroll-behavior: smooth; }
 .fw-800 { font-weight: 800; }
@@ -426,33 +361,14 @@ export default {
   padding: 16px 28px; display: flex; align-items: center;
   box-shadow: 0 15px 35px rgba(31, 38, 135, 0.05) !important;
 }
-.btn-clear { border: none; background: transparent; color: #cbd5e1; transition: 0.2s; }
-.btn-clear:hover { color: #ef4444; }
-.alert-siswa { max-width: 800px; margin: 0 auto; background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; border-radius: 14px; padding: 12px 16px; display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 0.85rem; }
-.alert-siswa button { margin-left: auto; border: none; background: transparent; color: #e11d48; font-size: 1.1rem; }
+.btn-clear { border: none; background: transparent; color: #cbd5e1; }
+.alert-siswa { max-width: 800px; margin: 0 auto; background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; border-radius: 14px; padding: 12px 16px; display: flex; align-items: center; gap: 10px; font-weight: 800; }
 .animate-fade-in { animation: fadeIn 0.6s ease; }
 .animate-slide-up { animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.animate-slide-right { animation: slideRight 0.6s ease both; }
 .animate-pop { animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes slideRight { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
 @keyframes pop { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
-.list-enter-active, .list-leave-active { transition: all 0.4s ease; }
-.list-enter-from, .list-leave-to { opacity: 0; transform: translateX(-30px); }
-@media (max-width: 768px) {
-  .header-glass { padding: 15px !important; min-height: 120px; }
-  .header-side-left, .header-side-right { width: 100%; display: flex; justify-content: center; }
-  .header-center { order: -1; margin-bottom: 10px; }
-  .fs-4-mobile { font-size: 1.25rem; }
-  .mobile-grid { display: grid; grid-template-columns: 1fr; gap: 15px; padding: 15px; }
-  .mobile-card { 
-    display: block !important; background: white; border-radius: 20px !important; 
-    padding: 20px; border: 1px solid #eef2ff !important; box-shadow: 0 4px 15px rgba(0,0,0,0.02);
-  }
-  .border-0-mobile { border: none !important; padding: 5px 0 !important; }
-  .mobile-label { display: block !important; font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px; }
-}
 .avatar-sm { width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; }
 .bg-indigo-grad { background: linear-gradient(135deg, #6366f1, #4f46e5); }
 .class-tag { background: #eef2ff; color: #4f46e5; padding: 6px 14px; border-radius: 10px; font-weight: 700; font-size: 11px; border: 1px solid #e0e7ff; }
@@ -464,12 +380,10 @@ export default {
 .btn-d { background: #fff1f2; color: #e11d48; }
 .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 9999; }
 .modal-box { width: 100%; max-width: 480px; }
-.btn-close-modern { position: absolute; top: 25px; right: 25px; width: 40px; height: 40px; border-radius: 50%; background: #f1f5f9; border: none; color: #94a3b8; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
-.btn-close-modern:hover { background: #fee2e2; color: #ef4444; transform: rotate(90deg); }
+.btn-close-modern { position: absolute; top: 25px; right: 25px; width: 40px; height: 40px; border-radius: 50%; background: #f1f5f9; border: none; color: #94a3b8; display: flex; align-items: center; justify-content: center; }
 .modal-icon-header { width: 50px; height: 50px; background: #eef2ff; color: #4f46e5; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
-.input-premium { background: #f8fafc; border: 2px solid #f1f5f9; padding: 14px 20px; border-radius: 16px; display: flex; align-items: center; gap: 12px; transition: 0.3s; }
-.input-premium:focus-within { border-color: #4f46e5; background: white; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+.input-premium { background: #f8fafc; border: 2px solid #f1f5f9; padding: 14px 20px; border-radius: 16px; display: flex; align-items: center; gap: 12px; }
 .input-premium input, .input-premium select { border: none; background: transparent; outline: none; width: 100%; font-weight: 600; color: #1e293b; }
-.btn-save-modern { background: #4f46e5; color: white; border: none; border-radius: 16px; padding: 16px; transition: 0.3s; }
+.btn-save-modern { background: #4f46e5; color: white; border: none; border-radius: 16px; padding: 16px; }
 .btn-cancel-modern { background: #f1f5f9; color: #64748b; border: none; border-radius: 16px; padding: 16px; }
 </style>

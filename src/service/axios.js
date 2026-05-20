@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: 'http://172.20.10.2:3000', // sesuaikan IP backend lu
+  baseURL: 'http://172.20.10.3:3000', // sesuaikan IP backend lu
   headers: {
     'Content-Type': 'application/json'
   }
