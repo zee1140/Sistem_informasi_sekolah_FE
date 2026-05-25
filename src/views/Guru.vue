@@ -43,6 +43,12 @@
         </div>
       </div>
 
+      <div v-if="pageMessage" class="alert-data mb-4 animate-pop">
+        <i class="bi bi-exclamation-circle"></i>
+        <span>{{ pageMessage }}</span>
+        <button type="button" @click="pageMessage = ''"><i class="bi bi-x"></i></button>
+      </div>
+
       <div class="table-card bg-white shadow-premium rounded-4 overflow-hidden animate-slide-up" style="animation-delay: 0.2s">
         <div class="table-responsive">
           <table class="table table-hover align-middle mb-0">
@@ -55,7 +61,7 @@
               </tr>
             </thead>
             <tbody class="mobile-grid">
-              <transition-group name="list">
+              
                 <tr v-for="(guru, i) in filteredGuru" :key="guru.id" class="row-hover mobile-card">
                   <td class="ps-md-4 py-3 border-0-mobile">
                     <div class="d-flex align-items-center gap-3">
@@ -64,7 +70,7 @@
                       </div>
                       <div>
                         <div class="fw-bold text-dark mb-0">{{ guru.nama }}</div>
-                        <small class="text-muted">NIP. 19800{{ 2026 + i }}</small>
+                        <small class="text-muted">NIP. {{ guru.nip || '-' }}</small>
                       </div>
                     </div>
                   </td>
@@ -78,13 +84,13 @@
                   </td>
                   <td class="text-md-end pe-md-4 border-0-mobile">
                     <div class="d-flex justify-content-md-end gap-2 mt-2 mt-md-0">
-                      <button class="btn-tool btn-v ripple" @click="viewGuru(guru)" title="Lihat"><i class="bi bi-eye"></i></button>
-                      <button class="btn-tool btn-e ripple" @click="bukaModal(guru)" title="Edit"><i class="bi bi-pencil-square"></i></button>
-                      <button class="btn-tool btn-d ripple" @click="hapusGuru(guru.id)" title="Hapus"><i class="bi bi-trash3"></i></button>
+                      <button type="button" class="btn-tool btn-v ripple" @click.prevent.stop="viewGuru(guru)" title="Lihat"><i class="bi bi-eye"></i></button>
+                      <button type="button" class="btn-tool btn-e ripple" @click.prevent.stop="bukaModal(guru)" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                      <button type="button" class="btn-tool btn-d ripple" @click.prevent.stop="konfirmasiHapus(guru.id)" title="Hapus"><i class="bi bi-trash3"></i></button>
                     </div>
                   </td>
                 </tr>
-              </transition-group>
+              
             </tbody>
           </table>
 
@@ -110,25 +116,80 @@
             </div>
 
             <div class="mb-4">
+              <label class="small fw-800 text-muted mb-2 ls-wide">NIP</label>
+              <div class="input-premium" :class="{'border-danger-custom': errors.nip}">
+                <i class="bi bi-credit-card-2-front text-indigo"></i>
+                <input
+                  v-model="formGuru.nip"
+                  type="text"
+                  inputmode="numeric"
+                  pattern="\d*"
+                  placeholder="Opsional"
+                  :readonly="isView"
+                  @input="onNipInput"
+                >
+              </div>
+              <small v-if="errors.nip" class="text-danger-custom fw-bold mt-1 d-block animate-pop">
+                <i class="bi bi-exclamation-circle"></i> NIP harus berupa angka saja!
+              </small>
+            </div>
+
+            <div class="mb-4">
               <label class="small fw-800 text-muted mb-2 ls-wide">NAMA LENGKAP & GELAR</label>
-              <div class="input-premium">
+              <div class="input-premium" :class="{'border-danger-custom': errors.nama}">
                 <i class="bi bi-person-badge text-indigo"></i>
                 <input v-model="formGuru.nama" type="text" placeholder="Contoh: Dr. Budi Santoso" :readonly="isView">
               </div>
+              <small v-if="errors.nama" class="text-danger-custom fw-bold mt-1 d-block animate-pop">
+                <i class="bi bi-exclamation-circle"></i> Nama dan gelar wajib diisi!
+              </small>
             </div>
 
             <div class="mb-5">
               <label class="small fw-800 text-muted mb-2 ls-wide">MATA PELAJARAN</label>
-              <div class="input-premium">
+              <div class="input-premium" :class="{'border-danger-custom': errors.mapel}">
                 <i class="bi bi-journal-bookmark text-indigo"></i>
-                <input v-model="formGuru.mapel" type="text" placeholder="Contoh: Matematika / Fisika" :readonly="isView">
+                <select v-model="formGuru.mapel" :disabled="isView">
+                  <option value="" disabled>Pilih Mata Pelajaran</option>
+                  <option>Matematika</option>
+                  <option>Bahasa Indonesia</option>
+                  <option>Bahasa Inggris</option>
+                  <option>PPKn</option>
+                  <option>Informatika</option>
+                  <option>Produktif Jurusan</option>
+                </select>
               </div>
+              <small v-if="errors.mapel" class="text-danger-custom fw-bold mt-1 d-block animate-pop">
+                <i class="bi bi-exclamation-circle"></i> Mata pelajaran tidak boleh kosong!
+              </small>
             </div>
 
             <div class="d-flex gap-3">
               <button class="btn btn-cancel-modern flex-grow-1 fw-bold ripple" @click="tutupModal">Kembali</button>
-              <button v-if="!isView" class="btn btn-save-modern flex-grow-1 fw-bold ripple shadow-lg" @click="simpanGuru">
-                {{ isEdit ? 'Simpan Perubahan' : 'Daftarkan Guru' }}
+              <button v-if="!isView" class="btn btn-save-modern flex-grow-1 fw-bold ripple shadow-lg" :disabled="isSaving" @click="simpanGuru">
+                {{ isSaving ? 'Menyimpan...' : (isEdit ? 'Simpan Perubahan' : 'Daftarkan Guru') }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
+
+    <transition name="modal-zoom">
+      <div v-if="showConfirm" class="modal-overlay px-3" @click.self="showConfirm = false">
+        <div class="modal-box bg-white shadow-2xl rounded-5 overflow-hidden text-center animate-pop" style="max-width: 400px;">
+          <div class="p-4 p-md-5">
+            <div class="mb-4">
+              <div class="mx-auto rounded-circle d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background: #fff1f2; color: #e11d48;">
+                <i class="bi bi-trash3-fill fs-1"></i>
+              </div>
+            </div>
+            <h4 class="fw-800 text-dark mb-2">Hapus Pengajar?</h4>
+            <p class="text-muted mb-4">Apakah anda yakin ingin menghapus data guru ini? Data yang dihapus tidak bisa dikembalikan.</p>
+            <div class="d-flex gap-3">
+              <button class="btn btn-cancel-modern flex-grow-1 fw-bold ripple" @click="showConfirm = false">Batal</button>
+              <button class="btn btn-d flex-grow-1 fw-bold ripple shadow-sm py-3" style="border-radius: 16px;" :disabled="isDeleting" @click="hapusGuru">
+                {{ isDeleting ? 'Menghapus...' : 'Ya, Hapus' }}
               </button>
             </div>
           </div>
@@ -139,83 +200,219 @@
 </template>
 
 <script>
+import api from '../service/axios.js'
+
 export default {
   data() {
     return {
       search: "",
       showModal: false,
+      showConfirm: false, // State Popup Hapus
+      selectedId: null,   // Simpan ID yang akan dihapus
       isEdit: false,
       isView: false,
       editId: null,
-      formGuru: { nama: '', mapel: '' },
-      daftarGuru: [
-        { id: 1, nama: 'Budi Santoso, S.Pd', mapel: 'Matematika' },
-        { id: 2, nama: 'Siti Aminah, M.Si', mapel: 'Fisika' },
-        { id: 3, nama: 'Rian Hidayat, S.Kom', mapel: 'Informatika' }
-      ]
+      isSaving: false,
+      isDeleting: false,
+      pageMessage: '',
+      formGuru: { id: '', nama: '', nip: '', mapel: '' },
+      errors: { nama: false, mapel: false, nip: false },
+      daftarGuru: []
     }
   },
   computed: {
     filteredGuru() {
       return this.daftarGuru.filter(g => 
-        g.nama.toLowerCase().includes(this.search.toLowerCase()) || 
-        g.mapel.toLowerCase().includes(this.search.toLowerCase())
+        String(g.nama || '').toLowerCase().includes(this.search.toLowerCase()) || 
+        String(g.mapel || '').toLowerCase().includes(this.search.toLowerCase()) ||
+        String(g.nip || '').toLowerCase().includes(this.search.toLowerCase())
       )
     }
   },
+  mounted() {
+    this.getGuru()
+  },
   methods: {
+    async getGuru() {
+      try {
+        const response = await api.get('/guru')
+        this.daftarGuru = Array.isArray(response.data)
+          ? response.data.map(this.normalizeGuru)
+          : []
+      } catch (error) {
+        console.log('GET GURU ERROR:', error.response || error)
+        this.pageMessage = this.getErrorMessage(error, 'Data guru gagal dimuat.')
+      }
+    },
+    normalizeGuru(guru) {
+      return {
+        id: guru?.id || guru?.id_guru || guru?.kode_guru || guru?.nip || '',
+        nama: guru?.nama || guru?.nama_guru || '-',
+        nip: guru?.nip || guru?.nomor_induk || '',
+        mapel: guru?.mapel || guru?.mata_pelajaran || guru?.pelajaran || '-'
+      }
+    },
     getInitials(name) {
+      if(!name) return '??';
       return name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
     },
     bukaModal(guru = null) {
       this.isView = false;
-      if (guru) { this.isEdit = true; this.editId = guru.id; this.formGuru = { ...guru }; }
-      else { this.isEdit = false; this.formGuru = { nama: '', mapel: '' }; }
+      this.errors = { nama: false, mapel: false, nip: false };
+      if (guru) { 
+        const normalized = this.normalizeGuru(guru)
+        this.isEdit = true; 
+        this.editId = normalized.id; 
+        this.formGuru = { ...normalized }; 
+      } else { 
+        this.isEdit = false; 
+        this.formGuru = { id: '', nama: '', nip: '', mapel: '' }; 
+      }
       this.showModal = true;
     },
-    viewGuru(guru) { this.isView = true; this.formGuru = { ...guru }; this.showModal = true; },
-    tutupModal() { this.showModal = false; },
-    simpanGuru() {
-      if (!this.formGuru.nama || !this.formGuru.mapel) return;
-      if (this.isEdit) {
-        const idx = this.daftarGuru.findIndex(g => g.id === this.editId);
-        this.daftarGuru[idx] = { ...this.formGuru };
-      } else {
-        this.daftarGuru.unshift({ id: Date.now(), ...this.formGuru });
-      }
-      this.tutupModal();
+    viewGuru(guru) { 
+      const normalized = this.normalizeGuru(guru)
+      this.isView = true; 
+      this.errors = { nama: false, mapel: false, nip: false };
+      this.formGuru = { ...normalized }; 
+      this.showModal = true; 
     },
-    hapusGuru(id) { if (confirm("Hapus data pengajar ini?")) this.daftarGuru = this.daftarGuru.filter(g => g.id !== id); }
+    tutupModal() { this.showModal = false; },
+    onNipInput(event) {
+      const raw = event.target.value || ''
+      const cleaned = raw.replace(/\D+/g, '')
+      this.errors.nip = raw !== cleaned
+      this.formGuru.nip = cleaned
+    },
+    async simpanGuru() {
+      this.errors.nama = !this.formGuru.nama.trim();
+      this.errors.mapel = !this.formGuru.mapel || !String(this.formGuru.mapel).trim();
+      this.errors.nip = this.formGuru.nip ? !/^[0-9]+$/.test(this.formGuru.nip) : false;
+      if (this.errors.nama || this.errors.mapel || this.errors.nip) return;
+
+      try {
+        this.isSaving = true
+        const payload = {
+          id: this.formGuru.id || (window.crypto?.randomUUID ? window.crypto.randomUUID() : `${Date.now()}`),
+          nama: this.formGuru.nama.trim(),
+          nama_guru: this.formGuru.nama.trim(),
+          nip: this.formGuru.nip || null,
+          mapel: this.formGuru.mapel.trim(),
+          mata_pelajaran: this.formGuru.mapel.trim()
+        }
+
+        if (this.isEdit) {
+          await api.put(`/guru/${encodeURIComponent(this.editId)}`, payload)
+        } else {
+          await api.post('/guru', payload)
+        }
+
+        await this.getGuru()
+        this.tutupModal();
+      } catch (error) {
+        console.log('SAVE GURU ERROR:', error.response || error)
+        this.pageMessage = this.getErrorMessage(error, 'Data guru gagal disimpan.')
+      } finally {
+        this.isSaving = false
+      }
+    },
+    // Fungsi baru untuk memicu popup
+    konfirmasiHapus(id) {
+      this.selectedId = id;
+      this.showConfirm = true;
+    },
+    // Fungsi hapus yang dijalankan setelah konfirmasi
+    async hapusGuru() { 
+      try {
+        this.isDeleting = true
+        await api.delete(`/guru/${encodeURIComponent(this.selectedId)}`)
+        this.daftarGuru = this.daftarGuru.filter(g => g.id !== this.selectedId);
+        this.showConfirm = false;
+        this.selectedId = null;
+        await this.getGuru()
+      } catch (error) {
+        console.log('DELETE GURU ERROR:', error.response || error)
+        this.pageMessage = this.getErrorMessage(error, 'Data guru gagal dihapus.')
+        this.showConfirm = false
+      } finally {
+        this.isDeleting = false
+      }
+    },
+    getErrorMessage(error, fallback) {
+      const data = error.response?.data
+      if (data?.message) return data.message
+      if (typeof data === 'string') return data.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
+      return fallback
+    }
   }
 }
 </script>
 
 <style scoped>
+/* Style tetap sama sesuai file asli Anda */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
-/* GLOBAL */
+.border-danger-custom { border-color: #ef4444 !important; background: #fff5f5 !important; }
+.text-danger-custom { color: #ef4444 !important; font-size: 0.75rem; }
 .app-container { height: 100vh; background: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; position: fixed; inset: 0; }
 .content-scroll-area { flex: 1; overflow-y: auto; height: calc(100vh - 120px); scroll-behavior: smooth; }
 .fw-800 { font-weight: 800; }
 .ls-wide { letter-spacing: 0.05em; }
 .text-indigo { color: #4f46e5; }
 .shadow-premium { box-shadow: 0 10px 30px -5px rgba(0,0,0,0.05); }
-
-/* HEADER CENTERED */
 .header-glass { background: white; border-bottom: 1px solid #f1f5f9; min-height: 100px; }
 .header-side-left, .header-side-right { flex: 1; }
 .avatar-aj { width: 44px; height: 44px; background: #4f46e5; color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; margin-bottom: 4px; border: 3px solid #eef2ff; }
 .h-line { width: 40px; height: 3px; background: #4f46e5; border-radius: 10px; margin-top: 4px; }
-
-/* BUTTONS */
 .ripple { transition: all 0.2s ease; cursor: pointer; }
 .ripple:active { transform: scale(0.95); opacity: 0.8; }
-.btn-back-modern { background: #f1f5f9; border: none; border-radius: 12px; font-weight: 700; font-size: 0.75rem; padding: 10px 18px; color: #64748b; }
+.btn-back-modern {
+  background: #eef2ff;
+  color: #4f46e5;
+  border: none;
+  border-radius: 999px; /* bikin pill */
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: 0.2s;
+}
+
+/* hover biar hidup dikit */
+.btn-back-modern:hover {
+  background: #4f46e5;
+  color: white;
+  transform: translateY(-1px);
+}
+/* PAKSA KIRI BANGET */
+.header-side-left {
+  display: flex;
+  justify-content: flex-start !important;
+  align-items: center;
+}
+
+/* HILANGIN WIDTH FULL YANG BIKIN KE TENGAH */
+.w-100-mobile {
+  width: auto !important;
+}
+
+/* BIAR CENTER TETEP DI TENGAH */
+.header-center {
+  flex: 1;
+  text-align: center;
+}
+
+/* KANAN TETEP DI KANAN */
+.header-side-right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
 .btn-add-premium { background: #4f46e5; color: white; border: none; padding: 12px 24px; border-radius: 14px; font-weight: 700; }
 .qs-badge { background: white; padding: 12px 20px; border-radius: 14px; border: 1px solid #eef2ff; display: flex; align-items: center; gap: 8px; }
 .qs-val { font-weight: 800; color: #4f46e5; }
-
-/* SEARCH GLASS */
 .search-wrapper { max-width: 800px; margin: 0 auto; }
 .search-inner-glass {
   background: rgba(255, 255, 255, 0.6) !important; backdrop-filter: blur(15px);
@@ -225,51 +422,38 @@ export default {
 }
 .btn-clear { border: none; background: transparent; color: #cbd5e1; transition: 0.2s; }
 .btn-clear:hover { color: #ef4444; }
+.alert-data { max-width: 800px; margin: 0 auto; background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; border-radius: 14px; padding: 12px 16px; display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 0.85rem; }
+.alert-data button { margin-left: auto; border: none; background: transparent; color: #e11d48; font-size: 1.1rem; }
 
-/* RESPONSIVE TABLE TO CARDS */
 @media (max-width: 768px) {
   .header-glass { padding: 15px !important; min-height: 120px; }
   .header-side-left, .header-side-right { width: 100%; display: flex; justify-content: center; }
   .header-center { order: -1; margin-bottom: 10px; }
   .fs-4-mobile { font-size: 1.25rem; }
-  
   .mobile-grid { display: grid; grid-template-columns: 1fr; gap: 15px; padding: 15px; }
-  .mobile-card { 
-    display: block !important; background: white; border-radius: 20px !important; 
-    padding: 20px; border: 1px solid #eef2ff !important; box-shadow: 0 4px 15px rgba(0,0,0,0.02);
-  }
+  .mobile-card { display: block !important; background: white; border-radius: 20px !important; padding: 20px; border: 1px solid #eef2ff !important; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
   .border-0-mobile { border: none !important; padding: 5px 0 !important; }
   .mobile-label { display: block !important; font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px; }
 }
 
-/* UI ELEMENTS */
 .avatar-sm { width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; }
 .bg-indigo-grad { background: linear-gradient(135deg, #6366f1, #4f46e5); }
 .class-tag { background: #eef2ff; color: #4f46e5; padding: 6px 14px; border-radius: 10px; font-weight: 700; font-size: 11px; border: 1px solid #e0e7ff; }
 .status-pill { background: #dcfce7; color: #15803d; padding: 6px 14px; border-radius: 50px; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center; gap: 6px; }
 .dot { width: 6px; height: 6px; background: #22c55e; border-radius: 50%; }
-
 .btn-tool { width: 38px; height: 38px; border-radius: 12px; border: none; margin-left: 6px; }
 .btn-v { background: #f0f9ff; color: #0369a1; }
 .btn-e { background: #f0fdf4; color: #16a34a; }
 .btn-d { background: #fff1f2; color: #e11d48; }
 
-/* MODAL & X BUTTON */
 .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 9999; }
 .modal-box { width: 100%; max-width: 480px; }
-.btn-close-modern {
-  position: absolute; top: 25px; right: 25px; width: 40px; height: 40px; border-radius: 50%;
-  background: #f1f5f9; border: none; color: #94a3b8;
-  display: flex; align-items: center; justify-content: center;
-  transition: 0.3s; z-index: 10;
-}
+.btn-close-modern { position: absolute; top: 25px; right: 25px; width: 40px; height: 40px; border-radius: 50%; background: #f1f5f9; border: none; color: #94a3b8; display: flex; align-items: center; justify-content: center; transition: 0.3s; z-index: 10; }
 .btn-close-modern:hover { background: #fee2e2; color: #ef4444; transform: rotate(90deg); }
-
 .modal-icon-header { width: 50px; height: 50px; background: #eef2ff; color: #4f46e5; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
 .input-premium { background: #f8fafc; border: 2px solid #f1f5f9; padding: 14px 20px; border-radius: 16px; display: flex; align-items: center; gap: 12px; transition: 0.3s; }
-.input-premium:focus-within { border-color: #4f46e5; background: white; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
-.input-premium input { border: none; background: transparent; outline: none; width: 100%; font-weight: 600; color: #1e293b; }
-
+.input-premium input,
+.input-premium select { border: none; background: transparent; outline: none; width: 100%; font-weight: 600; color: #1e293b; }
 .btn-save-modern { background: #4f46e5; color: white; border: none; border-radius: 16px; padding: 16px; transition: 0.3s; }
 .btn-cancel-modern { background: #f1f5f9; color: #64748b; border: none; border-radius: 16px; padding: 16px; }
 
@@ -278,13 +462,10 @@ export default {
 .animate-slide-up { animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
 .animate-slide-right { animation: slideRight 0.6s ease both; }
 .animate-pop { animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both; }
-
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes slideRight { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
 @keyframes pop { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
-
-/* List Transition */
 .list-enter-active, .list-leave-active { transition: all 0.4s ease; }
 .list-enter-from, .list-leave-to { opacity: 0; transform: translateX(-30px); }
 </style>
