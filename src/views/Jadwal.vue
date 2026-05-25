@@ -1,466 +1,668 @@
 <template>
-  <div class="app-container animate-fade-in">
+  <div class="app-container animate-page">
 
     <!-- HEADER -->
     <div class="header-glass py-3 py-md-4 px-3 px-md-5 bg-white border-bottom shadow-sm">
       <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
 
-        <!-- BACK -->
-        <div class="header-side-left">
+        <!-- LEFT -->
+        <div class="header-side-left w-100-mobile">
           <button class="btn btn-back-modern ripple" @click="$router.push('/dashboard')">
-            <i class="bi bi-arrow-left"></i> Dashboard
+            <i class="bi bi-arrow-left"></i>
+            Dashboard
           </button>
         </div>
 
-        <!-- TITLE -->
+        <!-- CENTER -->
         <div class="header-center text-center animate-pop">
           <div class="d-flex flex-column align-items-center gap-2">
             <div class="avatar-aj shadow-premium">AJ</div>
-            <h2 class="fw-800 text-dark mb-0">Agenda Belajar</h2>
+
+            <h2 class="fw-800 text-dark mb-0 fs-4-mobile">
+              Agenda Pembelajaran
+            </h2>
+
             <div class="h-line"></div>
           </div>
         </div>
 
         <!-- RIGHT -->
-        <div class="header-side-right d-flex align-items-center gap-2">
-          <div class="qs-badge shadow-sm">
-            <span class="qs-lab">TOTAL:</span>
+        <div class="header-side-right d-flex align-items-center justify-content-end gap-2 gap-md-3 w-100-mobile">
+
+          <div class="qs-badge shadow-sm animate-slide-right">
+            <span class="qs-lab">TOTAL MAPEL:</span>
             <span class="qs-val">{{ jadwalList.length }}</span>
           </div>
 
-          <button class="btn btn-add-premium ripple shadow-sm" @click="openModal">
-            <i class="bi bi-plus-lg"></i>
+          <button
+            class="btn btn-add-premium ripple shadow-sm"
+            @click="openModal()"
+          >
+            <i class="bi bi-plus-circle-fill me-md-2"></i>
+            <span class="d-none d-md-inline">Tambah Jadwal</span>
           </button>
-        </div>
 
+        </div>
       </div>
     </div>
 
     <!-- CONTENT -->
     <div class="content-scroll-area p-3 p-md-5">
-      <div class="agenda-wrapper mx-auto">
 
-        <div class="timeline-container">
-          <transition-group name="list">
+      <!-- SUMMARY -->
+      <div class="summary-grid animate-slide-up mb-4 mb-md-5">
 
-            <div v-for="(item, index) in jadwalList"
-                 :key="item.id"
-                 class="agenda-row animate-slide-up"
-                 :style="`animation-delay:${index * 0.05}s`">
+        <article class="summary-card">
+          <div class="summary-icon bg-indigo-soft">
+            <i class="bi bi-journal-bookmark-fill"></i>
+          </div>
 
-              <!-- LEFT -->
-              <div class="d-flex align-items-center gap-3">
-                <div class="avatar-sm bg-indigo-grad">
-                  <i :class="getIcon(item.mapel)"></i>
-                </div>
+          <div>
+            <p>Total Mapel</p>
+            <h3>{{ jadwalList.length }}</h3>
+          </div>
+        </article>
 
-                <div>
-                  <div class="fw-bold text-dark">{{ item.mapel }}</div>
-                  <small class="text-muted">
-                    {{ item.waktu }} • {{ item.ruang }} • {{ item.kelas }}
-                  </small>
-                </div>
-              </div>
+        <article class="summary-card">
+          <div class="summary-icon bg-amber-soft">
+            <i class="bi bi-clock-fill"></i>
+          </div>
 
-              <!-- GURU -->
-              <div class="d-none d-md-block text-muted fw-600">
-                {{ item.guru }}
-              </div>
+          <div>
+            <p>Status Sesi</p>
+            <h3 class="text-amber">Aktif</h3>
+          </div>
+        </article>
 
-              <!-- ACTION (SAMA PERSIS SISWA) -->
-              <div class="d-flex gap-2">
-                <button class="btn-tool btn-e ripple" @click="editJadwal(item, index)">
-                  <i class="bi bi-pencil-square"></i>
-                </button>
-                <button class="btn-tool btn-d ripple" @click="hapusJadwal(index)">
-                  <i class="bi bi-trash3"></i>
-                </button>
-              </div>
+        <article class="summary-card">
+          <div class="summary-icon bg-rose-soft">
+            <i class="bi bi-geo-alt-fill"></i>
+          </div>
 
-            </div>
+          <div>
+            <p>Lokasi</p>
+            <h3 class="text-rose">Lab Komp</h3>
+          </div>
+        </article>
 
-          </transition-group>
+      </div>
+
+      <!-- SEARCH -->
+      <div
+        class="search-wrapper mb-4 mb-md-5 animate-slide-up"
+        style="animation-delay: 0.1s"
+      >
+        <div class="search-inner-glass border-0">
+
+          <i class="bi bi-search text-indigo me-3"></i>
+
+          <input
+            v-model="search"
+            type="text"
+            placeholder="Cari mata pelajaran atau guru..."
+            class="flex-grow-1 border-0 outline-none text-dark fw-600 bg-transparent"
+          >
+
+          <transition name="fade">
+            <button
+              v-if="search"
+              class="btn-clear"
+              @click="search = ''"
+            >
+              <i class="bi bi-x-circle-fill"></i>
+            </button>
+          </transition>
+
+        </div>
+      </div>
+
+      <!-- TABLE -->
+      <div
+        class="table-card bg-white shadow-premium rounded-4 overflow-hidden animate-slide-up"
+        style="animation-delay: 0.2s"
+      >
+
+        <div class="table-responsive">
+
+          <table class="table table-hover align-middle mb-0">
+
+            <thead class="bg-light d-none d-md-table-header-group">
+              <tr class="text-uppercase small fw-800 text-muted ls-wide">
+                <th>Mata Pelajaran</th>
+                <th>Kelas</th>
+                <th>Waktu</th>
+                <th>Ruang</th>
+                <th class="text-end pe-4">Aksi</th>
+              </tr>
+            </thead>
+
+            <transition-group
+              name="list"
+              tag="tbody"
+              class="mobile-grid"
+            >
+
+              <tr
+                v-for="item in filteredJadwal"
+                :key="item.id"
+                class="row-hover mobile-card"
+              >
+
+                <!-- MAPEL -->
+                <td class="ps-md-4 py-3 border-0-mobile">
+
+                  <div class="d-flex align-items-center gap-3">
+
+                    <div class="avatar-sm initials bg-indigo-grad animate-pop">
+                      {{ getInitials(item.guru) }}
+                    </div>
+
+                    <div>
+                      <div class="fw-bold text-dark mb-0">
+                        {{ item.mapel }}
+                      </div>
+
+                      <small class="text-muted">
+                        Guru: {{ item.guru }}
+                      </small>
+                    </div>
+
+                  </div>
+
+                </td>
+
+                <!-- KELAS -->
+                <td class="border-0-mobile">
+
+                  <div class="mobile-label d-md-none">
+                    Kelas
+                  </div>
+
+                  <span class="badge-soft-indigo">
+                    {{ item.kelas }}
+                  </span>
+
+                </td>
+
+                <!-- WAKTU -->
+                <td class="border-0-mobile">
+
+                  <div class="mobile-label d-md-none">
+                    Waktu
+                  </div>
+
+                  <div class="fw-semibold text-secondary">
+                    <i class="bi bi-clock me-1 opacity-50"></i>
+                    {{ item.waktu }}
+                  </div>
+
+                </td>
+
+                <!-- RUANG -->
+                <td class="border-0-mobile">
+
+                  <div class="mobile-label d-md-none">
+                    Ruang
+                  </div>
+
+                  <div class="fw-semibold text-secondary">
+                    <i class="bi bi-geo-alt me-1 opacity-50"></i>
+                    {{ item.ruang }}
+                  </div>
+
+                </td>
+
+                <!-- ACTION -->
+                <td class="text-md-end pe-md-4 border-0-mobile">
+
+                  <div class="d-flex justify-content-md-end gap-2 mt-2 mt-md-0">
+
+                    <button
+                      type="button"
+                      class="btn-tool btn-e ripple"
+                      @click.stop="openModal(item)"
+                    >
+                      <i class="bi bi-pencil-square"></i>
+                    </button>
+
+                    <button
+                      type="button"
+                      class="btn-tool btn-d ripple"
+                      @click.stop="openConfirm(item)"
+                    >
+                      <i class="bi bi-trash3"></i>
+                    </button>
+
+                  </div>
+
+                </td>
+
+              </tr>
+
+            </transition-group>
+
+          </table>
+
+          <!-- EMPTY -->
+          <div
+            v-if="filteredJadwal.length === 0"
+            class="p-5 text-center animate-pop"
+          >
+            <i class="bi bi-calendar-x fs-1 text-muted opacity-25"></i>
+
+            <p class="mt-3 fw-bold text-muted">
+              Jadwal tidak ditemukan...
+            </p>
+          </div>
+
         </div>
 
       </div>
+
     </div>
-
-    <transition name="modal-zoom">
-  <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
-
-    <div class="modal-box animate-pop">
-
-      <!-- CLOSE -->
-      <button class="btn-close-modern" @click="closeModal">
-        <i class="bi bi-x-lg"></i>
-      </button>
-
-      <!-- HEADER -->
-      <div class="d-flex align-items-center gap-3 mb-4">
-        <div class="modal-icon">
-          <i class="bi bi-calendar-event"></i>
-        </div>
-        <h4 class="fw-800 mb-0">
-          {{ isEdit ? 'Edit Jadwal' : 'Tambah Jadwal' }}
-        </h4>
-      </div>
-
-      <!-- FORM -->
-      <div class="form-group mb-3">
-        <label>MAPEL</label>
-        <div class="input-modern">
-          <i class="bi bi-book"></i>
-          <input v-model="form.mapel" placeholder="Contoh: Matematika">
-        </div>
-      </div>
-
-      <div class="form-group mb-3">
-        <label>WAKTU</label>
-        <div class="input-modern">
-          <i class="bi bi-clock"></i>
-          <input v-model="form.waktu" placeholder="07:00 - 08:30">
-        </div>
-      </div>
-
-      <div class="form-group mb-3">
-        <label>RUANG</label>
-        <div class="input-modern">
-          <i class="bi bi-geo-alt"></i>
-          <input v-model="form.ruang" placeholder="LAB-01">
-        </div>
-      </div>
-
-      <div class="form-group mb-4">
-        <label>GURU</label>
-        <div class="input-modern">
-          <i class="bi bi-person"></i>
-          <input v-model="form.guru" placeholder="Nama Guru">
-        </div>
-      </div>
-
-      <!-- BUTTON -->
-      <div class="d-flex gap-3">
-        <button class="btn-cancel w-100" @click="closeModal">
-          Kembali
-        </button>
-        <button class="btn-save w-100" @click="saveJadwal">
-          {{ isEdit ? 'Update Data' : 'Simpan' }}
-        </button>
-      </div>
-
-    </div>
-
-  </div>
-</transition>
 
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      showModal: false,
-      isEdit: false,
-      editIndex: null,
-      form: { id: null, waktu: '', mapel: '', kelas: '12 IPA 1', guru: '', ruang: '' },
-      jadwalList: [
-        { id: 1, waktu: '07:00 - 08:30', mapel: 'Matematika', kelas: '12 IPA 1', guru: 'Budi Santoso', ruang: 'LAB-01' },
-        { id: 2, waktu: '08:30 - 10:00', mapel: 'Bahasa Inggris', kelas: '11 IPS 2', guru: 'Dewi Lestari', ruang: 'R.102' },
-        { id: 3, waktu: '10:15 - 11:45', mapel: 'Informatika', kelas: '10 IPA 2', guru: 'Rian Hidayat', ruang: 'LAB-KOM' }
-      ]
-    }
-  },
-  methods: {
-    getIcon(mapel) {
-      const m = mapel.toLowerCase()
-      if (m.includes('mat')) return 'bi-calculator'
-      if (m.includes('inggris')) return 'bi-translate'
-      if (m.includes('info')) return 'bi-cpu'
-      return 'bi-book'
-    },
-    openModal() {
-      this.isEdit = false
-      this.form = { id: Date.now(), waktu: '', mapel: '', kelas: '12 IPA 1', guru: '', ruang: '' }
-      this.showModal = true
-    },
-    closeModal() { this.showModal = false },
-    editJadwal(item, index) {
-      this.isEdit = true
-      this.editIndex = index
-      this.form = { ...item }
-      this.showModal = true
-    },
-    saveJadwal() {
-      if (!this.form.mapel) return
-      if (this.isEdit) {
-        this.jadwalList[this.editIndex] = { ...this.form }
-      } else {
-        this.jadwalList.push({ ...this.form })
-      }
-      this.closeModal()
-    },
-    hapusJadwal(index) {
-      if (confirm("Hapus jadwal?")) this.jadwalList.splice(index, 1)
-    }
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import api from '../service/axios.js'
+
+const search = ref('')
+const jadwalList = ref([])
+
+const filteredJadwal = computed(() => {
+  const k = search.value.toLowerCase()
+
+  return jadwalList.value.filter(j =>
+    j.mapel.toLowerCase().includes(k) ||
+    j.guru.toLowerCase().includes(k)
+  )
+})
+
+onMounted(() => {
+  getJadwal()
+})
+
+const getJadwal = async () => {
+  try {
+
+    const res = await api.get('/jadwal')
+
+    jadwalList.value = res.data.map(item => ({
+      id: item.id || item.id_jadwal,
+      mapel: item.mapel || item.mata_pelajaran || '-',
+      kelas: item.kelas || '-',
+      waktu: item.waktu || item.jam || '-',
+      ruang: item.ruang || '-',
+      guru: item.guru || item.nama_guru || '-'
+    }))
+
+  } catch (e) {
+    console.error(e)
   }
+}
+
+const openModal = (item = null) => {
+  console.log(item)
+}
+
+const openConfirm = (item) => {
+  console.log(item)
+}
+
+const getInitials = (n) => {
+  return n
+    ? n
+      .split(' ')
+      .map(x => x[0])
+      .join('')
+      .toUpperCase()
+      .substring(0,2)
+    : '?'
 }
 </script>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
-/* --- LAYOUT & THEME --- */
-.app-container { height: 100vh; background: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; position: fixed; inset: 0; }
-.content-scroll-area { flex: 1; overflow-y: auto; height: calc(100vh - 120px); scroll-behavior: smooth; }
-.fw-800 { font-weight: 800; }
-.ls-wide { letter-spacing: 0.05em; }
-.text-indigo { color: #4f46e5; }
-.shadow-premium { box-shadow: 0 10px 30px -5px rgba(0,0,0,0.05); }
+/* LAYOUT */
 
-/* --- HEADER CENTERED --- */
-.header-glass { background: white; border-bottom: 1px solid #f1f5f9; min-height: 100px; }
-.header-side-left, .header-side-right { flex: 1; }
-.avatar-aj { width: 44px; height: 44px; background: #4f46e5; color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; margin-bottom: 4px; border: 3px solid #eef2ff; }
-.h-line { width: 40px; height: 3px; background: #4f46e5; border-radius: 10px; margin-top: 4px; }
-
-/* --- BUTTONS & BADGES --- */
-.ripple { transition: all 0.2s ease; cursor: pointer; }
-.ripple:active { transform: scale(0.95); opacity: 0.8; }
-
-.app-container {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  background: #f8fafc;
-  min-height: 100vh;
+.app-container{
+height:100vh;
+background:#f8fafc;
+font-family:'Plus Jakarta Sans',sans-serif;
+overflow:hidden;
+position:fixed;
+inset:0;
 }
 
-/* HEADER FIX */
-.header-side-left { display:flex; justify-content:flex-start; }
-.header-center { flex:1; text-align:center; }
-.header-side-right { display:flex; justify-content:flex-end; }
+.content-scroll-area{
+flex:1;
+overflow-y:auto;
+height:calc(100vh - 120px);
+scroll-behavior:smooth;
+}
+
+.fw-800{
+font-weight:800;
+}
+
+.ls-wide{
+letter-spacing:.05em;
+}
+
+.shadow-premium{
+box-shadow:0 10px 30px -5px rgba(0,0,0,.05);
+}
+
+.text-indigo{
+color:#4f46e5;
+}
+
+/* HEADER */
+
+.header-glass{
+background:white;
+border-bottom:1px solid #f1f5f9;
+min-height:100px;
+}
+
+.header-side-left,
+.header-side-right{
+flex:1;
+}
+
+.header-side-left{
+display:flex;
+justify-content:flex-start;
+align-items:center;
+}
+
+.header-side-right{
+display:flex;
+justify-content:flex-end;
+align-items:center;
+}
+
+.header-center{
+flex:1;
+text-align:center;
+}
+
+.w-100-mobile{
+width:auto!important;
+}
+
+.avatar-aj{
+width:44px;
+height:44px;
+background:#4f46e5;
+color:white;
+border-radius:12px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:800;
+margin-bottom:4px;
+border:3px solid #eef2ff;
+}
+
+.h-line{
+width:40px;
+height:3px;
+background:#4f46e5;
+border-radius:10px;
+margin-top:4px;
+}
 
 /* BUTTON */
-.btn-back-modern {
-  background: #eef2ff;
-  color: #4f46e5;
-  border: none;
-  border-radius: 999px; /* bikin pill */
-  padding: 8px 16px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  transition: 0.2s;
+
+.ripple{
+transition:.2s;
+cursor:pointer;
 }
 
-/* hover biar hidup dikit */
-.btn-back-modern:hover {
-  background: #4f46e5;
-  color: white;
-  transform: translateY(-1px);
+.ripple:active{
+transform:scale(.95);
 }
 
-.btn-add-premium {
-  background: #4f46e5;
-  color: white;
-  border-radius: 14px;
-  width: 42px;
-  height: 42px;
+.btn-back-modern{
+background:#eef2ff;
+color:#4f46e5;
+border:none;
+border-radius:999px;
+padding:8px 16px;
+font-weight:600;
+display:flex;
+align-items:center;
+gap:6px;
 }
 
-.qs-badge {
-  background: white;
-  padding: 10px 16px;
-  border-radius: 14px;
+.btn-back-modern:hover{
+background:#4f46e5;
+color:white;
 }
 
-.qs-val { color:#4f46e5; font-weight:800; }
-
-/* ROW */
-.agenda-row {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  background:white;
-  padding:18px;
-  border-radius:18px;
-  margin-bottom:12px;
-  border:1px solid #eef2ff;
+.btn-add-premium{
+background:#4f46e5;
+color:white;
+border:none;
+padding:12px 24px;
+border-radius:14px;
+font-weight:700;
 }
 
-.avatar-sm {
-  width:46px;
-  height:46px;
-  border-radius:14px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:white;
+.qs-badge{
+background:white;
+padding:12px 20px;
+border-radius:14px;
+border:1px solid #eef2ff;
+display:flex;
+gap:8px;
 }
 
-.bg-indigo-grad {
-  background: linear-gradient(135deg, #6366f1, #4f46e5);
+.qs-val{
+font-weight:800;
+color:#4f46e5;
 }
 
-/* BUTTON TOOL (SAMA SISWA) */
-.btn-tool {
-  width:38px;
-  height:38px;
-  border-radius:12px;
-  border:none;
+/* SUMMARY */
+
+.summary-grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:16px;
 }
 
-.btn-e { background:#f0fdf4; color:#16a34a; }
-.btn-d { background:#fff1f2; color:#e11d48; }
-
-/* MODAL */
-.modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-.modal-box { width: 100%; max-width: 480px; }
-.btn-close-modern {
-  position: absolute; top: 25px; right: 25px; width: 40px; height: 40px; border-radius: 50%;
-  background: #f1f5f9; border: none; color: #94a3b8;
-  display: flex; align-items: center; justify-content: center;
-  transition: 0.3s; z-index: 10;
-}
-.btn-close-modern:hover { background: #fee2e2; color: #ef4444; transform: rotate(90deg); }
-
-/* INPUT */
-.input-premium {
-  background:#f8fafc;
-  padding:12px;
-  border-radius:14px;
+.summary-card{
+background:white;
+border-radius:18px;
+padding:18px;
+display:flex;
+align-items:center;
+gap:14px;
+border:1px solid #eef2ff;
+box-shadow:0 12px 28px rgba(15,23,42,.04);
 }
 
-.input-premium input {
-  border:none;
-  outline:none;
-  width:100%;
+.summary-icon{
+width:48px;
+height:48px;
+border-radius:14px;
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:1.35rem;
+}
+
+.bg-indigo-soft{
+background:#eef2ff;
+color:#4f46e5;
+}
+
+.bg-amber-soft{
+background:#fffbeb;
+color:#f59e0b;
+}
+
+.bg-rose-soft{
+background:#fff1f2;
+color:#e11d48;
+}
+
+/* SEARCH */
+
+.search-wrapper{
+max-width:800px;
+margin:auto;
+}
+
+.search-inner-glass{
+display:flex;
+align-items:center;
+padding:16px 28px;
+border-radius:20px;
+background:rgba(255,255,255,.7);
+backdrop-filter:blur(15px);
+box-shadow:0 15px 35px rgba(31,38,135,.05);
+}
+
+.btn-clear{
+border:none;
+background:none;
+}
+
+/* TABLE */
+
+.avatar-sm{
+width:46px;
+height:46px;
+border-radius:14px;
+display:flex;
+align-items:center;
+justify-content:center;
+color:white;
+font-weight:800;
+}
+
+.bg-indigo-grad{
+background:linear-gradient(135deg,#6366f1,#4f46e5);
+}
+
+.badge-soft-indigo{
+background:#eef2ff;
+color:#4f46e5;
+padding:4px 12px;
+border-radius:8px;
+font-size:11px;
+font-weight:800;
+}
+
+.btn-tool{
+width:38px;
+height:38px;
+border:none;
+border-radius:12px;
+}
+
+.btn-e{
+background:#f0fdf4;
+color:#16a34a;
+}
+
+.btn-d{
+background:#fff1f2;
+color:#e11d48;
 }
 
 /* ANIMATION */
-.animate-slide-up {
-  animation: slideUp 0.5s ease both;
+
+.animate-page{
+animation:fadeIn .6s ease;
 }
 
-/* OVERLAY */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.4);
-  backdrop-filter: blur(10px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
+.animate-slide-up{
+animation:slideUp .7s ease both;
 }
 
-/* BOX */
-.modal-box {
-  width: 100%;
-  max-width: 420px;
-  background: #ffffff;
-  padding: 30px;
-  border-radius: 24px;
-  position: relative;
-  box-shadow: 0 25px 60px rgba(0,0,0,0.15);
+.animate-pop{
+animation:pop .4s ease both;
 }
 
-/* CLOSE BUTTON */
-.btn-close-modern {
-  position: absolute;
-  top: 18px;
-  right: 18px;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  border: none;
-  background: #f1f5f9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.list-enter-active,
+.list-leave-active{
+transition:.4s;
 }
 
-/* ICON */
-.modal-icon {
-  width: 45px;
-  height: 45px;
-  background: #eef2ff;
-  color: #4f46e5;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
+.list-enter-from,
+.list-leave-to{
+opacity:0;
+transform:translateY(15px);
 }
 
-/* INPUT */
-.input-modern {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: #f8fafc;
-  border: 2px solid #f1f5f9;
-  padding: 12px 15px;
-  border-radius: 14px;
+@keyframes fadeIn{
+from{opacity:0}
+to{opacity:1}
 }
 
-.input-modern input {
-  border: none;
-  outline: none;
-  width: 100%;
-  background: transparent;
+@keyframes slideUp{
+from{
+opacity:0;
+transform:translateY(25px)
+}
+to{
+opacity:1;
+transform:translateY(0)
+}
 }
 
-/* BUTTON */
-.btn-save {
-  background: #4f46e5;
-  color: white;
-  border: none;
-  border-radius: 14px;
-  padding: 12px;
-  font-weight: 600;
+@keyframes pop{
+from{
+opacity:0;
+transform:scale(.8)
+}
+to{
+opacity:1;
+transform:scale(1)
+}
 }
 
-.btn-cancel {
-  background: #f1f5f9;
-  border: none;
-  border-radius: 14px;
-  padding: 12px;
-  font-weight: 600;
+/* MOBILE */
+
+@media(max-width:768px){
+
+.summary-grid{
+grid-template-columns:1fr;
 }
 
-/* 🔥 ANIMASI ZOOM (INI YANG LU MAU) */
-.modal-zoom-enter-active {
-  animation: zoomIn 0.3s ease;
+.mobile-grid{
+display:grid;
+gap:15px;
+padding:15px;
 }
 
-.modal-zoom-leave-active {
-  animation: zoomOut 0.2s ease;
+.mobile-card{
+display:block!important;
+background:white;
+border-radius:20px!important;
+padding:20px;
+border:1px solid #eef2ff!important;
 }
 
-@keyframes zoomIn {
-  from {
-    opacity: 0;
-    transform: scale(0.7);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+.border-0-mobile{
+border:none!important;
+padding:5px 0!important;
 }
 
-@keyframes zoomOut {
-  from {
-    transform: scale(1);
-  }
-  to {
-    transform: scale(0.7);
-    opacity: 0;
-  }
+.mobile-label{
+display:block;
+font-size:10px;
+font-weight:800;
+color:#94a3b8;
+margin-bottom:4px;
+text-transform:uppercase;
 }
-@keyframes slideUp {
-  from { opacity:0; transform:translateY(20px); }
-  to { opacity:1; transform:translateY(0); }
+
 }
 </style>

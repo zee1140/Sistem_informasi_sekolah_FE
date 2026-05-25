@@ -10,6 +10,7 @@ import Siswa from '../views/Siswa.vue'
 import Kelas from '../views/Kelas.vue'
 import Guru from '../views/Guru.vue'
 import Jadwal from '../views/Jadwal.vue'
+import AbsensiSiswa from '../views/AbsensiSiswa.vue'
 
 // ROUTES
 const routes = [
@@ -67,6 +68,19 @@ const routes = [
     path: '/jadwal',
     name: 'Jadwal',
     component: Jadwal
+  },
+
+  {
+    path: '/absensi',
+    name: 'AbsensiSiswa',
+    component: AbsensiSiswa
+  },
+
+  {
+    path: '/absensi/:id',
+    name: 'AbsensiSiswaDetail',
+    component: AbsensiSiswa,
+    props: true
   },
 
   // fallback (mengarahkan halaman typo ke Login atau Dashboard)

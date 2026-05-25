@@ -48,50 +48,48 @@
           <table class="table table-hover align-middle mb-0">
             <thead class="bg-light d-none d-md-table-header-group">
               <tr class="text-uppercase small fw-800 text-muted ls-wide">
-                <th class="ps-4 py-4">Ruang Kelas</th>
+                <th>Kode Kelas</th>
                 <th>Wali Kelas</th>
                 <th class="text-center">Kapasitas</th>
                 <th class="text-end pe-4">Aksi</th>
               </tr>
             </thead>
-            <tbody class="mobile-grid">
-              <transition-group name="list">
-                <tr v-for="(kelas, index) in filteredKelas" :key="index" class="row-hover mobile-card">
+            <transition-group name="list" tag="tbody" class="mobile-grid">
+                <tr v-for="kelas in filteredKelas" :key="kelas.kode_kelas" class="row-hover mobile-card">
                   <td class="ps-md-4 py-3 border-0-mobile">
                     <div class="d-flex align-items-center gap-3">
                       <div class="avatar-sm initials bg-indigo-grad animate-pop">
                         <i class="bi bi-door-closed"></i>
                       </div>
                       <div>
-                        <div class="fw-bold text-dark mb-0">{{ kelas.nama }}</div>
-                        <small class="text-muted">Jeprut Academic Area</small>
+                        <div class="fw-bold text-dark mb-0">{{ kelas.kode_kelas }}</div>
+                        <small class="text-muted">Kode Kelas</small>
                       </div>
                     </div>
                   </td>
                   <td class="border-0-mobile">
                     <div class="mobile-label d-md-none">Wali Kelas</div>
                     <div class="d-flex align-items-center gap-2 fw-semibold text-secondary">
-                        <i class="bi bi-person-badge opacity-50"></i> {{ kelas.wali }}
+                        <i class="bi bi-person-badge opacity-50"></i> {{ kelas.wali_kelas }}
                     </div>
                   </td>
                   <td class="text-md-center border-0-mobile">
                     <div class="mobile-label d-md-none">Kapasitas Siswa</div>
                     <div class="d-flex flex-column align-items-md-center">
-                        <span class="badge-soft-indigo mb-1">{{ kelas.jumlah }} / 40 Siswa</span>
+                        <span class="badge-soft-indigo mb-1">{{ kelas.kapasitas_siswa }} siswa</span>
                         <div class="cap-bar d-none d-md-block">
-                            <div class="cap-fill" :style="{ width: (kelas.jumlah/40)*100 + '%' }"></div>
+                            <div class="cap-fill" :style="{ width: `${Math.min(Number(kelas.kapasitas_siswa || 0), 100)}%` }"></div>
                         </div>
                     </div>
                   </td>
                   <td class="text-md-end pe-md-4 border-0-mobile">
                     <div class="d-flex justify-content-md-end gap-2 mt-2 mt-md-0">
-                      <button class="btn-tool btn-e ripple" @click="editData(index)"><i class="bi bi-pencil-square"></i></button>
-                      <button class="btn-tool btn-d ripple" @click="deleteData(index)"><i class="bi bi-trash3"></i></button>
+                      <button type="button" class="btn-tool btn-e ripple" @click.stop="editData(kelas)"><i class="bi bi-pencil-square"></i></button>
+                      <button type="button" class="btn-tool btn-d ripple" @click.stop="confirmDelete(kelas)"><i class="bi bi-trash3"></i></button>
                     </div>
                   </td>
                 </tr>
-              </transition-group>
-            </tbody>
+            </transition-group>
           </table>
           
           <div v-if="filteredKelas.length === 0" class="p-5 text-center animate-pop">
@@ -114,28 +112,55 @@
             </div>
 
             <div class="mb-4">
-              <label class="small fw-800 text-muted mb-2 ls-wide">NAMA KELAS</label>
-              <div class="input-premium">
-                <i class="bi bi-door-open text-indigo"></i>
-                <input v-model="form.nama" type="text" placeholder="Contoh: 10 IPA 1">
+              <label class="small fw-800 text-muted mb-2 ls-wide">KODE KELAS</label>
+              <div class="input-premium" :class="{'border-danger-custom': errors.kode_kelas}">
+                <i class="bi bi-hash text-indigo"></i>
+                <input
+                  v-model="form.kode_kelas"
+                  type="text"
+                  placeholder="Contoh: X-PPLG-1"
+                  :disabled="isEdit"
+                >
               </div>
+              <small v-if="errors.kode_kelas" class="text-danger-custom fw-bold mt-1 d-block animate-pop">
+                <i class="bi bi-exclamation-circle"></i> Kode kelas harus diisi!
+              </small>
             </div>
 
             <div class="mb-4">
               <label class="small fw-800 text-muted mb-2 ls-wide">WALI KELAS</label>
-              <div class="input-premium">
+              <div class="input-premium" :class="{'border-danger-custom': errors.wali_kelas}">
                 <i class="bi bi-person-workspace text-indigo"></i>
-                <input v-model="form.wali" type="text" placeholder="Nama Guru Wali">
+                <input
+                  v-model="form.wali_kelas"
+                  type="text"
+                  placeholder="Nama Guru Wali"
+                >
               </div>
+              <small v-if="errors.wali_kelas" class="text-danger-custom fw-bold mt-1 d-block animate-pop">
+                <i class="bi bi-exclamation-circle"></i> Wali kelas harus diisi!
+              </small>
             </div>
 
-            <div class="mb-5">
-              <label class="small fw-800 text-muted mb-2 ls-wide">JUMLAH SISWA</label>
-              <div class="input-premium">
+            <div class="mb-4">
+              <label class="small fw-800 text-muted mb-2 ls-wide">KAPASITAS SISWA</label>
+              <div class="input-premium" :class="{'border-danger-custom': errors.kapasitas_siswa}">
                 <i class="bi bi-people text-indigo"></i>
-                <input v-model="form.jumlah" type="number" placeholder="0">
+                <input
+                  v-model.number="form.kapasitas_siswa"
+                  type="number"
+                  min="1"
+                  placeholder="Contoh: 36"
+                >
               </div>
+              <small v-if="errors.kapasitas_siswa" class="text-danger-custom fw-bold mt-1 d-block animate-pop">
+                <i class="bi bi-exclamation-circle"></i> Kapasitas siswa harus diisi!
+              </small>
             </div>
+
+            <small v-if="errorMessage" class="text-danger-custom fw-bold mb-4 d-block animate-pop">
+              <i class="bi bi-exclamation-circle"></i> {{ errorMessage }}
+            </small>
 
             <div class="d-flex gap-3">
               <button class="btn btn-cancel-modern flex-grow-1 fw-bold ripple" @click="closeModal">Batal</button>
@@ -147,64 +172,266 @@
         </div>
       </div>
     </transition>
+
+    <transition name="modal-zoom">
+      <div v-if="showConfirm" class="modal-overlay px-3" @click.self="showConfirm = false">
+        <div class="modal-box bg-white shadow-2xl rounded-5 overflow-hidden text-center animate-pop" style="max-width: 400px;">
+          <div class="p-4 p-md-5">
+            <div class="mb-4">
+              <div class="mx-auto rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 80px; height: 80px; background: #fff1f2; color: #e11d48;">
+                <i class="bi bi-exclamation-octagon-fill fs-1"></i>
+              </div>
+            </div>
+            <h4 class="fw-800 text-dark mb-2">Hapus Kelas?</h4>
+            <p class="text-muted mb-4">Apakah anda yakin ingin menghapus data kelas ini? Semua data terkait mungkin akan terpengaruh.</p>
+            <div class="d-flex gap-3">
+              <button class="btn btn-cancel-modern flex-grow-1 fw-bold ripple" @click="cancelDelete">Batal</button>
+              <button class="btn btn-d flex-grow-1 fw-bold ripple shadow-sm py-3" style="border-radius: 16px;" @click="deleteData">
+                Ya, Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script>
+import api from '../service/axios.js'
+
 export default {
   data() {
     return {
       search: "",
       showModal: false,
+      showConfirm: false,
+      selectedKelas: null,
       isEdit: false,
-      editIndex: null,
-      kelasList: [
-        { nama: "10 IPA 1", wali: "Budi Santoso, S.Pd", jumlah: 32 },
-        { nama: "11 IPS 2", wali: "Siti Aminah, M.Si", jumlah: 30 },
-        { nama: "12 IPA 3", wali: "Rian Hidayat, S.Kom", jumlah: 28 }
-      ],
-      form: { nama: "", wali: "", jumlah: "" }
+      errorMessage: "",
+
+      kelasList: [],
+
+      form: {
+        kode_kelas: "",
+        wali_kelas: "",
+        kapasitas_siswa: ""
+      },
+
+      errors: {
+        kode_kelas: false,
+        wali_kelas: false,
+        kapasitas_siswa: false
+      }
     }
   },
+
   computed: {
     filteredKelas() {
+      const keyword = this.search.toLowerCase()
+
       return this.kelasList.filter(k =>
-        k.nama.toLowerCase().includes(this.search.toLowerCase()) ||
-        k.wali.toLowerCase().includes(this.search.toLowerCase())
+        k.kode_kelas
+          ?.toLowerCase()
+          .includes(keyword) ||
+
+        k.wali_kelas
+          ?.toLowerCase()
+          .includes(keyword)
       )
     }
   },
+
+  mounted() {
+    this.getKelas()
+  },
+
   methods: {
-    openModal() {
-      this.isEdit = false;
-      this.form = { nama: "", wali: "", jumlah: "" };
-      this.showModal = true;
-    },
-    closeModal() { this.showModal = false; },
-    saveData() {
-      if (!this.form.nama || !this.form.wali) return;
-      if (this.isEdit) {
-        this.kelasList[this.editIndex] = { ...this.form };
-      } else {
-        this.kelasList.unshift({ ...this.form });
+
+    // ==================
+    // GET DATA
+    // ==================
+    async getKelas() {
+      try {
+        const response = await api.get('/kelas')
+
+        this.kelasList = response.data
+
+      } catch(error){
+        console.log("GET ERROR:",error)
+        this.errorMessage = error.response?.data?.message || 'Data kelas gagal dimuat.'
       }
-      this.closeModal();
     },
-    editData(index) {
-      this.form = { ...this.kelasList[index] };
-      this.editIndex = index;
-      this.isEdit = true;
-      this.showModal = true;
+
+    // ==================
+    // OPEN MODAL
+    // ==================
+    openModal(){
+
+      this.isEdit=false
+      this.selectedKelas=null
+      this.errorMessage=""
+
+      this.form={
+        kode_kelas:"",
+        wali_kelas:"",
+        kapasitas_siswa:""
+      }
+
+      this.errors={
+        kode_kelas:false,
+        wali_kelas:false,
+        kapasitas_siswa:false
+      }
+
+      this.showModal=true
     },
-    deleteData(index) {
-      if (confirm('Hapus data kelas ini?')) this.kelasList.splice(index, 1);
+
+    closeModal(){
+      this.showModal=false
+      this.errorMessage=""
+    },
+
+    // ==================
+    // TAMBAH + EDIT
+    // ==================
+    async saveData(){
+
+      this.errors.kode_kelas=
+      !this.form.kode_kelas.trim()
+
+      this.errors.wali_kelas=
+      !this.form.wali_kelas.trim()
+
+      this.errors.kapasitas_siswa=
+      !this.form.kapasitas_siswa || Number(this.form.kapasitas_siswa) <= 0
+
+      if(
+        this.errors.kode_kelas ||
+        this.errors.wali_kelas ||
+        this.errors.kapasitas_siswa
+      ){
+        return
+      }
+
+      try{
+
+        if(this.isEdit){
+
+          await api.put(
+            `/kelas/${this.selectedKelas.kode_kelas}`,
+            {
+              wali_kelas:this.form.wali_kelas,
+              kapasitas_siswa:this.form.kapasitas_siswa
+            }
+          )
+
+        }else{
+
+          await api.post(
+            '/kelas',
+            {
+              kode_kelas:this.form.kode_kelas,
+              wali_kelas:this.form.wali_kelas,
+              kapasitas_siswa:this.form.kapasitas_siswa
+            }
+          )
+        }
+
+        await this.getKelas()
+
+        this.closeModal()
+
+      }catch(error){
+        console.log("SAVE ERROR:",error.response || error)
+        this.errorMessage = error.response?.data?.message || 'Data kelas gagal disimpan.'
+      }
+
+    },
+
+    // ==================
+    // EDIT
+    // ==================
+    editData(kelas){
+      if(!kelas) return
+
+      this.form={
+
+        kode_kelas:kelas.kode_kelas,
+        wali_kelas:kelas.wali_kelas,
+        kapasitas_siswa:kelas.kapasitas_siswa
+
+      }
+
+      this.selectedKelas=kelas
+      this.errorMessage=""
+      this.isEdit=true
+      this.showModal=true
+    },
+
+    // ==================
+    // HAPUS POPUP
+    // ==================
+    confirmDelete(kelas){
+      if(!kelas) return
+
+      this.selectedKelas=kelas
+      this.showConfirm=true
+
+    },
+
+    cancelDelete(){
+      this.showConfirm=false
+      this.selectedKelas=null
+    },
+
+    // ==================
+    // DELETE
+    // ==================
+    async deleteData(){
+
+      try{
+        if(!this.selectedKelas) return
+
+        const kode=this.selectedKelas.kode_kelas
+
+        await api.delete(
+          `/kelas/${kode}`
+        )
+
+        await this.getKelas()
+
+        this.showConfirm=false
+        this.selectedKelas=null
+
+      }catch(error){
+
+        console.log(
+          "DELETE ERROR:",
+          error.response || error
+        )
+        this.errorMessage = error.response?.data?.message || 'Data kelas gagal dihapus.'
+
+      }
+
     }
+
   }
 }
 </script>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* --- VALIDATION CUSTOM STYLES --- */
+.border-danger-custom {
+  border-color: #ef4444 !important;
+  background: #fff5f5 !important;
+}
+.text-danger-custom {
+  color: #ef4444 !important;
+  font-size: 0.75rem;
+}
 
 /* --- LAYOUT & THEME --- */
 .app-container { height: 100vh; background: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; position: fixed; inset: 0; }
@@ -304,7 +531,6 @@ export default {
 /* --- UI ELEMENTS --- */
 .avatar-sm { width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; }
 .bg-indigo-grad { background: linear-gradient(135deg, #6366f1, #4f46e5); font-size: 1.2rem; }
-.class-tag { background: #eef2ff; color: #4f46e5; padding: 6px 14px; border-radius: 10px; font-weight: 700; font-size: 11px; }
 .badge-soft-indigo { background: #eef2ff; color: #4f46e5; padding: 4px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; }
 
 .btn-tool { width: 38px; height: 38px; border-radius: 12px; border: none; margin-left: 6px; }
