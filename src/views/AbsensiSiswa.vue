@@ -3,7 +3,7 @@
     <header class="header-glass">
       <div class="header-inner">
 
-        <div class="header-side">
+        <div class="header-side header-side-left">
           <button class="btn btn-back-modern ripple" @click="router.push('/dashboard')">
             <i class="bi bi-arrow-left"></i> Dashboard
           </button>
@@ -15,7 +15,7 @@
           <div class="h-line"></div>
         </div>
 
-        <div class="header-side header-actions">
+        <div class="header-side header-side-right header-actions">
 
           <button class="btn-report ripple btn-hover-premium" @click="downloadLaporan">
             <i class="bi bi-download"></i>
@@ -97,7 +97,7 @@
 
         <div class="table-responsive">
 
-          <table>
+          <table v-if="filteredAbsensi.length > 0">
 
             <thead>
               <tr>
@@ -174,13 +174,17 @@
 
           </table>
 
+          <div v-else class="empty-state">
+            <i class="bi bi-folder2-open"></i>
+            <p>Belum ada data absensi hari ini.</p>
+          </div>
+
         </div>
 
       </section>
 
     </main>
 
-    <!-- MODAL -->
     <transition name="modal-zoom">
 
       <div
@@ -271,12 +275,10 @@
                 <i class="bi bi-check-circle text-indigo"></i>
 
                 <select v-model="form.status">
-
                   <option>Hadir</option>
                   <option>Izin</option>
                   <option>Sakit</option>
                   <option>Alpa</option>
-
                 </select>
 
               </div>
@@ -312,32 +314,21 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+
+// URL Target API (Silakan sesuaikan endpoint-nya nanti)
+const API_URL = 'https://api.contoh.com/absensi' 
 
 const search = ref('')
 const showModal = ref(false)
 const isEdit = ref(false)
 const editId = ref(null)
 
-const dataAbsensi = ref([
-  {
-    id: 1,
-    nama: 'Andi Wijaya',
-    kelas: 'XI RPL 1',
-    waktu: '07:00',
-    status: 'Hadir'
-  },
-  {
-    id: 2,
-    nama: 'Rina Putri',
-    kelas: 'XI RPL 2',
-    waktu: '07:10',
-    status: 'Izin'
-  }
-])
+// Array dikosongkan terlebih dahulu sesuai permintaan
+const dataAbsensi = ref([])
 
 const form = ref({
   nama: '',
@@ -346,10 +337,111 @@ const form = ref({
   status: 'Hadir'
 })
 
+// ==========================================
+// INTEGRASI API (INTEGRATION METHODS)
+// ==========================================
+
+// 1. Ambil Data dari API (GET)
+const fetchAbsensi = async () => {
+  try {
+    // Jalur Integrasi Asli (buka komentar jika API sudah siap):
+    // const response = await fetch(API_URL)
+    // const json = await response.json()
+    // dataAbsensi.value = json.data // Sesuaikan dengan key response API Anda
+    
+    console.log('Mengambil data dari server...')
+  } catch (error) {
+    console.error('Gagal mengambil data:', error)
+  }
+}
+
+// Jalankan pengambilan data otomatis saat halaman selesai dimuat
+onMounted(() => {
+  fetchAbsensi()
+})
+
+// 2. Simpan atau Update ke API (POST / PUT)
+const simpanData = async () => {
+  try {
+    if (isEdit.value) {
+      // Jalur Edit Data (PUT)
+      // await fetch(`${API_URL}/${editId.value}`, {
+      //   method: 'PUT',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify(form.value)
+      // })
+      
+      // Manipulasi Lokal Sementara
+      const index = dataAbsensi.value.findIndex(i => i.id === editId.value)
+      if (index !== -1) {
+        dataAbsensi.value[index] = { ...form.value, id: editId.value }
+      }
+      console.log(`Berhasil mengubah data ID: ${editId.value} di server.`)
+
+    } else {
+      // Jalur Data Baru (POST)
+      // const response = await fetch(API_URL, {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify(form.value)
+      // })
+      // const result = await response.json()
+      
+      // Manipulasi Lokal Sementara
+      dataAbsensi.value.push({
+        ...form.value,
+        id: Date.now() // Sementara pakai timestamp, nanti diganti ID dari backend
+      })
+      console.log('Berhasil menambahkan data baru ke server.')
+    }
+
+    // Ambil data terbaru dari server agar sinkron
+    // await fetchAbsensi() 
+    
+    closeModal()
+  } catch (error) {
+    console.error('Gagal menyimpan data:', error)
+  }
+}
+
+// 3. Hapus Data dari API (DELETE)
+const hapusData = async (id) => {
+  if (confirm('Apakah Anda yakin ingin menghapus catatan absensi ini?')) {
+    try {
+      // await fetch(`${API_URL}/${id}`, {
+      //   method: 'DELETE'
+      // })
+      
+      // Manipulasi Lokal Sementara
+      dataAbsensi.value = dataAbsensi.value.filter(i => i.id !== id)
+      console.log(`Berhasil menghapus data ID: ${id} dari server.`)
+      
+      // Ambil data terbaru dari server
+      // await fetchAbsensi()
+    } catch (error) {
+      console.error('Gagal menghapus data:', error)
+    }
+  }
+}
+
+// 4. Unduh Laporan via API
+const downloadLaporan = async () => {
+  try {
+    console.log('Menyiapkan file laporan absensi dari API...')
+    // window.open(`${API_URL}/laporan/download`, '_blank')
+  } catch (error) {
+    console.error('Gagal mengunduh laporan:', error)
+  }
+}
+
+// ==========================================
+// COMPUTED & UTILITIES (LOGIKA INTERFACE)
+// ==========================================
+
 const filteredAbsensi = computed(() => {
   return dataAbsensi.value.filter(item =>
-    item.nama.toLowerCase().includes(search.value.toLowerCase()) ||
-    item.kelas.toLowerCase().includes(search.value.toLowerCase())
+    item.nama?.toLowerCase().includes(search.value.toLowerCase()) ||
+    item.kelas?.toLowerCase().includes(search.value.toLowerCase())
   )
 })
 
@@ -358,9 +450,7 @@ const totalHadir = computed(() => {
 })
 
 const totalIzinSakit = computed(() => {
-  return dataAbsensi.value.filter(i =>
-    i.status === 'Izin' || i.status === 'Sakit'
-  ).length
+  return dataAbsensi.value.filter(i => i.status === 'Izin' || i.status === 'Sakit').length
 })
 
 const totalAlpa = computed(() => {
@@ -368,8 +458,7 @@ const totalAlpa = computed(() => {
 })
 
 const openModal = (data = null) => {
-
-  if(data){
+  if (data) {
     isEdit.value = true
     editId.value = data.id
     form.value = { ...data }
@@ -382,7 +471,6 @@ const openModal = (data = null) => {
       status: 'Hadir'
     }
   }
-
   showModal.value = true
 }
 
@@ -390,60 +478,23 @@ const closeModal = () => {
   showModal.value = false
 }
 
-const simpanData = () => {
-
-  if(isEdit.value){
-
-    const index = dataAbsensi.value.findIndex(i => i.id === editId.value)
-
-    dataAbsensi.value[index] = {
-      ...form.value,
-      id: editId.value
-    }
-
-  } else {
-
-    dataAbsensi.value.push({
-      ...form.value,
-      id: Date.now()
-    })
-
-  }
-
-  closeModal()
-}
-
-const hapusData = (id) => {
-  dataAbsensi.value = dataAbsensi.value.filter(i => i.id !== id)
-}
-
 const getInitials = (nama) => {
+  if (!nama) return ''
   return nama
     .split(' ')
     .map(i => i[0])
     .join('')
-    .substring(0,2)
+    .substring(0, 2)
     .toUpperCase()
 }
 
 const statusClass = (status) => {
-
-  switch(status){
-
-    case 'Hadir':
-      return 'status-hadir'
-
-    case 'Izin':
-      return 'status-izin'
-
-    case 'Sakit':
-      return 'status-sakit'
-
-    case 'Alpa':
-      return 'status-alpa'
-
-    default:
-      return 'status-default'
+  switch (status) {
+    case 'Hadir': return 'status-hadir'
+    case 'Izin': return 'status-izin'
+    case 'Sakit': return 'status-sakit'
+    case 'Alpa': return 'status-alpa'
+    default: return 'status-default'
   }
 }
 </script>
@@ -485,12 +536,24 @@ const statusClass = (status) => {
   align-items:center;
 }
 
+.header-side-left {
+  display: flex;
+  justify-content: flex-start !important;
+  align-items: center;
+}
+
+.header-side-right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
 .header-actions{
-  justify-content:flex-end;
   gap:12px;
 }
 
 .header-center{
+  flex: 1;
   text-align:center;
 }
 
@@ -631,7 +694,7 @@ const statusClass = (status) => {
   cursor:pointer;
 }
 
-/* TABLE */
+/* TABLE & EMPTY STATE */
 
 .table-card{
   background:white;
@@ -766,7 +829,25 @@ tbody tr:hover{
   text-align:right;
 }
 
-/* BUTTON */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #94a3b8;
+}
+
+.empty-state i {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 12px;
+  color: #cbd5e1;
+}
+
+.empty-state p {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* BUTTONS */
 
 .btn-back-modern,
 .btn-report,
@@ -784,56 +865,26 @@ tbody tr:hover{
   transition:0.2s ease;
 }
 
-/* DASHBOARD BUTTON SAMA PERSIS */
 .ripple { transition: all 0.2s ease; cursor: pointer; }
 .ripple:active { transform: scale(0.95); opacity: 0.8; }
+
 .btn-back-modern {
   background: #eef2ff;
   color: #4f46e5;
-  border: none;
-  border-radius: 999px; /* bikin pill */
+  border-radius: 999px;
   padding: 8px 16px;
   font-weight: 600;
   font-size: 0.9rem;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  transition: 0.2s;
 }
 
-/* hover biar hidup dikit */
 .btn-back-modern:hover {
   background: #4f46e5;
   color: white;
   transform: translateY(-1px);
 }
-/* PAKSA KIRI BANGET */
-.header-side-left {
-  display: flex;
-  justify-content: flex-start !important;
-  align-items: center;
-}
-
-/* HILANGIN WIDTH FULL YANG BIKIN KE TENGAH */
-.w-100-mobile {
-  width: auto !important;
-}
-
-/* BIAR CENTER TETEP DI TENGAH */
-.header-center {
-  flex: 1;
-  text-align: center;
-}
-
-/* KANAN TETEP DI KANAN */
-.header-side-right {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-}
-
-
-/* BUTTON LAIN */
 
 .btn-report{
   background:#f1f5f9;
@@ -913,8 +964,6 @@ tbody tr:hover{
   background:#4f46e5;
   color:white;
 }
-
-/* HOVER HALUS */
 
 .btn-hover-premium:hover{
   transform:translateY(-1px);
@@ -1025,16 +1074,6 @@ tbody tr:hover{
   flex:1;
 }
 
-/* RIPPLE */
-
-.ripple{
-  transition:.2s ease;
-}
-
-.ripple:active{
-  transform:scale(.96);
-}
-
 /* ANIMATION */
 
 .animate-fade-in{
@@ -1061,12 +1100,8 @@ tbody tr:hover{
 }
 
 @keyframes fadeIn{
-  from{
-    opacity:0;
-  }
-  to{
-    opacity:1;
-  }
+  from{ opacity:0; }
+  to{ opacity:1; }
 }
 
 @keyframes slideUp{
@@ -1080,10 +1115,9 @@ tbody tr:hover{
   }
 }
 
-/* MOBILE */
+/* RESPONSIVE / MOBILE */
 
 @media(max-width:768px){
-
   .header-inner{
     flex-direction:column;
   }
