@@ -246,20 +246,20 @@ export default {
           bg: 'bg-indigo-light',
           up: 12
         },
-        {
-          label: 'Guru Aktif',
-          val: '86',
-          icon: 'bi-person-badge-fill',
-          bg: 'bg-emerald-light',
-          up: 3
-        },
-        {
-          label: 'Ruang Kelas',
-          val: '32',
-          icon: 'bi-door-open-fill',
-          bg: 'bg-cyan-light',
-          up: 0
-        },
+       {
+         label: 'Guru Aktif',
+         val: '0',
+         icon: 'bi-person-badge-fill',
+         bg: 'bg-emerald-light',
+         up: 3
+},
+       {
+        label: 'Ruang Kelas',
+        val: '0',
+        icon: 'bi-door-open-fill',
+        bg: 'bg-cyan-light',
+        up: 0
+},
         {
           label: 'Kehadiran',
           val: '98%',
@@ -323,6 +323,34 @@ export default {
         console.error('Gagal mengambil data siswa:', error)
       }
     },
+      
+    async getJumlahGuru() {
+  try {
+    const response = await axios.get(
+      'http://127.0.0.1:8000/api/guru'
+    )
+
+    const data = response.data.data || response.data
+
+    this.stats[1].val = data.length
+  } catch (error) {
+    console.error('Gagal mengambil data guru:', error)
+  }
+},
+
+async getJumlahKelas() {
+  try {
+    const response = await axios.get(
+      'http://127.0.0.1:8000/api/kelas'
+    )
+
+    const data = response.data.data || response.data
+
+    this.stats[2].val = data.length
+  } catch (error) {
+    console.error('Gagal mengambil data kelas:', error)
+  }
+},
 
     logout() {
       if (confirm('Keluar sistem?')) {
@@ -331,15 +359,17 @@ export default {
     }
   },
 
-  mounted() {
+    mounted() {
+  this.updateTime()
+
+  setInterval(() => {
     this.updateTime()
+  }, 1000)
 
-    setInterval(() => {
-      this.updateTime()
-    }, 1000)
-
-    this.getSiswaTerbaru()
-  }
+  this.getSiswaTerbaru()
+  this.getJumlahGuru()
+  this.getJumlahKelas()
+}
 }
 </script>
 
