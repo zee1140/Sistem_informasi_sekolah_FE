@@ -168,23 +168,49 @@
                         <th class="border-0 small fw-bold text-end p-3">AKSI</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      <tr v-for="i in 3" :key="i">
-                        <td class="p-3">
-                          <div class="d-flex align-items-center gap-3">
-                            <div class="avatar-sm bg-indigo-light text-indigo fw-bold">
-                              {{ i == 1 ? 'AW' : (i == 2 ? 'RR' : 'DN') }}
-                            </div>
-                            <span class="fw-bold small">{{ i == 1 ? 'Andi Wijaya' : (i == 2 ? 'Rina Rose' : 'Dani Noel') }}</span>
-                          </div>
-                        </td>
-                        <td class="small fw-semibold">Kelas {{ 10 + i }} IPA</td>
-                        <td class="text-center"><span class="badge-active">Aktif</span></td>
-                        <td class="text-end p-3">
-                          <button class="btn btn-sm btn-light border fw-bold text-indigo" style="font-size: 11px;">KONTROL</button>
-                        </td>
-                      </tr>
-                    </tbody>
+                  <tbody>
+  <tr
+    v-for="siswa in siswaTerbaru"
+    :key="siswa.id"
+  >
+    <td class="p-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="avatar-sm bg-indigo-light text-indigo fw-bold">
+          {{ getInitials(siswa.nama) }}
+        </div>
+
+        <span class="fw-bold small">
+          {{ siswa.nama }}
+        </span>
+      </div>
+    </td>
+
+    <td class="small fw-semibold">
+      {{ siswa.kode_kelas }}
+    </td>
+
+    <td class="text-center">
+      <span class="badge-active">
+        Aktif
+      </span>
+    </td>
+
+    <td class="text-end p-3">
+      <router-link
+        to="/siswa"
+        class="btn btn-sm btn-light border fw-bold text-indigo"
+      >
+        KONTROL
+      </router-link>
+    </td>
+  </tr>
+
+  <tr v-if="siswaTerbaru.length === 0">
+    <td colspan="4" class="text-center py-4 text-muted">
+      Belum ada data siswa
+    </td>
+  </tr>
+</tbody>
                   </table>
                 </div>
               </div>
@@ -201,32 +227,118 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   data() {
     return {
       isSidebarOpen: false,
       jamSekarang: '',
       tanggalSekarang: '',
+
+      siswaTerbaru: [],
+
       stats: [
-        { label: 'Total Siswa', val: '1,248', icon: 'bi-people-fill', bg: 'bg-indigo-light', up: 12 },
-        { label: 'Guru Aktif', val: '86', icon: 'bi-person-badge-fill', bg: 'bg-emerald-light', up: 3 },
-        { label: 'Ruang Kelas', val: '32', icon: 'bi-door-open-fill', bg: 'bg-cyan-light', up: 0 },
-        { label: 'Kehadiran', val: '98%', icon: 'bi-check-circle-fill', bg: 'bg-orange-light', up: 5 }
+        {
+          label: 'Total Siswa',
+          val: '0',
+          icon: 'bi-people-fill',
+          bg: 'bg-indigo-light',
+          up: 12
+        },
+        {
+          label: 'Guru Aktif',
+          val: '86',
+          icon: 'bi-person-badge-fill',
+          bg: 'bg-emerald-light',
+          up: 3
+        },
+        {
+          label: 'Ruang Kelas',
+          val: '32',
+          icon: 'bi-door-open-fill',
+          bg: 'bg-cyan-light',
+          up: 0
+        },
+        {
+          label: 'Kehadiran',
+          val: '98%',
+          icon: 'bi-check-circle-fill',
+          bg: 'bg-orange-light',
+          up: 5
+        }
       ],
-      chartData: { 'Sen': 85, 'Sel': 92, 'Rab': 78, 'Kam': 95, 'Jum': 88, 'Sab': 40, 'Min': 15 }
+
+      chartData: {
+        Sen: 85,
+        Sel: 92,
+        Rab: 78,
+        Kam: 95,
+        Jum: 88,
+        Sab: 40,
+        Min: 15
+      }
     }
   },
+
   methods: {
     updateTime() {
-      const now = new Date();
-      this.jamSekarang = now.toLocaleTimeString('id-ID', { hour12: false });
-      this.tanggalSekarang = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      const now = new Date()
+
+      this.jamSekarang = now.toLocaleTimeString('id-ID', {
+        hour12: false
+      })
+
+      this.tanggalSekarang = now.toLocaleDateString('id-ID', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      })
     },
-    logout() { if(confirm('Keluar sistem?')) this.$router.push('/'); }
+
+    getInitials(nama) {
+      if (!nama) return '-'
+
+      return nama
+        .split(' ')
+        .map(word => word.charAt(0))
+        .join('')
+        .substring(0, 2)
+        .toUpperCase()
+    },
+
+    async getSiswaTerbaru() {
+      try {
+        const response = await axios.get(
+          'http://127.0.0.1:8000/api/siswa'
+        )
+
+        const data = response.data.data || response.data
+
+        this.siswaTerbaru = data.slice(0, 5)
+
+        this.stats[0].val = data.length
+      } catch (error) {
+        console.error('Gagal mengambil data siswa:', error)
+      }
+    },
+
+    logout() {
+      if (confirm('Keluar sistem?')) {
+        this.$router.push('/')
+      }
+    }
   },
+
   mounted() {
-    this.updateTime();
-    setInterval(this.updateTime, 1000);
+    this.updateTime()
+
+    setInterval(() => {
+      this.updateTime()
+    }, 1000)
+
+    this.getSiswaTerbaru()
   }
 }
 </script>
