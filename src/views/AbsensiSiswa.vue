@@ -127,7 +127,7 @@
     </td>
 
     <td class="small fw-semibold">
-      {{ siswa.kode_kelas }}
+      {{ siswa.kelas }}
     </td>
 
     <td class="text-center">
@@ -155,6 +155,7 @@
 </tbody>
                 
           </table>
+
 
         </div>
 
@@ -228,20 +229,58 @@
 
               </div>
 
-              <div class="form-group">
+             <div class="form-group">
+  <label>SISWA</label>
 
-                <label>WAKTU MASUK</label>
+  <div class="input-premium">
+    <i class="bi bi-person"></i>
 
-                <div class="input-premium">
-                  <i class="bi bi-clock text-indigo"></i>
+    <select v-model="form.siswa_id">
 
-                  <input
-                    v-model="form.waktu"
-                    type="time"
-                  >
-                </div>
+      <option value="">
+        Pilih Siswa
+      </option>
 
-              </div>
+      <option
+        v-for="siswa in dataSiswa"
+        :key="siswa.id"
+        :value="siswa.id"
+      >
+        {{ siswa.nama }}
+      </option>
+
+    </select>
+
+  </div>
+</div>
+
+<div class="form-group">
+  <label>TANGGAL</label>
+
+  <div class="input-premium">
+    <i class="bi bi-calendar"></i>
+
+    <input
+      type="date"
+      v-model="form.tanggal"
+    >
+  </div>
+</div>
+
+<div class="form-group">
+  <label>STATUS</label>
+
+  <div class="input-premium">
+
+    <select v-model="form.status">
+      <option value="Hadir">Hadir</option>
+      <option value="Izin">Izin</option>
+      <option value="Sakit">Sakit</option>
+      <option value="Alpa">Alpa</option>
+    </select>
+
+  </div>
+</div>
 
             </div>
 
@@ -294,8 +333,9 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import api from '../service/axios.js'
 
 const router = useRouter()
 
@@ -304,27 +344,12 @@ const showModal = ref(false)
 const isEdit = ref(false)
 const editId = ref(null)
 
-const dataAbsensi = ref([
-  {
-    id: 1,
-    nama: 'Andi Wijaya',
-    kelas: 'XI RPL 1',
-    waktu: '07:00',
-    status: 'Hadir'
-  },
-  {
-    id: 2,
-    nama: 'Rina Putri',
-    kelas: 'XI RPL 2',
-    waktu: '07:10',
-    status: 'Izin'
-  }
-])
+const dataAbsensi = ref([])
+const dataSiswa = ref([])
 
 const form = ref({
-  nama: '',
-  kelas: '',
-  waktu: '',
+  siswa_id: '',
+  tanggal: new Date().toISOString().split('T')[0],
   status: 'Hadir'
 })
 
@@ -334,6 +359,9 @@ const filteredAbsensi = computed(() => {
     item.kelas.toLowerCase().includes(search.value.toLowerCase())
   )
 })
+
+// Alias untuk kebutuhan template (biar tidak error saat render)
+const siswaTerbaru = computed(() => filteredAbsensi.value ?? [])
 
 const totalHadir = computed(() => {
   return dataAbsensi.value.filter(i => i.status === 'Hadir').length
@@ -429,7 +457,6 @@ const statusClass = (status) => {
   }
 }
 </script>
-
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
