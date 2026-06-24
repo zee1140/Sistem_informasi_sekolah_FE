@@ -37,6 +37,7 @@
           <button
             class="btn btn-add-premium ripple shadow-sm"
             @click="openModal()"
+            
           >
             <i class="bi bi-plus-circle-fill me-md-2"></i>
             <span class="d-none d-md-inline">Tambah Jadwal</span>
@@ -259,9 +260,90 @@
 
       </div>
 
-    </div>
+       </div>
 
   </div>
+
+  <!-- MODAL -->
+  <transition name="modal-fade">
+    <div
+      v-if="showModal"
+      class="guru-modal-overlay"
+      @click.self="closeModal"
+    >
+      <div class="guru-modal">
+
+        <button
+          class="guru-close"
+          @click="closeModal"
+        >
+          <i class="bi bi-x-lg"></i>
+        </button>
+
+        <div class="guru-icon">
+          <i class="bi bi-shield-check"></i>
+        </div>
+
+        <h2 class="guru-title">
+          Input Guru
+        </h2>
+
+        <div class="guru-group">
+          <label>NIP</label>
+
+          <div class="guru-input">
+            <input
+              v-model="formGuru.nip"
+              type="text"
+              placeholder="Opsional"
+            >
+          </div>
+        </div>
+
+        <div class="guru-group">
+          <label>Nama Lengkap</label>
+
+          <div class="guru-input">
+            <input
+              v-model="formGuru.nama"
+              type="text"
+              placeholder="Masukkan Nama Guru"
+            >
+          </div>
+        </div>
+
+        <div class="guru-group">
+          <label>Mata Pelajaran</label>
+
+          <div class="guru-input">
+            <select v-model="formGuru.mapel">
+              <option value="">Pilih Mata Pelajaran</option>
+              <option>Matematika</option>
+              <option>Bahasa Indonesia</option>
+              <option>Bahasa Inggris</option>
+              <option>IPA</option>
+              <option>IPS</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="guru-footer">
+          <button
+            class="btn-kembali"
+            @click="closeModal"
+          >
+            Kembali
+          </button>
+
+          <button class="btn-daftar">
+            Simpan
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </transition>
+
 </template>
 
 <script setup>
@@ -270,6 +352,14 @@ import api from '../service/axios.js'
 
 const search = ref('')
 const jadwalList = ref([])
+
+const showModal = ref(false)
+
+const formGuru = ref({
+  nip: '',
+  nama: '',
+  mapel: ''
+})
 
 const filteredJadwal = computed(() => {
   const k = search.value.toLowerCase()
@@ -286,7 +376,6 @@ onMounted(() => {
 
 const getJadwal = async () => {
   try {
-
     const res = await api.get('/jadwal')
 
     jadwalList.value = res.data.map(item => ({
@@ -297,14 +386,19 @@ const getJadwal = async () => {
       ruang: item.ruang || '-',
       guru: item.guru || item.nama_guru || '-'
     }))
-
   } catch (e) {
     console.error(e)
   }
 }
 
+// BUKA MODAL
 const openModal = (item = null) => {
-  console.log(item)
+  showModal.value = true
+}
+
+// TUTUP MODAL
+const closeModal = () => {
+  showModal.value = false
 }
 
 const openConfirm = (item) => {
@@ -314,11 +408,11 @@ const openConfirm = (item) => {
 const getInitials = (n) => {
   return n
     ? n
-      .split(' ')
-      .map(x => x[0])
-      .join('')
-      .toUpperCase()
-      .substring(0,2)
+        .split(' ')
+        .map(x => x[0])
+        .join('')
+        .toUpperCase()
+        .substring(0, 2)
     : '?'
 }
 </script>
@@ -751,5 +845,123 @@ const getInitials = (n) => {
     margin-bottom: 4px;
   }
 
+}/* ==========================
+   MODAL
+========================== */
+
+.guru-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  backdrop-filter: blur(5px);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 9999;
 }
+
+.guru-modal {
+  width: 100%;
+  max-width: 550px;
+
+  background: white;
+  border-radius: 25px;
+
+  padding: 30px;
+  position: relative;
+
+  animation: popupScale .25s ease;
+}
+
+.guru-close {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+
+  border: none;
+  background: transparent;
+}
+
+.guru-icon {
+  width: 70px;
+  height: 70px;
+
+  background: #eef2ff;
+  color: #4f46e5;
+
+  border-radius: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 30px;
+
+  margin: auto;
+}
+
+.guru-title {
+  text-align: center;
+  margin: 20px 0;
+  font-weight: 800;
+}
+
+.guru-group {
+  margin-bottom: 20px;
+}
+
+.guru-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.guru-input input,
+.guru-input select {
+  width: 100%;
+  height: 55px;
+
+  border: 1px solid #ddd;
+  border-radius: 14px;
+
+  padding: 0 15px;
+}
+
+.guru-footer {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn-kembali,
+.btn-daftar {
+  flex: 1;
+  height: 55px;
+  border: none;
+  border-radius: 14px;
+  font-weight: 700;
+}
+
+.btn-kembali {
+  background: #f1f5f9;
+}
+
+.btn-daftar {
+  background: #4f46e5;
+  color: white;
+}
+
+@keyframes popupScale {
+  from {
+    transform: scale(.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 </style>
