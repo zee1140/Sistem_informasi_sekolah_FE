@@ -241,21 +241,21 @@ export default {
       stats: [
         {
           label: 'Total Siswa',
-          val: '0',
+          val: '1002',
           icon: 'bi-people-fill',
           bg: 'bg-indigo-light',
           up: 12
         },
        {
          label: 'Guru Aktif',
-         val: '0',
+         val: '56',
          icon: 'bi-person-badge-fill',
          bg: 'bg-emerald-light',
          up: 3
 },
        {
         label: 'Ruang Kelas',
-        val: '0',
+        val: '42',
         icon: 'bi-door-open-fill',
         bg: 'bg-cyan-light',
         up: 0
