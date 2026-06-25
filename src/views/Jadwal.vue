@@ -376,10 +376,10 @@ onMounted(() => {
 
 const getJadwal = async () => {
   try {
-    const res = await api.get('/jadwal')
+    const res = await api.get('/mapel')
 
     jadwalList.value = res.data.map(item => ({
-      id: item.id || item.id_jadwal,
+      id: item.id || item.id_mapel,
       mapel: item.mapel || item.mata_pelajaran || '-',
       kelas: item.kelas || '-',
       waktu: item.waktu || item.jam || '-',
