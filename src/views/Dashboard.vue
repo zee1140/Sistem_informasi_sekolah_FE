@@ -61,9 +61,8 @@
             </li>
           </ul>
           
-          
           <div class="logout-section mt-auto pt-4 border-top">
-            <button @click="logout" class="btn-logout border-0 shadow-sm w-100">
+            <button @click="openLogoutModal" class="btn-logout border-0 shadow-sm w-100">
               <i class="bi bi-power"></i><span>Keluar Sistem</span>
             </button>
           </div>
@@ -168,49 +167,30 @@
                         <th class="border-0 small fw-bold text-end p-3">AKSI</th>
                       </tr>
                     </thead>
-                  <tbody>
-  <tr
-    v-for="siswa in siswaTerbaru"
-    :key="siswa.id"
-  >
-    <td class="p-3">
-      <div class="d-flex align-items-center gap-3">
-        <div class="avatar-sm bg-indigo-light text-indigo fw-bold">
-          {{ getInitials(siswa.nama) }}
-        </div>
-
-        <span class="fw-bold small">
-          {{ siswa.nama }}
-        </span>
-      </div>
-    </td>
-
-    <td class="small fw-semibold">
-      {{ siswa.kode_kelas }}
-    </td>
-
-    <td class="text-center">
-      <span class="badge-active">
-        Aktif
-      </span>
-    </td>
-
-    <td class="text-end p-3">
-      <router-link
-        to="/siswa"
-        class="btn btn-sm btn-light border fw-bold text-indigo"
-      >
-        KONTROL
-      </router-link>
-    </td>
-  </tr>
-
-  <tr v-if="siswaTerbaru.length === 0">
-    <td colspan="4" class="text-center py-4 text-muted">
-      Belum ada data siswa
-    </td>
-  </tr>
-</tbody>
+                    <tbody>
+                      <tr v-for="siswa in siswaTerbaru" :key="siswa.id">
+                        <td class="p-3">
+                          <div class="d-flex align-items-center gap-3">
+                            <div class="avatar-sm bg-indigo-light text-indigo fw-bold">
+                              {{ getInitials(siswa.nama) }}
+                            </div>
+                            <span class="fw-bold small">{{ siswa.nama }}</span>
+                          </div>
+                        </td>
+                        <td class="small fw-semibold">{{ siswa.kode_kelas }}</td>
+                        <td class="text-center">
+                          <span class="badge-active">Aktif</span>
+                        </td>
+                        <td class="text-end p-3">
+                          <router-link to="/siswa" class="btn btn-sm btn-light border fw-bold text-indigo">
+                            KONTROL
+                          </router-link>
+                        </td>
+                      </tr>
+                      <tr v-if="siswaTerbaru.length === 0">
+                        <td colspan="4" class="text-center py-4 text-muted">Belum ada data siswa</td>
+                      </tr>
+                    </tbody>
                   </table>
                 </div>
               </div>
@@ -223,6 +203,30 @@
     </div>
 
     <div v-if="isSidebarOpen" class="sidebar-overlay d-lg-none" @click="isSidebarOpen = false"></div>
+
+    <transition name="modal-bounce">
+      <div v-if="showLogoutModal" class="custom-modal-overlay" @click.self="closeLogoutModal">
+        <div class="custom-modal-box">
+          <div class="modal-premium-deco"></div>
+          <button class="custom-btn-close" @click="closeLogoutModal">
+            <i class="bi bi-x-lg"></i>
+          </button>
+          
+          <div class="custom-modal-content">
+            <div class="custom-modal-icon shadow-premium">
+              <i class="bi bi-power"></i>
+            </div>
+            <h4 class="custom-modal-title">Keluar Sistem?</h4>
+            <p class="custom-modal-text">Anda akan keluar dari sesi admin **JeprutSchool**. Pastikan semua perubahan data penting telah disimpan.</p>
+            
+            <div class="custom-modal-actions">
+              <button class="custom-btn-cancel" @click="closeLogoutModal">Batal</button>
+              <button class="custom-btn-confirm shadow-premium" @click="confirmLogout">Ya, Keluar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -233,62 +237,24 @@ export default {
   data() {
     return {
       isSidebarOpen: false,
+      showLogoutModal: false, // State untuk modal logout custom
       jamSekarang: '',
       tanggalSekarang: '',
-
       siswaTerbaru: [],
-
       stats: [
-        {
-          label: 'Total Siswa',
-          val: '1002',
-          icon: 'bi-people-fill',
-          bg: 'bg-indigo-light',
-          up: 12
-        },
-       {
-         label: 'Guru Aktif',
-         val: '56',
-         icon: 'bi-person-badge-fill',
-         bg: 'bg-emerald-light',
-         up: 3
-},
-       {
-        label: 'Ruang Kelas',
-        val: '42',
-        icon: 'bi-door-open-fill',
-        bg: 'bg-cyan-light',
-        up: 0
-},
-        {
-          label: 'Kehadiran',
-          val: '98%',
-          icon: 'bi-check-circle-fill',
-          bg: 'bg-orange-light',
-          up: 5
-        }
+        { label: 'Total Siswa', val: '1002', icon: 'bi-people-fill', bg: 'bg-indigo-light', up: 12 },
+        { label: 'Guru Aktif', val: '56', icon: 'bi-person-badge-fill', bg: 'bg-emerald-light', up: 3 },
+        { label: 'Ruang Kelas', val: '42', icon: 'bi-door-open-fill', bg: 'bg-cyan-light', up: 0 },
+        { label: 'Kehadiran', val: '98%', icon: 'bi-check-circle-fill', bg: 'bg-orange-light', up: 5 }
       ],
-
-      chartData: {
-        Sen: 85,
-        Sel: 92,
-        Rab: 78,
-        Kam: 95,
-        Jum: 88,
-        Sab: 40,
-        Min: 15
-      }
+      chartData: { Sen: 85, Sel: 92, Rab: 78, Kam: 95, Jum: 88, Sab: 40, Min: 15 }
     }
   },
 
   methods: {
     updateTime() {
       const now = new Date()
-
-      this.jamSekarang = now.toLocaleTimeString('id-ID', {
-        hour12: false
-      })
-
+      this.jamSekarang = now.toLocaleTimeString('id-ID', { hour12: false })
       this.tanggalSekarang = now.toLocaleDateString('id-ID', {
         weekday: 'long',
         day: 'numeric',
@@ -299,25 +265,14 @@ export default {
 
     getInitials(nama) {
       if (!nama) return '-'
-
-      return nama
-        .split(' ')
-        .map(word => word.charAt(0))
-        .join('')
-        .substring(0, 2)
-        .toUpperCase()
+      return nama.split(' ').map(word => word.charAt(0)).join('').substring(0, 2).toUpperCase()
     },
 
     async getSiswaTerbaru() {
       try {
-        const response = await axios.get(
-          'http://127.0.0.1:8000/api/siswa'
-        )
-
+        const response = await axios.get('http://127.0.0.1:8000/api/siswa')
         const data = response.data.data || response.data
-
         this.siswaTerbaru = data.slice(0, 5)
-
         this.stats[0].val = data.length
       } catch (error) {
         console.error('Gagal mengambil data siswa:', error)
@@ -325,51 +280,46 @@ export default {
     },
       
     async getJumlahGuru() {
-  try {
-    const response = await axios.get(
-      'http://127.0.0.1:8000/api/guru'
-    )
-
-    const data = response.data.data || response.data
-
-    this.stats[1].val = data.length
-  } catch (error) {
-    console.error('Gagal mengambil data guru:', error)
-  }
-},
-
-async getJumlahKelas() {
-  try {
-    const response = await axios.get(
-      'http://127.0.0.1:8000/api/kelas'
-    )
-
-    const data = response.data.data || response.data
-
-    this.stats[2].val = data.length
-  } catch (error) {
-    console.error('Gagal mengambil data kelas:', error)
-  }
-},
-
-    logout() {
-      if (confirm('Keluar sistem?')) {
-        this.$router.push('/')
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/api/guru')
+        const data = response.data.data || response.data
+        this.stats[1].val = data.length
+      } catch (error) {
+        console.error('Gagal mengambil data guru:', error)
       }
+    },
+
+    async getJumlahKelas() {
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/api/kelas')
+        const data = response.data.data || response.data
+        this.stats[2].val = data.length
+      } catch (error) {
+        console.error('Gagal mengambil data kelas:', error)
+      }
+    },
+
+    openLogoutModal() {
+      this.showLogoutModal = true
+    },
+
+    closeLogoutModal() {
+      this.showLogoutModal = false
+    },
+
+    confirmLogout() {
+      this.showLogoutModal = false
+      this.$router.push('/')
     }
   },
 
-    mounted() {
-  this.updateTime()
-
-  setInterval(() => {
+  mounted() {
     this.updateTime()
-  }, 1000)
-
-  this.getSiswaTerbaru()
-  this.getJumlahGuru()
-  this.getJumlahKelas()
-}
+    setInterval(() => { this.updateTime() }, 1000)
+    this.getSiswaTerbaru()
+    this.getJumlahGuru()
+    this.getJumlahKelas()
+  }
 }
 </script>
 
@@ -386,7 +336,7 @@ async getJumlahKelas() {
 /* AVATAR AJ */
 .avatar-aj { width: 42px; height: 42px; background: #4f46e5; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; border: 3px solid #eef2ff; }
 
-/* SIDEBAR LINK - SATU BARIS RAPI */
+/* SIDEBAR LINK */
 .menu-link { display: flex; align-items: center; gap: 12px; padding: 14px 20px; color: #718096; text-decoration: none; font-weight: 700; border-radius: 14px; transition: 0.2s; }
 .nowrap-link { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .menu-link:hover { background: #f8fafc; color: #4f46e5; }
@@ -420,8 +370,151 @@ async getJumlahKelas() {
 
 /* ACTIVITY FEED */
 .activity-dot { width: 12px; height: 12px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 0 3px #f1f5f9; margin-top: 5px; }
-.btn-logout { background: #fee2e2; color: #991b1b; padding: 14px; border-radius: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; }
-.btn-logout:hover { background: #fecaca; }
+.btn-logout { background: #f3f0ff; color: #6366f1; padding: 14px; border-radius: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; cursor: pointer; }
+.btn-logout:hover { background: #e0e7ff; color: #4f46e5; transform: scale(0.98); }
+
+/* =============================================
+   CUSTOM MODAL PREMIUM STYLES (THEME UNGU)
+   ============================================= */
+.custom-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.custom-modal-box {
+  width: 90%;
+  max-width: 440px;
+  background: #ffffff;
+  border-radius: 28px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 24px 70px rgba(79, 70, 229, 0.15);
+  border: 1px solid rgba(238, 242, 255, 0.8);
+}
+
+.modal-premium-deco {
+  height: 6px;
+  background: linear-gradient(90deg, #6366f1, #4f46e5, #312e81);
+  width: 100%;
+}
+
+.custom-btn-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f8fafc;
+  border: none;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+  cursor: pointer;
+}
+.custom-btn-close:hover {
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+.custom-modal-content {
+  padding: 40px 30px 30px 30px;
+  text-align: center;
+}
+
+.custom-modal-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #e0e7ff 0%, #eef2ff 100%);
+  color: #4f46e5;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px auto;
+}
+
+.shadow-premium {
+  box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.2);
+}
+
+.custom-modal-title {
+  font-weight: 800;
+  color: #0f172a;
+  font-size: 22px;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+
+.custom-modal-text {
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+.custom-modal-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.custom-btn-cancel, 
+.custom-btn-confirm {
+  flex: 1;
+  padding: 13px 20px;
+  border-radius: 16px;
+  font-weight: 700;
+  font-size: 14px;
+  border: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.custom-btn-cancel {
+  background: #f1f5f9;
+  color: #64748b;
+}
+.custom-btn-cancel:hover {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.custom-btn-confirm {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: white;
+}
+.custom-btn-confirm:hover {
+  background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+  transform: translateY(-1px);
+}
+.custom-btn-confirm:active {
+  transform: translateY(0);
+}
+
+/* ANIMATION BOUNCE INEFFECT */
+.modal-bounce-enter-active {
+  animation: bounceIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.modal-bounce-leave-active {
+  transition: opacity 0.2s ease;
+}
+.modal-bounce-leave-to {
+  opacity: 0;
+}
+
+@keyframes bounceIn {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
 
 @media (max-width: 991px) {
   .sidebar { position: fixed; left: -280px; top: 0; bottom: 0; }

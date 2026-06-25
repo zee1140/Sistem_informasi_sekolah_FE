@@ -99,15 +99,15 @@
 
           <table>
 
-            <thead>
-              <tr>
-                <th>Nama Siswa</th>
-                <th>Kelas</th>
-                <th>Waktu Masuk</th>
-                <th>Status</th>
-                <th class="text-end">Aksi</th>
-              </tr>
-            </thead>
+            <<thead>
+  <tr>
+    <th>Nama Siswa</th>
+    <th>NIS</th>
+    <th>Kelas</th>
+    <th>Status</th>
+    <th class="text-end">Aksi</th>
+  </tr>
+</thead>
 
             <tbody>
   <tr
@@ -119,36 +119,58 @@
         <div class="avatar-sm bg-indigo-light text-indigo fw-bold">
           {{ getInitials(siswa.nama) }}
         </div>
+        <div>
+          <span class="fw-bold small d-block">
+            {{ siswa.nama }}
+          </span>
+          <small class="text-muted text-xs" style="font-size: 11px;">
+            ID: {{ siswa.id }}
+          </small>
+        </div>
+      </div>
+    </td>
 
-        <span class="fw-bold small">
-          {{ siswa.nama }}
+    <td class="p-3">
+      <div class="d-flex flex-column">
+        <span class="text-muted text-uppercase fw-bold mb-1" style="font-size: 10px; letter-spacing: 0.5px;">NIS</span>
+        <span class="class-tag text-center" style="width: max-content;">
+          {{ siswa.nis || '333' }}
         </span>
       </div>
     </td>
 
-    <td class="small fw-semibold">
-      {{ siswa.kelas }}
+    <td class="p-3">
+      <div class="d-flex flex-column">
+        <span class="text-muted text-uppercase fw-bold mb-1" style="font-size: 10px; letter-spacing: 0.5px;">KELAS</span>
+        <span class="class-tag text-center" style="width: max-content;">
+          {{ siswa.kelas }}
+        </span>
+      </div>
     </td>
 
     <td class="text-center">
       <span class="badge-active">
-        Aktif
+        • Aktif
       </span>
     </td>
 
     <td class="text-end p-3">
-      <router-link
-        to="/siswa"
-        class="btn btn-sm btn-light border fw-bold text-indigo"
-        style="font-size:11px;"
-      >
-        KONTROL
-      </router-link>
+      <div class="d-flex justify-content-end gap-2">
+        <button class="btn-action btn-view" title="Lihat">
+          <i class="bi bi-eye"></i>
+        </button>
+        <button class="btn-action btn-edit" title="Edit" @click="openModal(siswa)">
+          <i class="bi bi-pencil"></i>
+        </button>
+        <button class="btn-action btn-delete" title="Hapus" @click="hapusData(siswa.id)">
+          <i class="bi bi-trash"></i>
+        </button>
+      </div>
     </td>
   </tr>
 
   <tr v-if="siswaTerbaru.length === 0">
-    <td colspan="4" class="text-center py-4 text-muted">
+    <td colspan="5" class="text-center py-4 text-muted">
       Belum ada data siswa
     </td>
   </tr>
@@ -1140,4 +1162,57 @@ tbody tr:hover{
     text-align:left;
   }
 }
+/* Style Tambahan untuk Label Bertingkat dan Tombol Aksi */
+.d-flex { display: flex; }
+.flex-column { flex-direction: column; }
+.gap-2 { gap: 8px; }
+.gap-3 { gap: 12px; }
+.align-items-center { align-items: center; }
+.justify-content-end { justify-content: flex-end; }
+.mb-1 { margin-bottom: 4px; }
+.d-block { display: block; }
+.text-xs { font-size: 11px; }
+
+/* Badge Status Aktif Hijau */
+.badge-active {
+  background-color: #e6f9f0;
+  color: #10b981;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  display: inline-block;
+}
+
+/* Kustomisasi Tombol Aksi Sesuai Gambar */
+.btn-action {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.2s ease;
+}
+
+.btn-view {
+  background-color: #f0f7ff;
+  color: #0284c7;
+}
+.btn-view:hover { background-color: #e0f2fe; }
+
+.btn-edit {
+  background-color: #f0fdf4;
+  color: #16a34a;
+}
+.btn-edit:hover { background-color: #dcfce7; }
+
+.btn-delete {
+  background-color: #fff1f2;
+  color: #e11d48;
+}
+.btn-delete:hover { background-color: #ffe4e6; }
 </style>
