@@ -149,14 +149,13 @@
                     </div>
 
                     <div>
-                      <div class="fw-bold text-dark mb-0">
-                        {{ item.mapel }}
-                      </div>
-
-                      <small class="text-muted">
-                        Guru: {{ item.guru }}
-                      </small>
-                    </div>
+  <div class="fw-bold text-dark mb-0" style="text-align: left !important;">
+    {{ item.mapel }}
+  </div>
+  <small class="text-muted" style="text-align: left !important; display: block;">
+    Guru: {{ item.guru }}
+  </small>
+</div>
 
                   </div>
 
@@ -1045,6 +1044,10 @@ const getInitials = (n) => {
     border-radius: 20px !important;
     padding: 20px;
     border: 1px solid #eef2ff !important;
+    text-align: left !important;
+  }
+  .mobile-card .d-flex {
+    justify-content: flex-start !important;
   }
   .border-0-mobile {
     border: none !important;
