@@ -120,7 +120,7 @@
 
             <div class="form-group mb-4">
               <label class="small fw-800 text-muted mb-2 ls-wide">NIS</label>
-              <div class="input-premium" :class="{'border-danger-custom': errors.nis}">
+              <div class="input-premium" :class="{'border-danger-custom': errors.nis || errors.nisDuplicate}">
                 <i class="bi bi-credit-card-2-front text-indigo"></i>
                 <input
                   v-model="formSiswa.nis"
@@ -134,6 +134,9 @@
               </div>
               <small v-if="errors.nis" class="text-danger-custom fw-bold mt-1 d-block animate-pop">
                 <i class="bi bi-exclamation-circle"></i> NIS harus berupa angka saja!
+              </small>
+              <small v-if="errors.nisDuplicate" class="text-danger-custom fw-bold mt-1 d-block animate-pop">
+                <i class="bi bi-exclamation-circle"></i> NIS sudah terdaftar! Gunakan NIS yang berbeda.
               </small>
             </div>
 
@@ -227,7 +230,7 @@ export default {
       errorMessage: '',
       pageMessage: '',
       formSiswa: { id: '', nama: '', nis: '', kode_kelas: '' },
-      errors: { nama: false, nis: false, kode_kelas: false },
+      errors: { nama: false, nis: false, kode_kelas: false, nisDuplicate: false },
       kelasList: [],
       daftarSiswa: []
     }
@@ -277,7 +280,7 @@ export default {
     bukaModal(siswa = null) {
       this.isView = false;
       this.errorMessage = '';
-      this.errors = { nama: false, nis: false, kode_kelas: false };
+      this.errors = { nama: false, nis: false, kode_kelas: false, nisDuplicate: false };
       if (siswa) { 
         const normalized = this.normalizeSiswa(siswa)
         this.isEdit = true; 
@@ -306,14 +309,29 @@ export default {
         kode_kelas: normalized.kode_kelas
       }; 
       this.errorMessage = '';
-      this.errors = { nama: false, nis: false, kode_kelas: false };
+      this.errors = { nama: false, nis: false, kode_kelas: false, nisDuplicate: false };
       this.showModal = true; 
     },
     onNisInput(event) {
       const raw = event.target.value || ''
       const cleaned = raw.replace(/\D+/g, '')
       this.errors.nis = raw !== cleaned
+      this.errors.nisDuplicate = false // Reset duplicate check saat user mengetik
       this.formSiswa.nis = cleaned
+    },
+    checkNisDuplicate() {
+      if (!this.formSiswa.nis) return false
+
+      // Cek apakah NIS sudah ada di daftar siswa lain
+      const isDuplicate = this.daftarSiswa.some(siswa => {
+        // Saat edit, abaikan siswa yang sedang diedit
+        if (this.isEdit && siswa.id === this.editId) {
+          return false
+        }
+        return String(siswa.nis) === String(this.formSiswa.nis)
+      })
+
+      return isDuplicate
     },
     tutupModal() { 
       this.showModal = false; 
@@ -323,7 +341,8 @@ export default {
       this.errors.nama = !this.formSiswa.nama.trim();
       this.errors.nis = !/^[0-9]+$/.test(this.formSiswa.nis);
       this.errors.kode_kelas = !this.formSiswa.kode_kelas;
-      if (this.errors.nama || this.errors.nis || this.errors.kode_kelas) return;
+      this.errors.nisDuplicate = this.checkNisDuplicate();
+      if (this.errors.nama || this.errors.nis || this.errors.kode_kelas || this.errors.nisDuplicate) return;
 
       try {
         this.isSaving = true

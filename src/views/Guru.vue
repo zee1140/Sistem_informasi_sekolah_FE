@@ -68,7 +68,8 @@
                       <div class="avatar-sm initials bg-indigo-grad animate-pop" :style="`animation-delay: ${i * 0.05}s`">
                         {{ getInitials(guru.nama) }}
                       </div>
-                      <div>
+                      <div class="flex-grow-1">
+                        <div class="info-title d-md-none" style="font-size: 10px; color: #94a3b8; font-weight: 800; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">NAMA PENGAJAR</div>
                         <div class="fw-bold text-dark mb-0">{{ guru.nama }}</div>
                         <small class="text-muted">NIP. {{ guru.nip || '-' }}</small>
                       </div>
@@ -127,7 +128,7 @@
 
             <div class="mb-4">
               <label class="small fw-800 text-muted mb-2 ls-wide">NIP</label>
-              <div class="input-premium" :class="{'border-danger-custom': errors.nip}">
+              <div class="input-premium" :class="{'border-danger-custom': errors.nip || errors.nipDuplicate}">
                 <i class="bi bi-credit-card-2-front text-indigo"></i>
                 <input
                   v-model="formGuru.nip"
@@ -141,6 +142,9 @@
               </div>
               <small v-if="errors.nip" class="text-danger-custom fw-bold mt-1 d-block animate-pop">
                 <i class="bi bi-exclamation-circle"></i> NIP harus berupa angka saja!
+              </small>
+              <small v-if="errors.nipDuplicate" class="text-danger-custom fw-bold mt-1 d-block animate-pop">
+                <i class="bi bi-exclamation-circle"></i> NIP sudah terdaftar! Gunakan NIP yang berbeda.
               </small>
             </div>
 
@@ -227,7 +231,7 @@ export default {
       isDeleting: false,
       pageMessage: '',
       formGuru: { id: '', nama: '', nip: '', mapel: '' },
-      errors: { nama: false, mapel: false, nip: false },
+      errors: { nama: false, mapel: false, nip: false, nipDuplicate: false },
       daftarGuru: []
     }
   },
@@ -271,7 +275,7 @@ export default {
     bukaModal(guru = null) {
       console.log("data guru:", guru)
       this.isView = false;
-      this.errors = { nama: false, mapel: false, nip: false };
+      this.errors = { nama: false, mapel: false, nip: false, nipDuplicate: false };
       if (guru) { 
         const normalized = this.normalizeGuru(guru)
         this.isEdit = true; 
@@ -286,7 +290,7 @@ export default {
     viewGuru(guru) { 
       const normalized = this.normalizeGuru(guru)
       this.isView = true; 
-      this.errors = { nama: false, mapel: false, nip: false };
+      this.errors = { nama: false, mapel: false, nip: false, nipDuplicate: false };
       this.formGuru = { ...normalized }; 
       this.showModal = true; 
     },
@@ -295,14 +299,30 @@ export default {
       const raw = event.target.value || ''
       const cleaned = raw.replace(/\D+/g, '')
       this.errors.nip = raw !== cleaned
+      this.errors.nipDuplicate = false // Reset duplicate check saat user mengetik
       this.formGuru.nip = cleaned
+    },
+    checkNipDuplicate() {
+      if (!this.formGuru.nip) return false
+
+      // Cek apakah NIP sudah ada di daftar guru lain
+      const isDuplicate = this.daftarGuru.some(guru => {
+        // Saat edit, abaikan guru yang sedang diedit
+        if (this.isEdit && guru.id === this.editId) {
+          return false
+        }
+        return String(guru.nip) === String(this.formGuru.nip)
+      })
+
+      return isDuplicate
     },
     async simpanGuru() {
       
       this.errors.nama = !this.formGuru.nama.trim();
       this.errors.mapel = !this.formGuru.mapel || !String(this.formGuru.mapel).trim();
       this.errors.nip = this.formGuru.nip ? !/^[0-9]+$/.test(this.formGuru.nip) : false;
-      if (this.errors.nama || this.errors.mapel || this.errors.nip) return;
+      this.errors.nipDuplicate = this.checkNipDuplicate();
+      if (this.errors.nama || this.errors.mapel || this.errors.nip || this.errors.nipDuplicate) return;
 
       try {
         this.isSaving = true

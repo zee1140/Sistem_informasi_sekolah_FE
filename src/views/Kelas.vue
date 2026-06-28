@@ -45,52 +45,56 @@
 
       <div class="table-card bg-white shadow-premium rounded-4 overflow-hidden animate-slide-up" style="animation-delay: 0.2s">
         <div class="table-responsive">
-          <table class="table table-hover align-middle mb-0">
-            <thead class="bg-light d-none d-md-table-header-group">
-              <tr class="text-uppercase small fw-800 text-muted ls-wide">
-                <th>Kode Kelas</th>
-                <th>Wali Kelas</th>
-                <th class="text-center">Kapasitas</th>
-                <th class="text-end pe-4">Aksi</th>
-              </tr>
-            </thead>
-            <transition-group name="list" tag="tbody" class="mobile-grid">
-                <tr v-for="kelas in filteredKelas" :key="kelas.kode_kelas" class="row-hover mobile-card">
-                  <td class="ps-md-4 py-3 border-0-mobile">
-                    <div class="d-flex align-items-center gap-3">
-                      <div class="avatar-sm initials bg-indigo-grad animate-pop">
-                        <i class="bi bi-door-closed"></i>
-                      </div>
-                      <div>
-                        <div class="fw-bold text-dark mb-0">{{ kelas.kode_kelas }}</div>
-                        <small class="text-muted">Kode Kelas</small>
-                      </div>
-                    </div>
-                  </td>
-                  <td class="border-0-mobile">
-                    <div class="mobile-label d-md-none">Wali Kelas</div>
-                    <div class="d-flex align-items-center gap-2 fw-semibold text-secondary">
-                        <i class="bi bi-person-badge opacity-50"></i> {{ kelas.wali_kelas }}
-                    </div>
-                  </td>
-                  <td class="text-md-center border-0-mobile">
-                    <div class="mobile-label d-md-none">Kapasitas Siswa</div>
-                    <div class="d-flex flex-column align-items-md-center">
-                        <span class="badge-soft-indigo mb-1">{{ kelas.kapasitas_siswa }} siswa</span>
-                        <div class="cap-bar d-none d-md-block">
-                            <div class="cap-fill" :style="{ width: `${Math.min(Number(kelas.kapasitas_siswa || 0), 100)}%` }"></div>
-                        </div>
-                    </div>
-                  </td>
-                  <td class="text-md-end pe-md-4 border-0-mobile">
-                    <div class="d-flex justify-content-md-end gap-2 mt-2 mt-md-0">
-                      <button type="button" class="btn-tool btn-e ripple" @click.stop="editData(kelas)"><i class="bi bi-pencil-square"></i></button>
-                      <button type="button" class="btn-tool btn-d ripple" @click.stop="confirmDelete(kelas)"><i class="bi bi-trash3"></i></button>
-                    </div>
-                  </td>
-                </tr>
-            </transition-group>
-          </table>
+     <table class="table align-middle mb-0">
+  <transition-group name="list" tag="tbody" class="mobile-grid">
+    <tr v-for="kelas in filteredKelas" :key="kelas.kode_kelas" class="row-hover mobile-card">
+      
+      <td class="ps-md-4 py-3 border-0-mobile">
+        <div class="d-flex flex-column align-items-start gap-1">
+          <div class="mobile-label">Kode Kelas</div>
+          <div class="d-flex align-items-center gap-3">
+            <div class="avatar-sm initials bg-indigo-grad animate-pop">
+              <i class="bi bi-door-closed"></i>
+            </div>
+            <div class="fw-bold text-dark mb-0">{{ kelas.kode_kelas }}</div>
+          </div>
+        </div>
+      </td>
+
+      <td class="border-0-mobile text-md-center">
+        <div class="d-flex flex-column align-items-md-center gap-2">
+          <div class="mobile-label">Wali Kelas</div>
+          <div class="d-flex align-items-center gap-2 fw-semibold text-secondary">
+            <i class="bi bi-person-badge opacity-50"></i> {{ kelas.wali_kelas }}
+          </div>
+        </div>
+      </td>
+
+      <td class="border-0-mobile text-md-center">
+        <div class="d-flex flex-column align-items-md-center gap-2">
+          <div class="mobile-label">Total Siswa</div>
+          <div class="d-flex flex-column align-items-md-center">
+            <span class="badge-soft-indigo mb-1">{{ kelas.kapasitas_siswa }} siswa</span>
+            <div class="cap-bar">
+              <div class="cap-fill" :style="{ width: `${Math.min(Number(kelas.kapasitas_siswa || 0), 100)}%` }"></div>
+            </div>
+          </div>
+        </div>
+      </td>
+
+      <td class="text-md-end pe-md-4 border-0-mobile">
+        <div class="d-flex flex-column align-items-md-end gap-2">
+          <div class="mobile-label">Aksi</div>
+          <div class="d-flex gap-2 mt-1 mt-md-0">
+            <button type="button" class="btn-tool btn-e ripple" @click.stop="editData(kelas)"><i class="bi bi-pencil-square"></i></button>
+            <button type="button" class="btn-tool btn-d ripple" @click.stop="confirmDelete(kelas)"><i class="bi bi-trash3"></i></button>
+          </div>
+        </div>
+      </td>
+
+    </tr>
+  </transition-group>
+</table>
           
           <div v-if="filteredKelas.length === 0" class="p-5 text-center animate-pop">
             <i class="bi bi-door-open fs-1 text-muted opacity-25"></i>
@@ -558,4 +562,107 @@ export default {
 @keyframes pop { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
 .list-enter-active, .list-leave-active { transition: all 0.4s ease; }
 .list-enter-from, .list-leave-to { opacity: 0; transform: translateX(-30px); }
+
+@media (max-width: 768px) {
+  /* ... kode css mobile lama Anda ... */
+  .mobile-label { 
+    display: block !important; 
+    font-size: 10px; 
+    font-weight: 800; 
+    color: #94a3b8; 
+    text-transform: uppercase; 
+    margin-bottom: 4px;
+    align-self: flex-start; /* Tambahkan ini agar label rata kiri */
+  }
+}
+
+/* Pastikan class ini berada di luar media query atau hapus batasan @media-nya */
+.mobile-label { 
+  display: block !important; 
+  font-size: 11px; 
+  font-weight: 800; 
+  color: #94a3b8; 
+  text-transform: uppercase; 
+  margin-bottom: 2px;
+  letter-spacing: 0.05em;
+}
+
+/* Memastikan baris tabel desktop pun membagi kolom secara proporsional seperti contoh */
+.table-responsive table tbody tr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 15px 20px;
+}
+
+.table-responsive table tbody tr td {
+  border: none !important;
+  flex: 1;
+  min-width: 150px;
+}
+/* Styling teks judul kecil di atas nilai */
+.mobile-label { 
+  display: block !important; 
+  font-size: 11px; 
+  font-weight: 800; 
+  color: #94a3b8; 
+  text-transform: uppercase; 
+  margin-bottom: 2px;
+  letter-spacing: 0.05em;
+}
+
+/* Mengubah baris tabel menjadi struktur baris flex layout yang rapi */
+.table-responsive table tbody tr {
+  display: flex !important;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  width: 100%;
+}
+
+/* Membagi lebar tiap kolom td secara merata di layar desktop */
+.table-responsive table tbody tr td {
+  border: none !important;
+  flex: 1 1 0px !important; /* Membuat lebar kotak td sama rata */
+  min-width: 0;
+  padding: 8px !important;
+}
+
+/* Styling teks judul kecil di atas nilai */
+.mobile-label { 
+  display: block !important; 
+  font-size: 11px; 
+  font-weight: 800; 
+  color: #94a3b8; 
+  text-transform: uppercase; 
+  margin-bottom: 6px; /* Jarak sedikit diperlebar agar tidak terlalu mepet ke bawah */
+  letter-spacing: 0.05em;
+}
+
+/* Mengubah baris tabel menjadi struktur baris flex layout yang rapi */
+.table-responsive table tbody tr {
+  display: flex !important;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px !important; /* Padding baris diperluas secara merata */
+  width: 100%;
+  background-color: transparent;
+  transition: background-color 0.2s ease; /* Animasi hover halus */
+  border-bottom: 1px solid #f1f5f9; /* Garis pembatas bawah baris */
+}
+
+/* Efek animasi hover kustom pengganti table-hover Bootstrap */
+.table-responsive table tbody tr:hover {
+  background-color: rgba(241, 245, 249, 0.7) !important; /* Abu-abu transparan menyelimuti penuh */
+}
+
+/* Membagi lebar tiap kolom td secara merata di layar desktop */
+.table-responsive table tbody tr td {
+  border: none !important;
+  flex: 1 1 0px !important; 
+  min-width: 0;
+  padding: 0 !important; /* Padding td dinolkan karena sudah dihandle padding tr di atas */
+  background: transparent !important; /* Memastikan background bawaan td tidak memotong */
+}
 </style>

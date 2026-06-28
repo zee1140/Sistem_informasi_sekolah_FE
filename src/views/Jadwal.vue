@@ -268,7 +268,9 @@
           <div class="clean-modal-icon-box">
             <i class="bi bi-journal-plus"></i>
           </div>
-          <h3 class="clean-modal-title">Tambah Mata Pelajaran</h3>
+        <h3 class="clean-modal-title">
+  {{ editId ? 'Edit Mata Pelajaran' : 'Tambah Mata Pelajaran' }}
+</h3>
         </div>
 
         <div class="clean-modal-body">
@@ -320,9 +322,9 @@
             Kembali
           </button>
 
-          <button class="btn-clean-save shadow-premium">
-            Simpan Mapel
-          </button>
+    <button class="btn-clean-save shadow-premium" @click="saveMapel">
+  {{ editId ? 'Update Mapel' : 'Simpan Mapel' }}
+</button>
         </div>
 
       </div>
@@ -330,15 +332,14 @@
   </transition>
 
 </template>
-
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import api from '../service/axios.js'
 
 const search = ref('')
 const jadwalList = ref([])
-
 const showModal = ref(false)
+const editId = ref(null) // ← tambah ini untuk tahu mode edit/tambah
 
 const formGuru = ref({
   mapel_nama: '',
@@ -348,7 +349,6 @@ const formGuru = ref({
 
 const filteredJadwal = computed(() => {
   const k = search.value.toLowerCase()
-
   return jadwalList.value.filter(j =>
     j.mapel.toLowerCase().includes(k) ||
     j.guru.toLowerCase().includes(k)
@@ -362,15 +362,16 @@ onMounted(() => {
 const getJadwal = async () => {
   try {
     const res = await api.get('/mapel')
-
-    jadwalList.value = res.data.map(item => ({
-      id: item.id || item.id_mapel,
-      mapel: item.mapel || item.mata_pelajaran || '-',
-      kelas: item.kelas || '-',
-      waktu: item.waktu || item.jam || '-',
-      ruang: item.ruang || '-',
-      guru: item.guru || item.nama_guru || '-'
-    }))
+  jadwalList.value = res.data.map(item => ({
+  id: item.id_mapel,
+  mapel: item.nama_mapel || '-',
+  kelas: item.kelas || '-',
+  waktu: item.jam_mulai && item.jam_selesai 
+    ? `${item.jam_mulai} - ${item.jam_selesai}` 
+    : item.jam_mulai || '-',
+  ruang: item.ruang || '-',
+  guru: item.guru || '-'
+}))
   } catch (e) {
     console.error(e)
   }
@@ -378,10 +379,12 @@ const getJadwal = async () => {
 
 const openModal = (item = null) => {
   if (item) {
+    editId.value = item.id  // ← simpan id untuk edit
     formGuru.value.mapel_nama = item.mapel
     formGuru.value.nama = item.guru
     formGuru.value.kelas = item.kelas
   } else {
+    editId.value = null
     formGuru.value.mapel_nama = ''
     formGuru.value.nama = ''
     formGuru.value.kelas = ''
@@ -393,22 +396,50 @@ const closeModal = () => {
   showModal.value = false
 }
 
-const openConfirm = (item) => {
-  console.log(item)
+const saveMapel = async () => {
+  try {
+  const payload = {
+  nama_mapel: formGuru.value.mapel_nama,
+  guru: formGuru.value.nama,
+  kelas: formGuru.value.kelas
+}
+
+    console.log('PAYLOAD:', payload) // ← lihat data yang dikirim
+
+    if (editId.value) {
+      await api.put(`/mapel/${editId.value}`, payload)
+    } else {
+      await api.post('/mapel', payload)
+    }
+
+    closeModal()
+    getJadwal()
+  } catch (e) {
+    console.error('ERROR DETAIL:', e.response?.data) // ← lihat response error dari backend
+    console.error('STATUS:', e.response?.status)
+    alert('Gagal menyimpan data!')
+  }
+}
+
+const openConfirm = async (item) => {
+  const yakin = confirm(`Hapus mapel "${item.mapel}"?`)
+  if (!yakin) return
+
+  try {
+    await api.delete(`/mapel/${item.id}`)
+    getJadwal() // refresh tabel
+  } catch (e) {
+    console.error(e)
+    alert('Gagal menghapus data!')
+  }
 }
 
 const getInitials = (n) => {
   return n
-    ? n
-        .split(' ')
-        .map(x => x[0])
-        .join('')
-        .toUpperCase()
-        .substring(0, 2)
+    ? n.split(' ').map(x => x[0]).join('').toUpperCase().substring(0, 2)
     : '?'
 }
 </script>
-
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
