@@ -84,118 +84,66 @@
             <i class="bi bi-cpu-fill hero-icon"></i>
           </div>
 
-          <div class="row g-3 mb-4">
-            <div class="col-12 col-sm-6 col-xl-3" v-for="(stat, i) in stats" :key="i">
-              <div class="stat-card p-3 shadow-sm h-100 bg-white border-0">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                  <div class="stat-icon-box" :class="stat.bg"><i :class="stat.icon"></i></div>
-                  <div class="text-success small fw-bold"><i class="bi bi-graph-up"></i> +{{ stat.up }}%</div>
-                </div>
-                <h3 class="fw-bold mb-0">{{ stat.val }}</h3>
-                <p class="text-muted small fw-bold mb-0">{{ stat.label }}</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="row g-4 mb-4">
-            <div class="col-12 col-xl-8">
-              <div class="white-card p-4 shadow-sm border-0 h-100">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                  <h5 class="fw-bold mb-0">Statistik Kehadiran Aktif</h5>
-                  <div class="d-flex gap-2">
-                    <span class="badge bg-indigo-light text-indigo small">Minggu Ini</span>
-                  </div>
-                </div>
-                <div class="chart-wrapper d-flex align-items-end justify-content-around px-2">
-                  <div v-for="(val, day) in chartData" :key="day" class="bar-container">
-                    <div class="bar-value small fw-bold text-indigo">{{ val }}%</div>
-                    <div class="bar-fill" :style="{ height: val + '%' }">
-                      <div class="bar-glow"></div>
-                    </div>
-                    <div class="bar-day small fw-bold text-muted mt-3">{{ day }}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-12 col-xl-4">
-              <div class="white-card p-4 shadow-sm border-0 h-100">
-                <h5 class="fw-bold mb-4">Aktivitas Sistem</h5>
-                <div class="activity-list">
-                  <div class="activity-item d-flex gap-3 mb-4">
-                    <div class="activity-dot bg-indigo"></div>
-                    <div>
-                      <p class="small mb-0 fw-bold">Update Data Guru</p>
-                      <small class="text-muted">Baru saja oleh Admin AJ</small>
-                    </div>
-                  </div>
-                  <div class="activity-item d-flex gap-3 mb-4">
-                    <div class="activity-dot bg-emerald"></div>
-                    <div>
-                      <p class="small mb-0 fw-bold">Backup Database Selesai</p>
-                      <small class="text-muted">Otomatis - 2 Jam yang lalu</small>
-                    </div>
-                  </div>
-                  <div class="activity-item d-flex gap-3">
-                    <div class="activity-dot bg-warning"></div>
-                    <div>
-                      <p class="small mb-0 fw-bold">5 Siswa Baru Mendaftar</p>
-                      <small class="text-muted">Lihat di Manajemen Siswa</small>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
           <div class="row g-4 mb-4">
             <div class="col-12">
               <div class="white-card p-4 shadow-sm border-0">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                  <h5 class="fw-bold mb-0">Siswa Baru Terdaftar</h5>
-                  <router-link to="/siswa" class="btn btn-indigo btn-sm rounded-pill px-4 fw-bold">
-                    Buka Manajemen Siswa <i class="bi bi-arrow-right ms-1"></i>
-                  </router-link>
+                <h5 class="fw-bold mb-4">Tentang JeprutSchool</h5>
+                
+                <div class="row g-4">
+                  <div class="col-12 col-md-6">
+                    <h6 class="fw-bold text-indigo mb-3">
+                      <i class="bi bi-sparkles me-2"></i>Fitur Utama
+                    </h6>
+                    <ul class="feature-list">
+                      <li><i class="bi bi-check-circle-fill text-indigo"></i> Manajemen Data Siswa Komprehensif</li>
+                      <li><i class="bi bi-check-circle-fill text-indigo"></i> Pengelolaan Data Pengajar</li>
+                      <li><i class="bi bi-check-circle-fill text-indigo"></i> Sistem Manajemen Kelas</li>
+                      <li><i class="bi bi-check-circle-fill text-indigo"></i> Jadwal Pelajaran Terintegrasi</li>
+                      <li><i class="bi bi-check-circle-fill text-indigo"></i> Pencatatan Kehadiran Siswa</li>
+                      <li><i class="bi bi-check-circle-fill text-indigo"></i> Dashboard Admin Responsif</li>
+                    </ul>
+                  </div>
+
+                  <div class="col-12 col-md-6">
+                    <h6 class="fw-bold text-indigo mb-3">
+                      <i class="bi bi-palette-fill me-2"></i>Desain & Teknologi
+                    </h6>
+                    <div class="tech-stack">
+                      <div class="tech-item">
+                        <span class="tech-badge">Vue.js 3</span>
+                        <span class="text-muted small">Frontend Framework</span>
+                      </div>
+                      <div class="tech-item">
+                        <span class="tech-badge">Bootstrap 5</span>
+                        <span class="text-muted small">UI Framework</span>
+                      </div>
+                      <div class="tech-item">
+                        <span class="tech-badge">Responsive Design</span>
+                        <span class="text-muted small">Mobile First Approach</span>
+                      </div>
+                      <div class="tech-item">
+                        <span class="tech-badge">Modern UI</span>
+                        <span class="text-muted small">Clean & Intuitive Interface</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div class="table-responsive">
-                  <table class="table table-hover align-middle">
-                    <thead class="bg-light">
-                      <tr>
-                        <th class="border-0 small fw-bold p-3">NAMA LENGKAP</th>
-                        <th class="border-0 small fw-bold">KELAS TUJUAN</th>
-                        <th class="border-0 small fw-bold text-center">STATUS AKTIF</th>
-                        <th class="border-0 small fw-bold text-end p-3">AKSI</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr v-for="siswa in siswaTerbaru" :key="siswa.id">
-                        <td class="p-3">
-                          <div class="d-flex align-items-center gap-3">
-                            <div class="avatar-sm bg-indigo-light text-indigo fw-bold">
-                              {{ getInitials(siswa.nama) }}
-                            </div>
-                            <span class="fw-bold small">{{ siswa.nama }}</span>
-                          </div>
-                        </td>
-                        <td class="small fw-semibold">{{ siswa.kode_kelas }}</td>
-                        <td class="text-center">
-                          <span class="badge-active">Aktif</span>
-                        </td>
-                        <td class="text-end p-3">
-                          <router-link to="/siswa" class="btn btn-sm btn-light border fw-bold text-indigo">
-                            KONTROL
-                          </router-link>
-                        </td>
-                      </tr>
-                      <tr v-if="siswaTerbaru.length === 0">
-                        <td colspan="4" class="text-center py-4 text-muted">Belum ada data siswa</td>
-                      </tr>
-                    </tbody>
-                  </table>
+
+                <div class="mt-4 pt-4 border-top">
+                  <p class="text-muted mb-0 small">
+                    <i class="bi bi-info-circle me-2"></i>
+                    JeprutSchool adalah Sistem Informasi Manajemen Sekolah yang dirancang untuk memudahkan 
+                    pengelolaan data akademik dan administratif. Dengan antarmuka yang user-friendly dan fitur lengkap, 
+                    kami berkomitmen meningkatkan efisiensi operasional sekolah Anda.
+                  </p>
                 </div>
               </div>
             </div>
           </div>
+
+
+
+
 
           <div class="pb-5"></div>
         </div>
@@ -231,23 +179,13 @@
 </template>
 
 <script>
-import axios from 'axios'
-
 export default {
   data() {
     return {
       isSidebarOpen: false,
       showLogoutModal: false, // State untuk modal logout custom
       jamSekarang: '',
-      tanggalSekarang: '',
-      siswaTerbaru: [],
-      stats: [
-        { label: 'Total Siswa', val: '1002', icon: 'bi-people-fill', bg: 'bg-indigo-light', up: 12 },
-        { label: 'Guru Aktif', val: '56', icon: 'bi-person-badge-fill', bg: 'bg-emerald-light', up: 3 },
-        { label: 'Ruang Kelas', val: '42', icon: 'bi-door-open-fill', bg: 'bg-cyan-light', up: 0 },
-        { label: 'Kehadiran', val: '98%', icon: 'bi-check-circle-fill', bg: 'bg-orange-light', up: 5 }
-      ],
-      chartData: { Sen: 85, Sel: 92, Rab: 78, Kam: 95, Jum: 88, Sab: 40, Min: 15 }
+      tanggalSekarang: ''
     }
   },
 
@@ -261,42 +199,6 @@ export default {
         month: 'long',
         year: 'numeric'
       })
-    },
-
-    getInitials(nama) {
-      if (!nama) return '-'
-      return nama.split(' ').map(word => word.charAt(0)).join('').substring(0, 2).toUpperCase()
-    },
-
-    async getSiswaTerbaru() {
-      try {
-        const response = await axios.get('http://127.0.0.1:8000/api/siswa')
-        const data = response.data.data || response.data
-        this.siswaTerbaru = data.slice(0, 5)
-        this.stats[0].val = data.length
-      } catch (error) {
-        console.error('Gagal mengambil data siswa:', error)
-      }
-    },
-      
-    async getJumlahGuru() {
-      try {
-        const response = await axios.get('http://127.0.0.1:8000/api/guru')
-        const data = response.data.data || response.data
-        this.stats[1].val = data.length
-      } catch (error) {
-        console.error('Gagal mengambil data guru:', error)
-      }
-    },
-
-    async getJumlahKelas() {
-      try {
-        const response = await axios.get('http://127.0.0.1:8000/api/kelas')
-        const data = response.data.data || response.data
-        this.stats[2].val = data.length
-      } catch (error) {
-        console.error('Gagal mengambil data kelas:', error)
-      }
     },
 
     openLogoutModal() {
@@ -316,9 +218,6 @@ export default {
   mounted() {
     this.updateTime()
     setInterval(() => { this.updateTime() }, 1000)
-    this.getSiswaTerbaru()
-    this.getJumlahGuru()
-    this.getJumlahKelas()
   }
 }
 </script>
@@ -351,13 +250,6 @@ export default {
 .stat-card:hover { transform: translateY(-5px); }
 .stat-icon-box { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
 
-/* CHART AKTIF */
-.chart-wrapper { height: 250px; border-bottom: 2px solid #f1f5f9; padding-bottom: 5px; }
-.bar-container { width: 45px; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; }
-.bar-fill { width: 100%; background: linear-gradient(to top, #4f46e5, #818cf8); border-radius: 12px 12px 4px 4px; position: relative; transition: height 1s ease-in-out; animation: grow 1.2s ease-out; }
-.bar-glow { position: absolute; top: 0; left: 0; right: 0; height: 20px; background: rgba(255,255,255,0.2); filter: blur(5px); border-radius: 12px 12px 0 0; }
-@keyframes grow { from { height: 0; } }
-
 /* UTILS */
 .bg-indigo-light { background: #eef2ff; color: #4f46e5; }
 .bg-emerald-light { background: #ecfdf5; color: #10b981; }
@@ -365,13 +257,61 @@ export default {
 .bg-orange-light { background: #fff7ed; color: #f97316; }
 .text-indigo { color: #4f46e5; }
 .btn-indigo { background: #4f46e5; color: white; border: none; }
-.badge-active { background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 800; }
-.avatar-sm { width: 35px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 11px; }
 
-/* ACTIVITY FEED */
-.activity-dot { width: 12px; height: 12px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 0 3px #f1f5f9; margin-top: 5px; }
 .btn-logout { background: #f3f0ff; color: #6366f1; padding: 14px; border-radius: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; cursor: pointer; }
 .btn-logout:hover { background: #e0e7ff; color: #4f46e5; transform: scale(0.98); }
+
+/* ABOUT CARD STYLES */
+.feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.feature-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  font-size: 14px;
+  color: #475569;
+}
+
+.feature-list i {
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.tech-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tech-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background: #f8fafc;
+  border-radius: 10px;
+  border-left: 3px solid #4f46e5;
+}
+
+.tech-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.tech-item span:last-child {
+  font-size: 12px;
+}
 
 /* =============================================
    CUSTOM MODAL PREMIUM STYLES (THEME UNGU)
@@ -520,6 +460,5 @@ export default {
   .sidebar { position: fixed; left: -280px; top: 0; bottom: 0; }
   .sidebar.show-sidebar { left: 0; }
   .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1030; backdrop-filter: blur(2px); }
-  .bar-container { width: 30px; }
 }
 </style>

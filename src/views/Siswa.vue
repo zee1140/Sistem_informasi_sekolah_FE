@@ -67,18 +67,29 @@
                       </div>
                     </div>
                   </td>
-                  <td class="border-0-mobile">
-                    <div class="mobile-label d-md-none">NIS</div>
-                    <span class="class-tag">{{ siswa.nis || '-' }}</span>
-                  </td>
-                  <td class="border-0-mobile">
-                    <div class="mobile-label d-md-none">Kelas</div>
-                    <span class="class-tag">{{ siswa.kode_kelas }}</span>
-                  </td>
-                  <td class="text-md-center border-0-mobile">
-                    <div class="mobile-label d-md-none">Status</div>
-                    <span class="status-pill active"><span class="dot"></span> Aktif</span>
-                  </td>
+            <td class="border-0-mobile text-center">
+  <div class="info-section center-section">
+    <span class="info-title">NIS</span>
+    <span class="class-tag">{{ siswa.nis || '-' }}</span>
+  </div>
+</td>
+           <td class="border-0-mobile text-center">
+  <div class="info-section center-section">
+    <span class="info-title">KELAS</span>
+    <span class="class-tag">{{ siswa.kode_kelas }}</span>
+  </div>
+</td>
+                <td class="border-0-mobile text-center">
+  <div class="mobile-label d-md-none">Status</div>
+
+  <div class="info-section center-section">
+    <span class="info-title d-none d-md-block">STATUS</span>
+
+    <span class="status-pill">
+      <span class="dot"></span> Aktif
+    </span>
+  </div>
+</td>
                   <td class="text-md-end pe-md-4 border-0-mobile">
                     <div class="d-flex justify-content-md-end gap-2">
                       <button type="button" class="btn-tool btn-v ripple" @click.prevent.stop="viewSiswa(siswa)"><i class="bi bi-eye"></i></button>
@@ -535,5 +546,96 @@ export default {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+}
+
+.info-section{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.info-title{
+  font-size:11px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:#64748b;
+  margin-bottom:2px;
+}
+
+.class-tag{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:fit-content;
+  background:#eef2ff;
+  color:#4f46e5;
+  padding:7px 14px;
+  border-radius:12px;
+  font-size:11px;
+  font-weight:700;
+  border:1px solid #e0e7ff;
+}
+
+.info-section{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  text-align:center;
+}
+
+.center-section{
+  width:100%;
+}
+
+.info-title{
+  display:block;
+  font-size:11px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:#64748b;
+  min-height:16px;
+}
+
+.class-tag,
+.status-pill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:90px;
+}
+
+.info-section{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  text-align:center;
+}
+
+.center-section{
+  width:100%;
+}
+
+.info-title{
+  display:block;
+  font-size:11px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:#64748b;
+  min-height:16px;
+}
+
+.class-tag,
+.status-pill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:90px;
 }
 </style>

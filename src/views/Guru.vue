@@ -74,14 +74,24 @@
                       </div>
                     </div>
                   </td>
-                  <td class="border-0-mobile">
-                    <div class="mobile-label d-md-none">Mata Pelajaran</div>
-                    <span class="class-tag">{{ guru.mapel }}</span>
-                  </td>
-                  <td class="text-md-center border-0-mobile">
-                    <div class="mobile-label d-md-none">Status</div>
-                    <span class="status-pill active"><span class="dot"></span> Aktif Mengajar</span>
-                  </td>
+                 <td class="border-0-mobile text-center">
+  <div class="info-section center-section">
+    <span class="info-title">MAPEL</span>
+    <span class="class-tag">
+      {{ guru.mapel || '-' }}
+    </span>
+  </div>
+</td>
+
+<td class="border-0-mobile text-center">
+  <div class="info-section center-section">
+    <span class="info-title">STATUS</span>
+    <span class="status-pill">
+      <span class="dot"></span>
+      Aktif Mengajar
+    </span>
+  </div>
+</td>
                   <td class="text-md-end pe-md-4 border-0-mobile">
                     <div class="d-flex justify-content-md-end gap-2 mt-2 mt-md-0">
                       <button type="button" class="btn-tool btn-v ripple" @click.prevent.stop="viewGuru(guru)" title="Lihat"><i class="bi bi-eye"></i></button>
@@ -200,6 +210,7 @@
 </template>
 
 <script>
+
 import api from '../service/axios.js'
 
 export default {
@@ -244,26 +255,28 @@ export default {
         this.pageMessage = this.getErrorMessage(error, 'Data guru gagal dimuat.')
       }
     },
-    normalizeGuru(guru) {
-      return {
-        id: guru?.id || guru?.id_guru || guru?.kode_guru || guru?.nip || '',
-        nama: guru?.nama || guru?.nama_guru || '-',
-        nip: guru?.nip || guru?.nomor_induk || '',
-        mapel: guru?.mapel || guru?.mata_pelajaran || guru?.pelajaran || '-'
-      }
-    },
+   normalizeGuru(guru) {
+    console.log(guru)
+  return {
+    id: guru.id_guru,
+    nama: guru.nama_guru,
+    nip: guru.nip,
+    mapel: guru.mata_pelajaran
+  }
+},
     getInitials(name) {
       if(!name) return '??';
       return name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
     },
     bukaModal(guru = null) {
+      console.log("data guru:", guru)
       this.isView = false;
       this.errors = { nama: false, mapel: false, nip: false };
       if (guru) { 
         const normalized = this.normalizeGuru(guru)
         this.isEdit = true; 
-        this.editId = normalized.id; 
-        this.formGuru = { ...normalized }; 
+        this.editId = guru.id; 
+        this.formGuru = { ...guru }; 
       } else { 
         this.isEdit = false; 
         this.formGuru = { id: '', nama: '', nip: '', mapel: '' }; 
@@ -285,6 +298,7 @@ export default {
       this.formGuru.nip = cleaned
     },
     async simpanGuru() {
+      
       this.errors.nama = !this.formGuru.nama.trim();
       this.errors.mapel = !this.formGuru.mapel || !String(this.formGuru.mapel).trim();
       this.errors.nip = this.formGuru.nip ? !/^[0-9]+$/.test(this.formGuru.nip) : false;
@@ -292,15 +306,13 @@ export default {
 
       try {
         this.isSaving = true
-        const payload = {
-          id: this.formGuru.id || (window.crypto?.randomUUID ? window.crypto.randomUUID() : `${Date.now()}`),
-          nama: this.formGuru.nama.trim(),
-          nama_guru: this.formGuru.nama.trim(),
-          nip: this.formGuru.nip || null,
-          mapel: this.formGuru.mapel.trim(),
-          mata_pelajaran: this.formGuru.mapel.trim()
-        }
-
+       const payload = {
+  nip: this.formGuru.nip,
+  nama_guru: this.formGuru.nama,
+  mata_pelajaran: this.formGuru.mapel
+}
+console.log("Edit ID:", this.editId)
+console.log("Payload:", payload)
         if (this.isEdit) {
           await api.put(`/guru/${encodeURIComponent(this.editId)}`, payload)
         } else {
@@ -468,4 +480,35 @@ export default {
 @keyframes pop { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
 .list-enter-active, .list-leave-active { transition: all 0.4s ease; }
 .list-enter-from, .list-leave-to { opacity: 0; transform: translateX(-30px); }
+
+.info-section{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  text-align:center;
+}
+
+.center-section{
+  width:100%;
+}
+
+.info-title{
+  display:block;
+  font-size:11px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:#64748b;
+  min-height:16px;
+}
+
+.class-tag,
+.status-pill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:110px;
+}
 </style>

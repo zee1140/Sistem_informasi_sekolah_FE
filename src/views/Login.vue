@@ -31,15 +31,7 @@
         />
       </div>
 
-      <div class="d-flex justify-content-between mb-4 small">
-        <label class="remember">
-          <input type="checkbox" class="form-check-input me-1" />
-          Remember me
-        </label>
-        <router-link to="/forgot" class="forgot">
-          Forgot password?
-        </router-link>
-      </div>
+
 
       <!-- BUTTON -->
       <button
@@ -55,12 +47,7 @@
         {{ error }}
       </p>
 
-      <p class="register-text mt-4">
-        Don't have an account?
-        <router-link to="/register" class="register-link">
-          Register
-        </router-link>
-      </p>
+
     </div>
   </div>
 </template>
@@ -165,6 +152,21 @@ export default {
 .input {
   border-radius: 12px;
   padding: 12px;
+  border: 2px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.input:hover {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  transform: translateY(-2px);
+}
+
+.input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  transform: translateY(-2px);
+  outline: none;
 }
 
 .login-btn {
@@ -172,11 +174,43 @@ export default {
   color: white;
   border-radius: 12px;
   padding: 12px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.login-btn:hover:not(:disabled) {
+  background-color: #4f46e5;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
+}
+
+.login-btn:active:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 10px -5px rgba(99, 102, 241, 0.4);
+}
+
+.login-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .error-text {
   color: red;
   font-size: 13px;
   margin-top: 10px;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>
