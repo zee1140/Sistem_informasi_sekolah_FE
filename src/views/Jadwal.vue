@@ -105,7 +105,27 @@
               <i class="bi bi-x-circle-fill"></i>
             </button>
           </transition>
+      <Teleport to="body">
+  <div v-if="showDeleteModal" class="delete-modal-overlay" @click.self="closeDeleteConfirm">
+    <transition name="box-bounce">
+      <div v-if="showDeleteModal" class="delete-modal-box">
+        <div class="delete-icon-circle">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+        </div>
 
+        <h3 class="delete-modal-title">Hapus Data?</h3>
+        <p class="delete-modal-text">
+          Apakah anda yakin ingin menghapus data mata pelajaran ini? Tindakan ini tidak dapat dibatalkan.
+        </p>
+
+        <div class="delete-modal-actions">
+          <button class="btn-delete-cancel" @click="closeDeleteConfirm">Batal</button>
+          <button class="btn-delete-confirm" @click="confirmDelete">Ya, Hapus</button>
+        </div>
+      </div>
+    </transition>
+  </div>
+</Teleport>
         </div>
       </div>
 
@@ -116,17 +136,25 @@
 
         <div class="table-responsive">
 
-          <table class="table table-hover align-middle mb-0">
+        <table class="table table-hover align-middle mb-0">
+  <colgroup>
+    <col style="width: 35%">
+    <col style="width: 15%">
+    <col style="width: 20%">
+    <col style="width: 18%">
+    <col style="width: 12%">
+  </colgroup>
 
-            <thead class="bg-light d-none d-md-table-header-group">
-              <tr class="text-uppercase small fw-800 text-muted ls-wide">
-                <th>Mata Pelajaran</th>
-                <th>Kelas</th>
-                <th>Waktu</th>
-                <th>Ruang</th>
-                <th class="text-end pe-4">Aksi</th>
-              </tr>
-            </thead>
+<thead class="custom-thead">
+  <tr class="header-title-row">
+    <th class="ps-md-4 text-start">Mata Pelajaran</th>
+    <th class="text-center">Kelas</th>
+    <th class="text-center">Waktu</th>
+    <th class="text-center">Lokasi</th>
+    <th class="text-end pe-md-4">Aksi</th>
+  </tr>
+</thead>
+
 
             <transition-group
               name="list"
@@ -161,43 +189,23 @@
 
                 </td>
 
-                <td class="border-0-mobile">
+               <td class="border-0-mobile text-center">
+  <div class="mobile-label d-md-none">Kelas</div>
+  <span class="badge-soft-indigo">{{ item.kelas }}</span>
+</td>
 
-                  <div class="mobile-label d-md-none">
-                    Kelas
-                  </div>
-
-                  <span class="badge-soft-indigo">
-                    {{ item.kelas }}
-                  </span>
-
-                </td>
-
-                <td class="border-0-mobile">
-
-                  <div class="mobile-label d-md-none">
-                    Waktu
-                  </div>
-
-                  <div class="fw-semibold text-secondary">
-                    <i class="bi bi-clock me-1 opacity-50"></i>
-                    {{ item.waktu }}
-                  </div>
-
-                </td>
-
-                <td class="border-0-mobile">
-
-                  <div class="mobile-label d-md-none">
-                    Ruang
-                  </div>
-
-                  <div class="fw-semibold text-secondary">
-                    <i class="bi bi-geo-alt me-1 opacity-50"></i>
-                    {{ item.ruang }}
-                  </div>
-
-                </td>
+                <td class="border-0-mobile text-center">
+  <div class="mobile-label d-md-none">Waktu</div>
+  <div class="fw-semibold text-secondary">
+    <i class="bi bi-clock me-1 opacity-50"></i>{{ item.waktu }}
+  </div>
+</td>
+               <td class="border-0-mobile text-center">
+  <div class="mobile-label d-md-none">Ruang</div>
+  <div class="fw-semibold text-secondary">
+    <i class="bi bi-geo-alt me-1 opacity-50"></i>{{ item.ruang }}
+  </div>
+</td>
 
                 <td class="text-md-end pe-md-4 border-0-mobile">
 
@@ -420,23 +428,38 @@ const saveMapel = async () => {
   }
 }
 
-const openConfirm = async (item) => {
-  const yakin = confirm(`Hapus mapel "${item.mapel}"?`)
-  if (!yakin) return
 
-  try {
-    await api.delete(`/mapel/${item.id}`)
-    getJadwal() // refresh tabel
-  } catch (e) {
-    console.error(e)
-    alert('Gagal menghapus data!')
-  }
-}
 
 const getInitials = (n) => {
   return n
     ? n.split(' ').map(x => x[0]).join('').toUpperCase().substring(0, 2)
     : '?'
+}
+
+const showDeleteModal = ref(false)
+const itemToDelete = ref(null)
+
+const openConfirm = (item) => {
+  itemToDelete.value = item
+  showDeleteModal.value = true
+}
+
+const closeDeleteConfirm = () => {
+  showDeleteModal.value = false
+  itemToDelete.value = null
+}
+
+const confirmDelete = async () => {
+  if (!itemToDelete.value) return
+  try {
+    await api.delete(`/mapel/${itemToDelete.value.id}`)
+    getJadwal()
+  } catch (e) {
+    console.error(e)
+    alert('Gagal menghapus data!')
+  } finally {
+    closeDeleteConfirm()
+  }
 }
 </script>
 <style scoped>
@@ -826,6 +849,89 @@ const getInitials = (n) => {
   z-index: 9999;
 }
 
+.delete-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.delete-modal-box {
+  width: 90%;
+  max-width: 380px;
+  background: white;
+  border-radius: 28px;
+  padding: 36px 28px;
+  text-align: center;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.2);
+}
+
+.delete-icon-circle {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #fff1f2;
+  color: #e11d48;
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px auto;
+}
+
+.delete-modal-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 12px;
+}
+
+.delete-modal-text {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+.delete-modal-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-delete-cancel,
+.btn-delete-confirm {
+  flex: 1;
+  height: 50px;
+  border: none;
+  border-radius: 16px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btn-delete-cancel {
+  background: #eef2ff;
+  color: #4338ca;
+}
+
+.btn-delete-cancel:hover {
+  background: #e0e7ff;
+}
+
+.btn-delete-confirm {
+  background: #fff1f2;
+  color: #e11d48;
+}
+
+.btn-delete-confirm:hover {
+  background: #ffe4e6;
+}
+
 .clean-modal-box {
   width: 92%;
   max-width: 480px;
@@ -998,6 +1104,16 @@ const getInitials = (n) => {
 .modal-bounce-enter-active {
   animation: modalBounceIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
+.box-bounce-enter-active {
+  animation: modalBounceIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.box-bounce-leave-active {
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.box-bounce-leave-to {
+  opacity: 0;
+  transform: scale(0.92);
+} 
 .modal-bounce-leave-active {
   transition: opacity 0.2s ease;
 }
@@ -1061,5 +1177,45 @@ const getInitials = (n) => {
     text-transform: uppercase;
     margin-bottom: 4px;
   }
+}
+
+.custom-thead {
+  display: table-header-group;
+}
+
+.header-title-row th {
+  padding-top: 16px;
+  padding-bottom: 16px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: #ffffff;
+  border-bottom: 1px solid #f1f5f9;
+  text-align: left;
+  vertical-align: middle;
+}
+
+@media (max-width: 768px) {
+  .custom-thead {
+    display: none;
+  }
+}
+@media (min-width: 769px) {
+  .table-card table {
+    table-layout: fixed;
+  }
+}
+
+.delete-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
 }
 </style>

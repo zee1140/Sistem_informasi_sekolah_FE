@@ -140,9 +140,9 @@
         <button class="btn-action btn-edit" title="Edit" @click="openModal(siswa)">
           <i class="bi bi-pencil"></i>
         </button>
-        <button class="btn-action btn-delete" title="Hapus" @click="hapusData(siswa.id)">
-          <i class="bi bi-trash"></i>
-        </button>
+    <button class="btn-action btn-delete" title="Hapus" @click="openConfirm(siswa)">
+  <i class="bi bi-trash"></i>
+</button>
       </div>
     </td>
 
@@ -299,7 +299,31 @@
         </div>
 
       </div>
+
+      <Teleport to="body">
+        <div v-if="showDeleteModal" class="delete-modal-overlay" @click.self="closeDeleteConfirm">
+          <transition name="box-bounce">
+            <div v-if="showDeleteModal" class="delete-modal-box">
+              <div class="delete-icon-circle">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+              </div>
+
+              <h3 class="delete-modal-title">Hapus Data?</h3>
+              <p class="delete-modal-text">
+                Apakah anda yakin ingin menghapus data absensi ini? Tindakan ini tidak dapat dibatalkan.
+              </p>
+
+              <div class="delete-modal-actions">
+                <button class="btn-delete-cancel" @click="closeDeleteConfirm">Batal</button>
+                <button class="btn-delete-confirm" @click="confirmDelete">Ya, Hapus</button>
+              </div>
+            </div>
+          </transition>
+        </div>
+      </Teleport>
+
   </template>
+
 
   <script setup>
  import { ref, computed, onMounted } from 'vue'
@@ -450,11 +474,37 @@ const getSiswa = async () => {
     console.error('GET SISWA ERROR:', error.response || error)
   }
 }
+const showDeleteModal = ref(false)
+const itemToDelete = ref(null)
+
+const openConfirm = (item) => {
+  itemToDelete.value = item
+  showDeleteModal.value = true
+}
+
+const closeDeleteConfirm = () => {
+  showDeleteModal.value = false
+  itemToDelete.value = null
+}
+
+const confirmDelete = async () => {
+  if (!itemToDelete.value) return
+  try {
+    await api.delete(`/absensi/${itemToDelete.value.id}`)
+    getAbsensi()
+  } catch (e) {
+    console.error('ERROR HAPUS:', e.response?.data || e.message)
+    alert('Gagal menghapus data!')
+  } finally {
+    closeDeleteConfirm()
+  }
+}
 
 onMounted(() => {
   getSiswa()
   getAbsensi()
 })
+
   </script>
   <style scoped>
   @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -940,6 +990,104 @@ onMounted(() => {
     justify-content:center;
     z-index:9999;
   }
+  .delete-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+}
+
+.delete-modal-box {
+  width: 90%;
+  max-width: 380px;
+  background: white;
+  border-radius: 28px;
+  padding: 36px 28px;
+  text-align: center;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.2);
+}
+
+.delete-icon-circle {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #fff1f2;
+  color: #e11d48;
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px auto;
+}
+
+.delete-modal-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 12px;
+}
+
+.delete-modal-text {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+.delete-modal-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-delete-cancel,
+.btn-delete-confirm {
+  flex: 1;
+  height: 50px;
+  border: none;
+  border-radius: 16px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btn-delete-cancel {
+  background: #eef2ff;
+  color: #4338ca;
+}
+
+.btn-delete-cancel:hover {
+  background: #e0e7ff;
+}
+
+.btn-delete-confirm {
+  background: #fff1f2;
+  color: #e11d48;
+}
+
+.btn-delete-confirm:hover {
+  background: #ffe4e6;
+}
+
+.box-bounce-enter-active {
+  animation: modalBounceIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.box-bounce-leave-active {
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.box-bounce-leave-to {
+  opacity: 0;
+  transform: scale(0.92);
+}
+
+@keyframes modalBounceIn {
+  0% { transform: scale(0.92); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
 
   .modal-box{
     width:100%;

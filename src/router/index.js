@@ -88,7 +88,13 @@ const routes = [
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     redirect: '/dashboard' 
-  }
+  },
+{
+  path: '/rekap-nilai',
+  name: 'RekapNilai',
+  component: () => import('../views/RekapNilai.vue')
+}
+  
 ]
 
 // ROUTER

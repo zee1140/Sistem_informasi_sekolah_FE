@@ -59,6 +59,11 @@
                 <i class="bi bi-check-circle-fill"></i><span>Kehadiran Siswa</span>
               </router-link>
             </li>
+<li>
+  <router-link to="/rekap-nilai" class="menu-link">
+    <i class="bi bi-journal-text"></i><span>Rekap Nilai</span>
+  </router-link>
+</li>
           </ul>
           
           <div class="logout-section mt-auto pt-4 border-top">
