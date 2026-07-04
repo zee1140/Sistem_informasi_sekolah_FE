@@ -2,116 +2,162 @@
   <div class="app-container animate-fade-in">
     <header class="header-glass py-3 px-md-5">
       <div class="d-flex justify-content-between align-items-center">
+        
         <button class="btn-back-modern ripple" @click="$router.push('/dashboard')">
           <div class="icon-circle">
-            <i class="bi bi-arrow-left-short"></i>
+            <i class="bi bi-arrow-left"></i>
           </div>
           <span>DASHBOARD</span>
         </button>
-        
+
         <div class="header-center text-center">
-          <div class="brand-logo-purple shadow-glow">AJ</div>
+          <div class="brand-logo-purple shadow-premium">AJ</div>
           <h2 class="admin-title-purple mt-2">SYSTEM ARCHITECT</h2>
         </div>
 
-        <button class="btn-deploy-purple shadow-glow" @click="syncData">
-          <i class="bi bi-lightning-charge-fill me-2"></i>DEPLOY
+        <button class="btn-deploy-purple ripple shadow-sm" @click="syncData">
+          <i class="bi bi-lightning-charge-fill me-2"></i>
+          DEPLOY
         </button>
+
       </div>
     </header>
 
     <main class="content-scroll-area p-3 p-md-5">
       <div class="container-fluid max-width-xl">
+
         <div class="row g-4">
-          
+
           <aside class="col-xl-4 col-lg-5">
-            <div class="glass-card-purple p-5 text-center position-relative h-100 overflow-hidden">
+
+            <div class="glass-card-purple p-5 text-center h-100 profile-main-card">
+
               <div class="profile-container-circle mb-4">
                 <div class="pulse-ring-purple"></div>
-                <img :src="adminData.profileImage" class="profile-img-circle shadow-premium">
-                <label class="edit-btn-purple">
+                <div class="pulse-ring-purple ring-2"></div>
+                
+                <img
+                  :src="adminData.profileImage"
+                  class="profile-img-circle"
+                  alt="Profile"
+                >
+
+                <label class="edit-btn-purple ripple">
                   <i class="bi bi-camera-fill"></i>
-                  <input type="file" @change="onFileChange" hidden>
+                  <input type="file" hidden @change="onFileChange">
                 </label>
               </div>
 
-              <input v-model="adminData.name" class="input-name-purple mb-1" placeholder="Admin Name">
-              <div class="role-wrapper mb-4">
-                <span class="role-dot"></span>
-                <input v-model="adminData.role" class="input-role-purple" placeholder="Role">
+              <div class="input-name-wrapper mb-2">
+                <input
+                  v-model="adminData.name"
+                  class="input-name-purple"
+                  placeholder="Admin Name"
+                >
+                <div class="focus-line"></div>
               </div>
 
-              <div class="field-group-purple mt-5 text-start">
-                <label class="label-purple">SYSTEM MANIFESTO</label>
-                <textarea v-model="adminData.bio" class="textarea-purple-glass" placeholder="Write vision..."></textarea>
+              <div class="role-wrapper mb-4">
+                <div class="role-dot"></div>
+                <input
+                  v-model="adminData.role"
+                  class="input-role-purple"
+                  placeholder="Role/Position"
+                >
               </div>
-              
-              <div class="field-group-purple mt-3 text-start">
-                <label class="label-purple">SECURE ENDPOINT</label>
+
+              <hr class="card-divider">
+
+              <div class="field-group-purple text-start">
+                <label class="label-purple">
+                  <i class="bi bi-terminal me-1"></i> SYSTEM MANIFESTO
+                </label>
+                <textarea
+                  v-model="adminData.bio"
+                  class="textarea-purple-glass"
+                  placeholder="Write system manifesto..."
+                ></textarea>
+              </div>
+
+              <div class="field-group-purple mt-4 text-start">
+                <label class="label-purple">
+                  <i class="bi bi-shield-lock me-1"></i> SECURE ENDPOINT
+                </label>
                 <div class="input-wrapper-purple">
-                  <i class="bi bi-shield-check-fill text-purple-bold"></i>
-                  <input v-model="adminData.email" type="email" class="input-purple-glass">
+                  <i class="bi bi-envelope text-purple-bold"></i>
+                  <input
+                    v-model="adminData.email"
+                    class="input-purple-glass"
+                    placeholder="secure@endpoint.id"
+                  >
                 </div>
               </div>
 
-              <div class="d-flex justify-content-center gap-2 mt-5">
-                <div class="status-pill-purple"><span class="dot-live"></span> SYSTEM ACTIVE</div>
+              <div class="d-flex justify-content-center mt-5">
+                <div class="status-pill-purple">
+                  <div class="dot-live"></div>
+                  <span>SYSTEM ACTIVE</span>
+                </div>
               </div>
+
             </div>
+
           </aside>
 
           <section class="col-xl-8 col-lg-7">
             <div class="row g-4">
-              
+
               <div class="col-12">
-                <div class="glass-card-purple p-4 p-md-5 overflow-hidden">
-                  <div class="d-flex justify-content-between align-items-center mb-4 px-2">
+                <div class="glass-card-purple p-4 option-card-glow">
+                  
+                  <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
-                      <h4 class="fw-900 text-dark mb-0">Attendance Flow</h4>
-                      <p class="text-muted small fw-600 m-0">Live Dynamic Trends</p>
+                      <h4 class="metrics-heading">Attendance Flow</h4>
+                      <small class="metrics-sub">Live Dynamic Trends</small>
                     </div>
-                    <div class="avg-indicator-purple">98.2%</div>
+                    <div class="avg-indicator-purple">
+                      <i class="bi bi-cpu me-1"></i> 98.2%
+                    </div>
                   </div>
 
                   <div class="mountain-container">
-                    <svg viewBox="0 0 1000 300" preserveAspectRatio="none" class="mountain-svg">
+                    <svg viewBox="0 0 1000 240" class="mountain-svg">
                       <defs>
                         <linearGradient id="mountainGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                          <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.6" />
-                          <stop offset="100%" style="stop-color:#6366f1;stop-opacity:0" />
+                          <stop offset="0%" style="stop-color:#4f46e5;stop-opacity:0.35" />
+                          <stop offset="100%" style="stop-color:#818cf8;stop-opacity:0.0" />
                         </linearGradient>
+                        <filter id="glow">
+                          <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
+                          <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                          </feMerge>
+                        </filter>
                       </defs>
-                      <path d="M0,300 L0,150 Q150,50 300,180 T600,100 T1000,150 L1000,300 Z" 
-                            fill="url(#mountainGrad)" class="wave-path opacity-50" />
-                      <path d="M0,300 L0,200 Q200,100 400,220 T800,120 T1000,200 L1000,300 Z" 
-                            fill="url(#mountainGrad)" class="wave-path" />
+                      
+                      <path class="wave-bg" fill="url(#mountainGrad)" />
+                      
+                      <path class="wave-line" fill="none" stroke="#4f46e5" stroke-width="3" filter="url(#glow)" />
                     </svg>
-                    <div class="d-flex justify-content-between mt-3 px-4">
-                      <span class="bar-label-purple" v-for="day in ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']" :key="day">{{ day }}</span>
-                    </div>
                   </div>
+
                 </div>
               </div>
 
               <div class="col-md-6">
                 <div class="glass-card-purple p-4 h-100">
-                  <h6 class="fw-900 mb-4 px-2 text-dark opacity-75">KERNEL STATUS</h6>
-                  <div class="monitor-box-purple mb-4">
-                    <div class="d-flex justify-content-between mb-2">
-                      <span class="small fw-800 text-secondary">CPU LOAD</span>
-                      <span class="small fw-900 text-purple-bold">24%</span>
-                    </div>
-                    <div class="progress-track-purple">
-                      <div class="progress-bar-purple animate-pulse-width" style="width: 24%"></div>
+                  <h6 class="metrics-sub-title"><i class="bi bi-cpu text-purple-bold me-2"></i>CPU LOAD</h6>
+                  <div class="progress-track-purple mb-4">
+                    <div class="progress-bar-purple" style="width:24%">
+                      <div class="progress-shine"></div>
                     </div>
                   </div>
-                  <div class="monitor-box-purple">
-                    <div class="d-flex justify-content-between mb-2">
-                      <span class="small fw-800 text-secondary">RAM USAGE</span>
-                      <span class="small fw-900 text-purple-bold">58%</span>
-                    </div>
-                    <div class="progress-track-purple">
-                      <div class="progress-bar-purple" style="width: 58%"></div>
+
+                  <h6 class="metrics-sub-title"><i class="bi bi-memory text-purple-bold me-2"></i>RAM USAGE</h6>
+                  <div class="progress-track-purple">
+                    <div class="progress-bar-purple" style="width:58%">
+                      <div class="progress-shine"></div>
                     </div>
                   </div>
                 </div>
@@ -119,21 +165,28 @@
 
               <div class="col-md-6">
                 <div class="glass-card-purple p-4 h-100 d-flex flex-column justify-content-between">
-                  <h6 class="fw-900 mb-4 px-2 text-dark opacity-75">QUICK SEARCH</h6>
-                  <div class="command-input-purple mb-3">
-                    <i class="bi bi-terminal-fill text-purple-bold"></i>
-                    <input type="text" placeholder="Search student records...">
+                  <div>
+                    <h6 class="metrics-sub-title"><i class="bi bi-lightning text-purple-bold me-2"></i>QUICK COMMAND</h6>
+                    <div class="command-input-purple">
+                      <i class="bi bi-search text-purple-bold"></i>
+                      <input placeholder="Execute command or search...">
+                    </div>
                   </div>
-                  <div class="info-box-purple">
-                    <div class="small fw-900 text-purple-bold"><i class="bi bi-info-circle-fill me-2"></i>AI INSIGHT</div>
-                    <div class="xs-text text-secondary fw-600">Attendance is 5% higher than last week.</div>
+
+                  <div class="info-box-purple mt-3">
+                    <div class="d-flex align-items-center gap-2">
+                      <i class="bi bi-graph-up-arrow text-success-bold"></i>
+                      <span>Attendance naik <strong>5%</strong> dibanding minggu lalu</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
             </div>
           </section>
+
         </div>
+
       </div>
     </main>
   </div>
@@ -147,18 +200,20 @@ export default {
         name: 'ADMIN JPRT',
         role: 'SYSTEM ARCHITECT',
         email: 'admin@purple.id',
-        bio: 'Membangun ekosistem digital sekolah dengan standar industri dan keamanan modern.',
-        profileImage: 'https://i.pravatar.cc/300?u=purple_admin'
+        bio: 'Membangun ekosistem digital sekolah modern berkemampuan tinggi.',
+        profileImage: 'https://i.pravatar.cc/300'
       }
     }
   },
   methods: {
     onFileChange(e) {
-      const file = e.target.files[0];
-      if (file) this.adminData.profileImage = URL.createObjectURL(file);
+      const file = e.target.files[0]
+      if (file) {
+        this.adminData.profileImage = URL.createObjectURL(file)
+      }
     },
-    syncData() { 
-      alert("System Deployed: Config pushed to core."); 
+    syncData() {
+      alert("System deployment successful.")
     }
   }
 }
@@ -166,191 +221,502 @@ export default {
 
 <style scoped>
 @import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css');
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
-/* --- LAYOUT CORE --- */
-.app-container { height: 100vh; background: #f4f6fc; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; position: fixed; inset: 0; }
-.content-scroll-area { flex: 1; overflow-y: auto; height: calc(100vh - 95px); }
-.max-width-xl { max-width: 1250px; margin: 0 auto; }
-
-/* --- GLASS DESIGN --- */
-.glass-card-purple { 
-  background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); 
-  border-radius: 35px; border: 1px solid rgba(255, 255, 255, 1);
-  box-shadow: 0 15px 35px rgba(79, 70, 229, 0.08);
+*{
+  box-sizing:border-box;
+  font-family:'Plus Jakarta Sans',sans-serif;
 }
 
-/* --- BUTTONS --- */
-.btn-back-modern {
-  display: flex; align-items: center; gap: 12px; background: white; border: 1px solid #e2e8f0;
-  padding: 8px 20px 8px 8px; border-radius: 100px; cursor: pointer; transition: 0.3s ease;
+.app-container{
+  min-height:100vh;
+  background: linear-gradient(135deg, #f4f6fa 0%, #eaedf6 100%);
 }
-.btn-back-modern .icon-circle {
-  width: 38px; height: 38px; background: #4f46e5; color: white; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
-}
-.btn-back-modern span { font-weight: 800; font-size: 0.75rem; color: #4f46e5; letter-spacing: 1px; }
-.btn-back-modern:hover { transform: translateX(-5px); box-shadow: 0 10px 25px rgba(79, 70, 229, 0.2); border-color: #4f46e5; }
-.btn-deploy-purple { background: #1e293b; color: #4ade80; border: none; padding: 12px 25px; border-radius: 15px; font-weight: 900; cursor: pointer; }
 
-/* Avatar Lingkaran */
-.avatar-container {
+.content-scroll-area{
+  overflow-y:auto;
+  height:calc(100vh - 90px);
+}
+
+.max-width-xl{
+  max-width:1300px;
+  margin:auto;
+}
+
+/* GLOBAL RIPPLE & FX */
+.ripple {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.ripple:active {
+  transform: scale(0.96);
+  opacity: 0.85;
+}
+
+/* HEADER */
+.header-glass{
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(229, 231, 235, 0.7);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.brand-logo-purple{
+  width:48px;
+  height:48px;
+  border-radius:14px;
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-weight:800;
+  font-size:18px;
+  margin:auto;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+}
+
+.admin-title-purple{
+  font-size:16px;
+  font-weight:800;
+  color:#0f172a;
+  letter-spacing: 1px;
+}
+
+.btn-back-modern{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 18px;
+  border:1px solid rgba(229, 231, 235, 0.8);
+  background: rgba(255, 255, 255, 0.6);
+  border-radius:14px;
+  font-weight:700;
+  font-size: 0.85rem;
+  color: #4f46e5;
+  cursor:pointer;
+}
+
+.btn-back-modern:hover {
+  background: #4f46e5;
+  color: white;
+}
+
+.btn-back-modern:hover .icon-circle {
+  background: white;
+  color: #4f46e5;
+}
+
+.icon-circle{
+  width:26px;
+  height:26px;
+  background:#4f46e5;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  transition: all 0.2s ease;
+}
+
+.btn-deploy-purple{
+  border:none;
+  background: linear-gradient(135deg, #4f46e5, #4338ca);
+  color:white;
+  padding:12px 22px;
+  border-radius:14px;
+  font-weight:700;
+  font-size: 0.9rem;
+  box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2);
+}
+
+.btn-deploy-purple:hover {
+  background: linear-gradient(135deg, #4338ca, #3730a3);
+  box-shadow: 0 12px 24px rgba(79, 70, 229, 0.3);
+  transform: translateY(-1px);
+}
+
+/* PREMIUM GLASS CARD */
+.glass-card-purple{
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  border-radius:28px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.03), 0 5px 15px rgba(79, 70, 229, 0.02);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+}
+
+.glass-card-purple:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05), 0 8px 20px rgba(79, 70, 229, 0.04);
+}
+
+.profile-main-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(249, 250, 251, 0.75) 100%);
+}
+
+.card-divider {
+  border: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(229,231,235,0) 0%, rgba(229,231,235,1) 50%, rgba(229,231,235,0) 100%);
+  margin: 25px 0;
+}
+
+/* INTERACTIVE PROFILE IMAGE */
+.profile-container-circle{
+  position:relative;
+  width:150px;
+  height:150px;
+  margin:auto;
+}
+
+.profile-img-circle{
+  width:150px;
+  height:150px;
+  border-radius:50%;
+  object-fit:cover;
+  border:6px solid white;
+  display:block;
+  box-shadow:0 12px 28px rgba(0,0,0,0.08);
   position: relative;
-  width: 150px;
-  height: 150px;
-  margin: 0 auto;
-}
-
-.profile-image-wrapper {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 5px solid white;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
   z-index: 2;
 }
 
-.profile-img-circle {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s;
-}
-
-.avatar-container:hover .profile-img-circle {
-  transform: scale(1.1);
-}
-
-.avatar-glow {
-  position: absolute;
-  top: 10%; left: 10%;
-  width: 80%; height: 80%;
-  background: #6366f1;
-  filter: blur(25px);
-  opacity: 0.35;
+.pulse-ring-purple{
+  position:absolute;
+  width:170px;
+  height:170px;
+  top:-10px;
+  left:-10px;
+  border-radius:50%;
+  background:rgba(79,70,229,.1);
+  animation:pulse 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   z-index: 1;
 }
 
-.edit-badge {
-  position: absolute;
-  bottom: 5px;
-  right: 5px;
-  background: #6366f1;
-  color: white;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 4px solid white;
-  box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+.pulse-ring-purple.ring-2 {
+  animation-delay: 1.25s;
+}
+
+@keyframes pulse{
+  0%{ transform:scale(.92); opacity:1; }
+  100%{ transform:scale(1.15); opacity:0; }
+}
+
+.edit-btn-purple{
+  position:absolute;
+  bottom:4px;
+  right:4px;
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  cursor:pointer;
+  border:4px solid white;
+  box-shadow: 0 4px 10px rgba(79,70,229,0.3);
   z-index: 3;
-  cursor: pointer;
 }
 
-/* Typography & Badges */
-.admin-name {
-  font-weight: 800;
-  font-size: 1.7rem;
-  margin-top: 20px;
-}
-
-.badge-role {
-  background: rgba(99, 102, 241, 0.1);
-  color: #6366f1;
-  padding: 6px 16px;
-  border-radius: 100px;
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-
-/* Stats */
-.mini-stats-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-}
-
-.stat-card {
-  background: white;
-  padding: 15px;
-  border-radius: 20px;
-  border: 1px solid #f1f5f9;
-}
-
-.stat-val {
-  font-weight: 800;
-  font-size: 1.2rem;
-  display: block;
-}
-
-.stat-lab {
-  font-size: 0.7rem;
-  color: #94a3b8;
-  text-transform: uppercase;
-  font-weight: 700;
-}
-
-/* Form Styles */
-.custom-label {
-  font-weight: 700;
-  font-size: 0.85rem;
-  margin-bottom: 8px;
-  color: #64748b;
-  display: block;
-}
-
-.custom-input {
+/* GLASS INPUT MODERNIZATION */
+.input-name-wrapper {
+  position: relative;
+  display: inline-block;
   width: 100%;
+}
+
+.input-name-purple{
+  width:100%;
+  border:none;
+  font-size:24px;
+  font-weight:800;
+  text-align:center;
+  background:none;
+  outline:none;
+  color: #0f172a;
+  padding: 4px;
+}
+
+.input-name-purple:focus + .focus-line {
+  width: 60%;
+}
+
+.focus-line {
+  height: 2px;
+  width: 0%;
+  background: #4f46e5;
+  margin: auto;
+  transition: width 0.3s ease;
+}
+
+.role-wrapper{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+}
+
+.role-dot{
+  width:8px;
+  height:8px;
+  background:#10b981;
+  border-radius:50%;
+  box-shadow: 0 0 8px #10b981;
+}
+
+.input-role-purple{
+  border:none;
+  background:none;
+  text-align:center;
+  font-weight:700;
+  font-size: 0.9rem;
+  color:#4f46e5;
+  outline:none;
+  letter-spacing: 0.5px;
+}
+
+.label-purple{
+  font-size:.72rem;
+  font-weight:800;
+  color:#64748b;
+  margin-bottom:8px;
+  display:block;
+  letter-spacing: 0.5px;
+}
+
+.textarea-purple-glass{
+  width:100%;
+  height:95px;
   border: 2px solid #f1f5f9;
-  background: #f8fafc;
-  border-radius: 14px;
-  padding: 12px 18px;
-  font-weight: 500;
-  transition: 0.3s;
+  border-radius:16px;
+  padding:14px;
+  resize:none;
+  outline:none;
+  background: rgba(248, 250, 252, 0.7);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #334155;
+  transition: all 0.2s ease;
 }
 
-.custom-input:focus {
-  border-color: #6366f1;
-  background: white;
-  outline: none;
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+.textarea-purple-glass:focus,
+.input-wrapper-purple:focus-within,
+.command-input-purple:focus-within {
+  border-color:#4f46e5;
+  background:white;
+  box-shadow:0 0 0 4px rgba(79,70,229,.08);
 }
 
-/* Buttons */
-.btn-save-action {
-  flex: 2;
-  background: #1e293b;
-  color: white;
-  border: none;
-  padding: 16px;
-  border-radius: 16px;
+.input-wrapper-purple{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  border: 2px solid #f1f5f9;
+  border-radius:16px;
+  padding:14px 16px;
+  background: rgba(248, 250, 252, 0.7);
+  transition: all 0.2s ease;
+}
+
+.input-purple-glass{
+  width:100%;
+  border:none;
+  outline:none;
+  background:none;
+  font-size: 0.9rem;
   font-weight: 700;
-  transition: 0.3s;
+  color: #334155;
 }
 
-.btn-save-action:hover {
-  background: #334155;
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+/* LIVE STATUS PILL */
+.status-pill-purple{
+  padding:10px 20px;
+  border-radius:50px;
+  background:#dcfce7;
+  color: #15803d;
+  font-size:12px;
+  font-weight:800;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(21, 128, 61, 0.1);
 }
 
-.btn-cancel {
-  flex: 1;
-  background: #f1f5f9;
+.dot-live{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#10b981;
+  box-shadow: 0 0 10px #10b981;
+  animation: live-blink 1.5s infinite ease-in-out;
+}
+
+@keyframes live-blink {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* METRICS & LIVE MORPHING GRAPH */
+.metrics-heading {
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+.metrics-sub {
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.metrics-sub-title {
+  font-size: 0.75rem;
+  font-weight: 800;
   color: #64748b;
-  border: none;
-  padding: 16px;
-  border-radius: 16px;
-  font-weight: 700;
-  transition: 0.3s;
+  margin-bottom: 14px;
 }
 
-.btn-cancel:hover {
-  background: #e2e8f0;
-  color: #1e293b;
+.mountain-container {
+  height: 200px;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.mountain-svg {
+  width: 100%;
+  overflow: visible;
+}
+
+.wave-bg {
+  animation: waveMotionBg 8s ease-in-out infinite alternate;
+}
+
+.wave-line {
+  animation: waveMotionLine 8s ease-in-out infinite alternate;
+}
+
+/* Manipulasi Vektor Organik */
+@keyframes waveMotionBg {
+  0% {
+    d: path("M0,240 L0,120 Q150,40 300,150 T600,60 T1000,100 L1000,240 L0,240 Z");
+  }
+  50% {
+    d: path("M0,240 L0,90 Q180,140 350,70 T700,130 T1000,120 L1000,240 L0,240 Z");
+  }
+  100% {
+    d: path("M0,240 L0,140 Q130,80 280,110 T550,150 T1000,80 L1000,240 L0,240 Z");
+  }
+}
+
+@keyframes waveMotionLine {
+  0% {
+    d: path("M0,120 Q150,40 300,150 T600,60 T1000,100");
+  }
+  50% {
+    d: path("M0,90 Q180,140 350,70 T700,130 T1000,120");
+  }
+  100% {
+    d: path("M0,140 Q130,80 280,110 T550,150 T1000,80");
+  }
+}
+
+.avg-indicator-purple{
+  padding:8px 16px;
+  background:#eef2ff;
+  border-radius:14px;
+  font-weight:800;
+  font-size: 0.9rem;
+  color:#4f46e5;
+  border: 1px solid rgba(79, 70, 229, 0.1);
+}
+
+/* PROGRESS BAR GLOW & SHINE */
+.progress-track-purple{
+  height:12px;
+  background:#f1f5f9;
+  border-radius:100px;
+  overflow:hidden;
+  border: 1px solid #e2e8f0;
+}
+
+.progress-bar-purple{
+  height:100%;
+  background: linear-gradient(90deg, #6366f1, #4f46e5);
+  border-radius:100px;
+  position: relative;
+}
+
+.progress-shine {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.25) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shine 2.5s infinite linear;
+}
+
+@keyframes shine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* COMMAND INPUT */
+.command-input-purple{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px 16px;
+  border: 2px solid #f1f5f9;
+  border-radius:16px;
+  background: rgba(248, 250, 252, 0.7);
+  transition: all 0.2s ease;
+}
+
+.command-input-purple input{
+  border:none;
+  outline:none;
+  background:none;
+  width:100%;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #334155;
+}
+
+.info-box-purple{
+  padding:16px;
+  background: rgba(239, 246, 255, 0.6);
+  border-radius:16px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  border: 1px solid rgba(191, 219, 254, 0.5);
+}
+
+.text-purple-bold{
+  color:#4f46e5;
+}
+
+.text-success-bold {
+  color: #10b981;
+  font-size: 1.1rem;
+}
+
+/* SHADOWS & ANIMATIONS */
+.shadow-premium {
+  box-shadow: 0 8px 20px rgba(79, 70, 229, 0.15);
+}
+
+.animate-fade-in{
+  animation:fadeIn .5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeIn{
+  from{ opacity:0; transform: translateY(4px); }
+  to{ opacity:1; transform: translateY(0); }
 }
 </style>

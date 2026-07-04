@@ -54,10 +54,20 @@
                 <i class="bi bi-calendar-week-fill"></i><span>Jadwal Pelajaran</span>
               </router-link>
             </li>
+            <li>
+              <router-link to="/absensi" class="menu-link">
+                <i class="bi bi-check-circle-fill"></i><span>Kehadiran Siswa</span>
+              </router-link>
+            </li>
+<li>
+  <router-link to="/rekap-nilai" class="menu-link">
+    <i class="bi bi-journal-text"></i><span>Rekap Nilai</span>
+  </router-link>
+</li>
           </ul>
           
           <div class="logout-section mt-auto pt-4 border-top">
-            <button @click="logout" class="btn-logout border-0 shadow-sm w-100">
+            <button @click="openLogoutModal" class="btn-logout border-0 shadow-sm w-100">
               <i class="bi bi-power"></i><span>Keluar Sistem</span>
             </button>
           </div>
@@ -79,111 +89,66 @@
             <i class="bi bi-cpu-fill hero-icon"></i>
           </div>
 
-          <div class="row g-3 mb-4">
-            <div class="col-12 col-sm-6 col-xl-3" v-for="(stat, i) in stats" :key="i">
-              <div class="stat-card p-3 shadow-sm h-100 bg-white border-0">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                  <div class="stat-icon-box" :class="stat.bg"><i :class="stat.icon"></i></div>
-                  <div class="text-success small fw-bold"><i class="bi bi-graph-up"></i> +{{ stat.up }}%</div>
-                </div>
-                <h3 class="fw-bold mb-0">{{ stat.val }}</h3>
-                <p class="text-muted small fw-bold mb-0">{{ stat.label }}</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="row g-4 mb-4">
-            <div class="col-12 col-xl-8">
-              <div class="white-card p-4 shadow-sm border-0 h-100">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                  <h5 class="fw-bold mb-0">Statistik Kehadiran Aktif</h5>
-                  <div class="d-flex gap-2">
-                    <span class="badge bg-indigo-light text-indigo small">Minggu Ini</span>
-                  </div>
-                </div>
-                <div class="chart-wrapper d-flex align-items-end justify-content-around px-2">
-                  <div v-for="(val, day) in chartData" :key="day" class="bar-container">
-                    <div class="bar-value small fw-bold text-indigo">{{ val }}%</div>
-                    <div class="bar-fill" :style="{ height: val + '%' }">
-                      <div class="bar-glow"></div>
-                    </div>
-                    <div class="bar-day small fw-bold text-muted mt-3">{{ day }}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-12 col-xl-4">
-              <div class="white-card p-4 shadow-sm border-0 h-100">
-                <h5 class="fw-bold mb-4">Aktivitas Sistem</h5>
-                <div class="activity-list">
-                  <div class="activity-item d-flex gap-3 mb-4">
-                    <div class="activity-dot bg-indigo"></div>
-                    <div>
-                      <p class="small mb-0 fw-bold">Update Data Guru</p>
-                      <small class="text-muted">Baru saja oleh Admin AJ</small>
-                    </div>
-                  </div>
-                  <div class="activity-item d-flex gap-3 mb-4">
-                    <div class="activity-dot bg-emerald"></div>
-                    <div>
-                      <p class="small mb-0 fw-bold">Backup Database Selesai</p>
-                      <small class="text-muted">Otomatis - 2 Jam yang lalu</small>
-                    </div>
-                  </div>
-                  <div class="activity-item d-flex gap-3">
-                    <div class="activity-dot bg-warning"></div>
-                    <div>
-                      <p class="small mb-0 fw-bold">5 Siswa Baru Mendaftar</p>
-                      <small class="text-muted">Lihat di Manajemen Siswa</small>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
           <div class="row g-4 mb-4">
             <div class="col-12">
               <div class="white-card p-4 shadow-sm border-0">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                  <h5 class="fw-bold mb-0">Siswa Baru Terdaftar</h5>
-                  <router-link to="/siswa" class="btn btn-indigo btn-sm rounded-pill px-4 fw-bold">
-                    Buka Manajemen Siswa <i class="bi bi-arrow-right ms-1"></i>
-                  </router-link>
+                <h5 class="fw-bold mb-4">Tentang JeprutSchool</h5>
+                
+                <div class="row g-4">
+                  <div class="col-12 col-md-6">
+                    <h6 class="fw-bold text-indigo mb-3">
+                      <i class="bi bi-sparkles me-2"></i>Fitur Utama
+                    </h6>
+                    <ul class="feature-list">
+                      <li><i class="bi bi-check-circle-fill text-indigo"></i> Manajemen Data Siswa Komprehensif</li>
+                      <li><i class="bi bi-check-circle-fill text-indigo"></i> Pengelolaan Data Pengajar</li>
+                      <li><i class="bi bi-check-circle-fill text-indigo"></i> Sistem Manajemen Kelas</li>
+                      <li><i class="bi bi-check-circle-fill text-indigo"></i> Jadwal Pelajaran Terintegrasi</li>
+                      <li><i class="bi bi-check-circle-fill text-indigo"></i> Pencatatan Kehadiran Siswa</li>
+                      <li><i class="bi bi-check-circle-fill text-indigo"></i> Dashboard Admin Responsif</li>
+                    </ul>
+                  </div>
+
+                  <div class="col-12 col-md-6">
+                    <h6 class="fw-bold text-indigo mb-3">
+                      <i class="bi bi-palette-fill me-2"></i>Desain & Teknologi
+                    </h6>
+                    <div class="tech-stack">
+                      <div class="tech-item">
+                        <span class="tech-badge">Vue.js 3</span>
+                        <span class="text-muted small">Frontend Framework</span>
+                      </div>
+                      <div class="tech-item">
+                        <span class="tech-badge">Bootstrap 5</span>
+                        <span class="text-muted small">UI Framework</span>
+                      </div>
+                      <div class="tech-item">
+                        <span class="tech-badge">Responsive Design</span>
+                        <span class="text-muted small">Mobile First Approach</span>
+                      </div>
+                      <div class="tech-item">
+                        <span class="tech-badge">Modern UI</span>
+                        <span class="text-muted small">Clean & Intuitive Interface</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div class="table-responsive">
-                  <table class="table table-hover align-middle">
-                    <thead class="bg-light">
-                      <tr>
-                        <th class="border-0 small fw-bold p-3">NAMA LENGKAP</th>
-                        <th class="border-0 small fw-bold">KELAS TUJUAN</th>
-                        <th class="border-0 small fw-bold text-center">STATUS AKTIF</th>
-                        <th class="border-0 small fw-bold text-end p-3">AKSI</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr v-for="i in 3" :key="i">
-                        <td class="p-3">
-                          <div class="d-flex align-items-center gap-3">
-                            <div class="avatar-sm bg-indigo-light text-indigo fw-bold">
-                              {{ i == 1 ? 'AW' : (i == 2 ? 'RR' : 'DN') }}
-                            </div>
-                            <span class="fw-bold small">{{ i == 1 ? 'Andi Wijaya' : (i == 2 ? 'Rina Rose' : 'Dani Noel') }}</span>
-                          </div>
-                        </td>
-                        <td class="small fw-semibold">Kelas {{ 10 + i }} IPA</td>
-                        <td class="text-center"><span class="badge-active">Aktif</span></td>
-                        <td class="text-end p-3">
-                          <button class="btn btn-sm btn-light border fw-bold text-indigo" style="font-size: 11px;">KONTROL</button>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+
+                <div class="mt-4 pt-4 border-top">
+                  <p class="text-muted mb-0 small">
+                    <i class="bi bi-info-circle me-2"></i>
+                    JeprutSchool adalah Sistem Informasi Manajemen Sekolah yang dirancang untuk memudahkan 
+                    pengelolaan data akademik dan administratif. Dengan antarmuka yang user-friendly dan fitur lengkap, 
+                    kami berkomitmen meningkatkan efisiensi operasional sekolah Anda.
+                  </p>
                 </div>
               </div>
             </div>
           </div>
+
+
+
+
 
           <div class="pb-5"></div>
         </div>
@@ -191,6 +156,30 @@
     </div>
 
     <div v-if="isSidebarOpen" class="sidebar-overlay d-lg-none" @click="isSidebarOpen = false"></div>
+
+    <transition name="modal-bounce">
+      <div v-if="showLogoutModal" class="custom-modal-overlay" @click.self="closeLogoutModal">
+        <div class="custom-modal-box">
+          <div class="modal-premium-deco"></div>
+          <button class="custom-btn-close" @click="closeLogoutModal">
+            <i class="bi bi-x-lg"></i>
+          </button>
+          
+          <div class="custom-modal-content">
+            <div class="custom-modal-icon shadow-premium">
+              <i class="bi bi-power"></i>
+            </div>
+            <h4 class="custom-modal-title">Keluar Sistem?</h4>
+            <p class="custom-modal-text">Anda akan keluar dari sesi admin **JeprutSchool**. Pastikan semua perubahan data penting telah disimpan.</p>
+            
+            <div class="custom-modal-actions">
+              <button class="custom-btn-cancel" @click="closeLogoutModal">Batal</button>
+              <button class="custom-btn-confirm shadow-premium" @click="confirmLogout">Ya, Keluar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -199,28 +188,41 @@ export default {
   data() {
     return {
       isSidebarOpen: false,
+      showLogoutModal: false, // State untuk modal logout custom
       jamSekarang: '',
-      tanggalSekarang: '',
-      stats: [
-        { label: 'Total Siswa', val: '1,248', icon: 'bi-people-fill', bg: 'bg-indigo-light', up: 12 },
-        { label: 'Guru Aktif', val: '86', icon: 'bi-person-badge-fill', bg: 'bg-emerald-light', up: 3 },
-        { label: 'Ruang Kelas', val: '32', icon: 'bi-door-open-fill', bg: 'bg-cyan-light', up: 0 },
-        { label: 'Kehadiran', val: '98%', icon: 'bi-check-circle-fill', bg: 'bg-orange-light', up: 5 }
-      ],
-      chartData: { 'Sen': 85, 'Sel': 92, 'Rab': 78, 'Kam': 95, 'Jum': 88, 'Sab': 40, 'Min': 15 }
+      tanggalSekarang: ''
     }
   },
+
   methods: {
     updateTime() {
-      const now = new Date();
-      this.jamSekarang = now.toLocaleTimeString('id-ID', { hour12: false });
-      this.tanggalSekarang = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      const now = new Date()
+      this.jamSekarang = now.toLocaleTimeString('id-ID', { hour12: false })
+      this.tanggalSekarang = now.toLocaleDateString('id-ID', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      })
     },
-    logout() { if(confirm('Keluar sistem?')) this.$router.push('/'); }
+
+    openLogoutModal() {
+      this.showLogoutModal = true
+    },
+
+    closeLogoutModal() {
+      this.showLogoutModal = false
+    },
+
+    confirmLogout() {
+      this.showLogoutModal = false
+      this.$router.push('/')
+    }
   },
+
   mounted() {
-    this.updateTime();
-    setInterval(this.updateTime, 1000);
+    this.updateTime()
+    setInterval(() => { this.updateTime() }, 1000)
   }
 }
 </script>
@@ -238,7 +240,7 @@ export default {
 /* AVATAR AJ */
 .avatar-aj { width: 42px; height: 42px; background: #4f46e5; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; border: 3px solid #eef2ff; }
 
-/* SIDEBAR LINK - SATU BARIS RAPI */
+/* SIDEBAR LINK */
 .menu-link { display: flex; align-items: center; gap: 12px; padding: 14px 20px; color: #718096; text-decoration: none; font-weight: 700; border-radius: 14px; transition: 0.2s; }
 .nowrap-link { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .menu-link:hover { background: #f8fafc; color: #4f46e5; }
@@ -253,13 +255,6 @@ export default {
 .stat-card:hover { transform: translateY(-5px); }
 .stat-icon-box { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
 
-/* CHART AKTIF */
-.chart-wrapper { height: 250px; border-bottom: 2px solid #f1f5f9; padding-bottom: 5px; }
-.bar-container { width: 45px; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; }
-.bar-fill { width: 100%; background: linear-gradient(to top, #4f46e5, #818cf8); border-radius: 12px 12px 4px 4px; position: relative; transition: height 1s ease-in-out; animation: grow 1.2s ease-out; }
-.bar-glow { position: absolute; top: 0; left: 0; right: 0; height: 20px; background: rgba(255,255,255,0.2); filter: blur(5px); border-radius: 12px 12px 0 0; }
-@keyframes grow { from { height: 0; } }
-
 /* UTILS */
 .bg-indigo-light { background: #eef2ff; color: #4f46e5; }
 .bg-emerald-light { background: #ecfdf5; color: #10b981; }
@@ -267,18 +262,208 @@ export default {
 .bg-orange-light { background: #fff7ed; color: #f97316; }
 .text-indigo { color: #4f46e5; }
 .btn-indigo { background: #4f46e5; color: white; border: none; }
-.badge-active { background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 800; }
-.avatar-sm { width: 35px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 11px; }
 
-/* ACTIVITY FEED */
-.activity-dot { width: 12px; height: 12px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 0 3px #f1f5f9; margin-top: 5px; }
-.btn-logout { background: #fee2e2; color: #991b1b; padding: 14px; border-radius: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; }
-.btn-logout:hover { background: #fecaca; }
+.btn-logout { background: #f3f0ff; color: #6366f1; padding: 14px; border-radius: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; cursor: pointer; }
+.btn-logout:hover { background: #e0e7ff; color: #4f46e5; transform: scale(0.98); }
+
+/* ABOUT CARD STYLES */
+.feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.feature-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  font-size: 14px;
+  color: #475569;
+}
+
+.feature-list i {
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.tech-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tech-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background: #f8fafc;
+  border-radius: 10px;
+  border-left: 3px solid #4f46e5;
+}
+
+.tech-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.tech-item span:last-child {
+  font-size: 12px;
+}
+
+/* =============================================
+   CUSTOM MODAL PREMIUM STYLES (THEME UNGU)
+   ============================================= */
+.custom-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.custom-modal-box {
+  width: 90%;
+  max-width: 440px;
+  background: #ffffff;
+  border-radius: 28px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 24px 70px rgba(79, 70, 229, 0.15);
+  border: 1px solid rgba(238, 242, 255, 0.8);
+}
+
+.modal-premium-deco {
+  height: 6px;
+  background: linear-gradient(90deg, #6366f1, #4f46e5, #312e81);
+  width: 100%;
+}
+
+.custom-btn-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f8fafc;
+  border: none;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+  cursor: pointer;
+}
+.custom-btn-close:hover {
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+.custom-modal-content {
+  padding: 40px 30px 30px 30px;
+  text-align: center;
+}
+
+.custom-modal-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #e0e7ff 0%, #eef2ff 100%);
+  color: #4f46e5;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px auto;
+}
+
+.shadow-premium {
+  box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.2);
+}
+
+.custom-modal-title {
+  font-weight: 800;
+  color: #0f172a;
+  font-size: 22px;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+
+.custom-modal-text {
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+.custom-modal-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.custom-btn-cancel, 
+.custom-btn-confirm {
+  flex: 1;
+  padding: 13px 20px;
+  border-radius: 16px;
+  font-weight: 700;
+  font-size: 14px;
+  border: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.custom-btn-cancel {
+  background: #f1f5f9;
+  color: #64748b;
+}
+.custom-btn-cancel:hover {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.custom-btn-confirm {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: white;
+}
+.custom-btn-confirm:hover {
+  background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+  transform: translateY(-1px);
+}
+.custom-btn-confirm:active {
+  transform: translateY(0);
+}
+
+/* ANIMATION BOUNCE INEFFECT */
+.modal-bounce-enter-active {
+  animation: bounceIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.modal-bounce-leave-active {
+  transition: opacity 0.2s ease;
+}
+.modal-bounce-leave-to {
+  opacity: 0;
+}
+
+@keyframes bounceIn {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
 
 @media (max-width: 991px) {
   .sidebar { position: fixed; left: -280px; top: 0; bottom: 0; }
   .sidebar.show-sidebar { left: 0; }
   .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1030; backdrop-filter: blur(2px); }
-  .bar-container { width: 30px; }
 }
 </style>
